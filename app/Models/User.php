@@ -8,7 +8,7 @@ use App\Traits\Filterable;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
-use App\Traits\UsingUuidAsPrimaryKey;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,7 +16,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * App\Models\User
@@ -42,7 +41,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property \Carbon\Carbon $first_active_at
  * @property \Carbon\Carbon $last_active_at
  * @property \Carbon\Carbon $frozen_at
- * @property string id
  * @method static where(string $string, mixed $username)
  * @method static create(array $all)
  * @property int $id
@@ -281,8 +279,6 @@ class User extends Authenticatable
         if (\auth()->check() && $this->is(auth()->user())) {
             return parent::attributesToArray();
         }
-
         return Arr::only(parent::attributesToArray(), self::SAFE_FIELDS);
     }
-
 }

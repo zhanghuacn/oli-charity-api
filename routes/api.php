@@ -21,3 +21,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/logout', [AuthController::class, 'logout']);
 Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/social-login', [AuthController::class, 'socialite']);
+
+
+Route::middleware('auth:sanctum')->get('/auth/user', function (Request $request) {
+    return \Illuminate\Support\Facades\Auth::user();
+});

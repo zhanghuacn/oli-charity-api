@@ -10,6 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -21,7 +22,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
         $user = User::create($request->all());
-        return Response::success($user->createDeviceToken($request->get('device_name')));
+        return Response::success($user->createDeviceToken($request->input('device_name')));
     }
 
     /**
@@ -34,16 +35,29 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('username', $request->username)->orWhere('email', $request->username)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages(['email' => ['The provided credentials are incorrect.']]);
+        $user = User::where('username', $request->input('username'))->orWhere('email', $request->input('username'))->first();
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
         }
-        return Response::success($user->createDeviceToken($request->get('device_name')));
+        return Response::success($user->createDeviceToken($request->input('device_name')));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
     {
         $request->user()->tokens()->delete();
-        return Response::ok();
+        return Response::success();
+    }
+
+    public function socialite(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'driver' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
+            'token' => 'required',
+        ]);
+        $social_user = Socialite::driver($request->input('driver'))->userFromToken($request->input('token'));
+        abort_if($social_user == null, 400, 'Invalid credentials');
+        return Response::success();
     }
 }
