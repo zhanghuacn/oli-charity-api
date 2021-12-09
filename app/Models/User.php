@@ -8,14 +8,25 @@ use App\Traits\Filterable;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
+use Database\Factories\UserFactory;
+use Eloquent;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
+use function auth;
+use function now;
 
 /**
  * App\Models\User
@@ -46,19 +57,19 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $id
  * @property string|null $status_remark 状态说明
  * @property string|null $remember_token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property-read string $display_status
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
+ * @property-read Collection|PersonalAccessToken[] $tokens
  * @property-read int|null $tokens_count
- * @method static \Database\Factories\UserFactory factory(...$parameters)
+ * @method static UserFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|User filter(?array $input = null)
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
- * @method static \Illuminate\Database\Query\Builder|User onlyTrashed()
+ * @method static Builder|User onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
  * @method static \Illuminate\Database\Eloquent\Builder|User whereAvatar($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereBirthday($value)
@@ -87,9 +98,13 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereStatusRemark($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUsername($value)
- * @method static \Illuminate\Database\Query\Builder|User withTrashed()
- * @method static \Illuminate\Database\Query\Builder|User withoutTrashed()
- * @mixin \Eloquent
+ * @method static Builder|User withTrashed()
+ * @method static Builder|User withoutTrashed()
+ * @mixin Eloquent
+ * @property-read Collection|\App\Models\UserSocialite[] $socialites
+ * @property-read int|null $socialites_count
+ * @property-read Collection|\App\Models\UserSocialite[] $userSocialites
+ * @property-read int|null $user_socialites_count
  */
 class User extends Authenticatable
 {
@@ -188,6 +203,11 @@ class User extends Authenticatable
         'gender' => self::GENDER_UNKNOWN,
     ];
 
+    public function userSocialites(): HasMany
+    {
+        return $this->hasMany(UserSocialite::class);
+    }
+
     protected static function booted()
     {
         static::saving(
@@ -254,7 +274,7 @@ class User extends Authenticatable
     {
         $this->updateQuietly(
             [
-                'last_active_at' => \now(),
+                'last_active_at' => now(),
                 'status' => self::STATUS_ACTIVE,
             ]
         );
@@ -266,7 +286,7 @@ class User extends Authenticatable
     {
         $this->first_active_at || $this->updateQuietly(
             [
-                'first_active_at' => \now(),
+                'first_active_at' => now(),
                 'status' => self::STATUS_ACTIVE,
             ]
         );
@@ -276,7 +296,7 @@ class User extends Authenticatable
 
     public function attributesToArray(): array
     {
-        if (\auth()->check() && $this->is(auth()->user())) {
+        if (auth()->check() && $this->is(auth()->user())) {
             return parent::attributesToArray();
         }
         return Arr::only(parent::attributesToArray(), self::SAFE_FIELDS);
