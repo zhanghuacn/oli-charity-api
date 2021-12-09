@@ -96,3 +96,5 @@ fabric.properties
 /.phpstorm.meta.php
 /_ide_helper.php
 
+/.php-cs-fixer.cache
+.idea
