@@ -98,3 +98,4 @@ fabric.properties
 
 /.php-cs-fixer.cache
 .idea
+/_ide_helper_models.php

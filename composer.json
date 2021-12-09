@@ -9,8 +9,9 @@
         "friendsofphp/php-cs-fixer": "^3.3",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "jiannei/laravel-response": "^4.0",
         "laravel/framework": "^8.65",
-        "laravel/sanctum": "^2.11",
+        "laravel/sanctum": "^2.12",
         "laravel/tinker": "^2.5"
     },
     "require-dev": {
@@ -21,6 +22,7 @@
         "facade/ignition": "^2.17",
         "fakerphp/faker": "^1.9.1",
         "laravel/sail": "^1.0.1",
+        "laravel/telescope": "^4.6",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^5.10",
         "phpunit/phpunit": "^9.5.10"
@@ -68,7 +70,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         },
         "hooks": {
             "pre-commit": [
