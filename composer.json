@@ -5,7 +5,8 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
+        "friendsofphp/php-cs-fixer": "^3.3",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.65",
@@ -13,7 +14,11 @@
         "laravel/tinker": "^2.5"
     },
     "require-dev": {
-        "facade/ignition": "^2.5",
+        "barryvdh/laravel-ide-helper": "^2.10",
+        "beyondcode/laravel-dump-server": "^1.7",
+        "brainmaestro/composer-git-hooks": "^2.8",
+        "doctrine/dbal": "^3.2",
+        "facade/ignition": "^2.17",
         "fakerphp/faker": "^1.9.1",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
@@ -25,7 +30,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "./bootstrap/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -37,19 +45,40 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
-        ]
+        ],
+        "post-update-cmd": [
+            "cghooks update",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta"
+        ],
+        "post-merge": "composer install",
+        "post-install-cmd": [
+            "cghooks add --ignore-lock",
+            "cghooks update"
+        ],
+        "cghooks": "vendor/bin/cghooks",
+        "check-style": "php-cs-fixer fix --using-cache=no --diff --config=.php-cs-fixer.php --dry-run --ansi",
+        "fix-style": "php-cs-fixer fix --using-cache=no --config=.php-cs-fixer.php --ansi",
+        "test": "@php artisan test"
     },
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "hooks": {
+            "pre-commit": [
+                "composer test",
+                "composer check-style"
+            ],
+            "pre-push": [
+                "composer test",
+                "composer check-style"
+            ]
         }
     },
     "config": {
