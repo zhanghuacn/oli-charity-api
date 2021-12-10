@@ -12,4 +12,12 @@ class Controller extends BaseController
     use AuthorizesRequests;
     use DispatchesJobs;
     use ValidatesRequests;
+
+
+    public function __construct()
+    {
+        if (request()->header('Authorization')) {
+            $this->middleware('auth:sanctum');
+        }
+    }
 }

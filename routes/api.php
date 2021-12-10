@@ -27,6 +27,10 @@ Route::post('/auth/social-login', [AuthController::class, 'socialiteLogin']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
 
+Route::get('/ucenter/notifications', [UCenterController::class, 'notifications']);
+Route::put('/ucenter/information', [UCenterController::class, 'information']);
+Route::put('/ucenter/privacy', [UCenterController::class, 'privacy']);
+
 Route::get('/explore/index', [ExploreController::class, 'index']);
 
 Route::get('/news', [NewsController::class, 'index']);
@@ -34,20 +38,23 @@ Route::get('/news/{news}', [NewsController::class, 'show']);
 
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{charity}', [CharityController::class, 'show']);
+Route::post('/charities/{charity}/actions/follow', [CharityController::class, 'subscribe']);
+Route::post('/charities/{charity}/actions/unfollow', [CharityController::class, 'unsubscribe']);
 
 Route::get('/events', [ActivityController::class, 'index']);
 Route::get('/events/{activity}', [ActivityController::class, 'show']);
+Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'subscribe']);
+Route::post('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
 
-Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('/ucenter/notifications', [UCenterController::class, 'notifications']);
-    Route::put('/ucenter/information', [UCenterController::class, 'information']);
-    Route::put('/ucenter/privacy', [UCenterController::class, 'privacy']);
 
-    Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'subscribe']);
-    Route::post('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
 
-});
+
+
+Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'subscribe']);
+Route::post('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
+
+
 
 
 
