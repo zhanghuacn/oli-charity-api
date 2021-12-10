@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ExploreController;
+use App\Http\Controllers\Api\UCenterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,16 +16,25 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/logout', [AuthController::class, 'logout']);
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/social-login', [AuthController::class, 'socialite']);
-
-
-Route::middleware('auth:sanctum')->get('/auth/user', function (Request $request) {
-    return \Illuminate\Support\Facades\Auth::user();
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/social-login', [AuthController::class, 'socialiteLogin']);
+    Route::post('/social-bind', [AuthController::class, 'socialiteBind']);
+    Route::post('/social-register', [AuthController::class, 'socialiteRegister']);
 });
+
+Route::prefix('ucenter')->middleware('auth:sanctum')->group(function () {
+    Route::any('/notifications', [UCenterController::class, 'notifications']);
+    Route::put('/information', [UCenterController::class, 'information']);
+    Route::put('/privacy', [UCenterController::class, 'privacy']);
+});
+
+Route::prefix('explore')->group(function () {
+    Route::any('/index', [ExploreController::class, 'index']);
+});
+
+
+
+

@@ -7,6 +7,13 @@ use Illuminate\Notifications\Notification;
 
 class ResetPassword extends Notification
 {
+    private $token;
+
+    public function __construct($token)
+    {
+        $this->token = $token;
+    }
+
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage())

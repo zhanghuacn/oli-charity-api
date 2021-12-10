@@ -8,9 +8,7 @@ use App\Models\UserSocialite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -47,7 +45,7 @@ class AuthController extends Controller
         return Response::success();
     }
 
-    public function socialite(Request $request): JsonResponse|JsonResource
+    public function socialiteLogin(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
             'driver' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
