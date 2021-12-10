@@ -4,16 +4,16 @@ namespace App\Http\Resources\Api;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class NewsCollection extends ResourceCollection
+class CharityCollection extends ResourceCollection
 {
     public function toArray($request)
     {
         return $this->collection->map(function ($item) {
             return [
                 'id' => $item->id,
-                'title' => $item->title,
-                'image' => $item->thumb,
+                'name' => $item->name,
                 'description' => $item->description,
+                'logo' => $item->logo,
             ];
         });
     }

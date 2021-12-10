@@ -15,7 +15,7 @@ class CreateUserSocialitesTable extends Migration
     {
         Schema::create('user_socialites', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained('users');
             $table->enum('provider', ['GOOGLE', 'FACEBOOK', 'TWITTER', 'APPLE'])->comment('第三方登录提供者');
             $table->string('provider_id')->unique()->comment('第三方登录ID');
             $table->timestamps();

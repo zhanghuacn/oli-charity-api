@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
+use Overtrue\LaravelSubscribe\Traits\Subscriber;
 use function auth;
 use function now;
 
@@ -107,6 +108,8 @@ use function now;
  * @property-read int|null $socialites_count
  * @property-read Collection|\App\Models\UserSocialite[] $userSocialites
  * @property-read int|null $user_socialites_count
+ * @property-read Collection|\Overtrue\LaravelSubscribe\Subscription[] $subscriptions
+ * @property-read int|null $subscriptions_count
  */
 class User extends Authenticatable
 {
@@ -118,6 +121,7 @@ class User extends Authenticatable
     use HasCacheProperty;
     use HasExtendsProperty;
     use Filterable;
+    use Subscriber;
 
     public const GENDER_UNKNOWN = 'UNKNOWN';
     public const GENDER_MALE = 'MALE';
@@ -135,15 +139,18 @@ class User extends Authenticatable
     public const STATUS_FROZEN = 'FROZEN';
 
     public const STATUSES = [
-        self::STATUS_INACTIVATED => '未激活',
-        self::STATUS_ACTIVE => '正常',
-        self::STATUS_FROZEN => '已冻结',
+        self::STATUS_INACTIVATED => 'INACTIVATED',
+        self::STATUS_ACTIVE => 'ACTIVE',
+        self::STATUS_FROZEN => 'FROZEN',
     ];
 
     // 默认缓存信息
     public const DEFAULT_CACHE = [];
     // 默认设置信息
-    public const DEFAULT_SETTINGS = [];
+    public const DEFAULT_SETTINGS = [
+        'portfolio' => true,
+        'records' => true,
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -216,6 +223,7 @@ class User extends Authenticatable
         static::saving(
             function (User $user) {
                 $user->name = $user->name ?? $user->username;
+                $user->settings = $user->settings ?? self::DEFAULT_SETTINGS;
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
 
                 if (Hash::needsRehash($user->password)) {
