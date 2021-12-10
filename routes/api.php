@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExploreController;
+use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\UCenterController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,9 @@ Route::prefix('ucenter')->middleware('auth:sanctum')->group(function () {
 Route::prefix('explore')->group(function () {
     Route::any('/index', [ExploreController::class, 'index']);
 });
+
+Route::get('/news', [NewsController::class, 'index']);
+Route::get('/news/{news}', [NewsController::class, 'show']);
 
 
 

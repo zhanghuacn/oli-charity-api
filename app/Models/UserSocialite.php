@@ -33,11 +33,6 @@ class UserSocialite extends Model
 {
     use HasFactory;
 
-    public const PROVIDER_GOOGLE = 'GOOGLE';
-    public const PROVIDER_FACEBOOK = 'FACEBOOK';
-    public const PROVIDER_TWITTER = 'TWITTER';
-    public const PROVIDER_APPLE = 'APPLE';
-
     protected $fillable = [
         'user_id',
         'provider',

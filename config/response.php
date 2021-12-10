@@ -63,7 +63,7 @@ return [
 
                 'fields' => [
                     // When data is nested with data, such as returning paged data, you can also set an alias for the inner data
-                    'data' => ['alias' => 'data', 'show' => true], // data/rows/list
+                    'data' => ['alias' => 'list', 'show' => true], // data/rows/list
 
                     'meta' => [
                         'alia' => 'meta',
