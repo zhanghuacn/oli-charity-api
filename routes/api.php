@@ -28,9 +28,6 @@ Route::post('/auth/social-login', [AuthController::class, 'socialiteLogin']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
 
-Route::get('/ucenter/notifications', [UCenterController::class, 'notifications']);
-Route::put('/ucenter/information', [UCenterController::class, 'information']);
-Route::put('/ucenter/privacy', [UCenterController::class, 'privacy']);
 Route::get('/ucenter/follow-charities', [UCenterController::class, 'followCharities']);
 Route::get('/ucenter/follow-events', [UCenterController::class, 'followActivities']);
 Route::get('/ucenter/follow-users', [UCenterController::class, 'followUsers']);
@@ -43,17 +40,30 @@ Route::get('/news/{news}', [NewsController::class, 'show']);
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{charity}', [CharityController::class, 'show']);
 Route::get('/charities/{charity}/events', [CharityController::class, 'activities']);
-Route::post('/charities/{charity}/actions/follow', [CharityController::class, 'subscribe']);
-Route::delete('/charities/{charity}/actions/unfollow', [CharityController::class, 'unsubscribe']);
+
 
 Route::get('/events', [ActivityController::class, 'index']);
 Route::get('/events/{activity}', [ActivityController::class, 'show']);
-Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'subscribe']);
-Route::delete('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
 
 Route::get('/users/{user}', [UserController::class, 'show']);
-Route::post('/users/{user}/actions/follow', [UserController::class, 'follow']);
-Route::delete('/users/{user}/actions/unfollow', [UserController::class, 'unfollow']);
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/ucenter/notifications', [UCenterController::class, 'notifications']);
+    Route::put('/ucenter/information', [UCenterController::class, 'information']);
+    Route::put('/ucenter/privacy', [UCenterController::class, 'privacy']);
+
+    Route::post('/charities/{charity}/actions/follow', [CharityController::class, 'subscribe']);
+    Route::delete('/charities/{charity}/actions/unfollow', [CharityController::class, 'unsubscribe']);
+
+    Route::get('/events/{activity}/guests', [ActivityController::class, 'guests']);
+    Route::put('/events/{activity}/actions/anonymous', [ActivityController::class, 'anonymous']);
+    Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'subscribe']);
+    Route::delete('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
+
+    Route::post('/users/{user}/actions/follow', [UserController::class, 'follow']);
+    Route::delete('/users/{user}/actions/unfollow', [UserController::class, 'unfollow']);
+});
 
 
 

@@ -229,7 +229,6 @@ class User extends Authenticatable
         static::saving(
             function (User $user) {
                 $user->name = $user->name ?? $user->username;
-                $user->settings = $user->settings ?? self::DEFAULT_SETTINGS;
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
 
                 if (Hash::needsRehash($user->password)) {
@@ -274,7 +273,7 @@ class User extends Authenticatable
     }
 
     #[ArrayShape(['token_type' => "string", 'token' => "string"])]
-    public function createDeviceApiToken(string $name, array $role): array
+    public function createDeviceToken($name, $role): array
     {
         return [
             'token_type' => 'bearer',

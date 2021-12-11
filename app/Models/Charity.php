@@ -93,8 +93,7 @@ class Charity extends Model
     ];
 
     // 默认缓存信息
-    public const DEFAULT_CACHE = [
-    ];
+    public const DEFAULT_CACHE = [];
 
     protected $fillable = [
         'name',
@@ -112,6 +111,7 @@ class Charity extends Model
         'address',
         'stripe_account',
         'is_visible',
+        'cache',
         'extends',
         'status',
         'remark',
@@ -142,7 +142,7 @@ class Charity extends Model
     {
         static::saving(
             function (Charity $charity) {
-                $charity->cache = $charity->cache ?? self::DEFAULT_CACHE;
+//                $charity->cache = $charity->cache ?? self::DEFAULT_CACHE;
             }
         );
     }

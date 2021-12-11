@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\ActivityResource;
+use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
+use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,8 +24,29 @@ class ActivityController extends Controller
 
     public function show(Activity $activity): JsonResponse|JsonResource
     {
-//        visits($activity)->increment();
+        visits($activity)->increment();
         return Response::success(new ActivityResource($activity));
+    }
+
+    public function guests(Activity $activity, Request $request): JsonResponse|JsonResource
+    {
+        $is_staff = $activity->tickets()->where(['user_id' => Auth::id(), 'type' => Ticket::TYPE_STAFF])->exists();
+        abort_if($is_staff == false, 403, 'Permission denied');
+        $users = $activity->tickets()->with('user')->where(['type' => Ticket::TYPE_DONOR])->get()
+            ->map(function ($ticket) {
+                return $ticket->user;
+            });
+        return Response::success(new UserCollection($users));
+    }
+
+    public function anonymous(Activity $activity, Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'enable' => 'required|boolean',
+        ]);
+        $activity->tickets()->where(['user_id' => Auth::id()])
+            ->update(['anonymous' => $request['enable']]);
+        return Response::success();
     }
 
     public function subscribe(Activity $activity): JsonResponse|JsonResource

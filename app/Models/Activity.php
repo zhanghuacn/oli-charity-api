@@ -74,6 +74,9 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @method static Builder|Activity whereIsPrivate($value)
  * @property-read Collection|\App\Models\Staff[] $staffs
  * @property-read int|null $staffs_count
+ * @property \Illuminate\Support\Fluent $settings 活动设置
+ * @property-read int|null $tickets_count
+ * @method static Builder|Activity whereSettings($value)
  */
 class Activity extends Model
 {
@@ -159,7 +162,7 @@ class Activity extends Model
     {
         static::saving(
             function (Activity $activity) {
-                $activity->settings = $activity->settings ?? self::DEFAULT_SETTINGS;
+//                $activity->settings = $activity->settings ?? self::DEFAULT_SETTINGS;
             }
         );
     }

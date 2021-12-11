@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereProviderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereExtends($value)
  */
 class Oauth extends Model
 {
