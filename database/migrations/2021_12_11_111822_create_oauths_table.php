@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserSocialitesTable extends Migration
+class CreateOauthsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateUserSocialitesTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_socialites', function (Blueprint $table) {
+        Schema::create('oauths', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->enum('provider', ['GOOGLE', 'FACEBOOK', 'TWITTER', 'APPLE'])->comment('第三方登录提供者');
             $table->string('provider_id')->unique()->comment('第三方登录ID');
+            $table->json('extends')->nullable()->comment('扩展信息');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +32,6 @@ class CreateUserSocialitesTable extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('user_socialites');
+        Schema::dropIfExists('oauths');
     }
 }

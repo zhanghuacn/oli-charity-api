@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Oauth;
 use App\Models\User;
 use App\Models\UserSocialite;
 use Illuminate\Http\JsonResponse;
@@ -53,11 +54,11 @@ class AuthController extends Controller
         ]);
         $social_user = Socialite::driver($request['driver'])->userFromToken($request['token']);
         abort_if($social_user == null, 400, 'Invalid credentials');
-        $userSocialite = UserSocialite::with('user')->where([
+        $oauth = Oauth::with('user')->where([
             ['provider', '=', $request['driver']],
             ['provider_id', '=', $social_user->id],
         ])->firstOrFail();
-        return Response::success($userSocialite->user()->createDeviceToken($request['device_name']));
+        return Response::success($oauth->user()->createDeviceToken($request['device_name']));
     }
 
     public function socialiteBind(Request $request): JsonResponse|JsonResource
@@ -74,11 +75,10 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        UserSocialite::create([
-            'user_id' => $user->id,
+        $user->oauths()->save(new Oauth([
             'provider' => $request['driver'],
             'provider_id' => $social_user->id,
-        ]);
+        ]));
         return Response::success($user->createDeviceToken($request['device_name']));
     }
 

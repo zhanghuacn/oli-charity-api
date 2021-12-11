@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CharityResource extends JsonResource
 {
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'id' => $this->id,

@@ -22,7 +22,7 @@ class ActivityController extends Controller
 
     public function show(Activity $activity): JsonResponse|JsonResource
     {
-        visits($activity)->increment();
+//        visits($activity)->increment();
         return Response::success(new ActivityResource($activity));
     }
 

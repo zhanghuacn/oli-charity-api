@@ -7,16 +7,16 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
 use JsonSerializable;
 
-class NewsCollection extends ResourceCollection
+class UserCollection extends ResourceCollection
 {
     public function toArray($request): array|Collection|JsonSerializable|Arrayable
     {
         return $this->collection->map(function ($item) {
             return [
                 'id' => $item->id,
-                'title' => $item->title,
-                'image' => $item->thumb,
-                'description' => $item->description,
+                'name' => $item->name,
+                'avatar' => $item->avatar,
+                'profile' => $item->profile,
             ];
         });
     }

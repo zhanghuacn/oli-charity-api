@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\HasCacheProperty;
+use App\Traits\HasExtendsProperty;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -76,6 +78,8 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
 class Charity extends Model
 {
     use HasFactory;
+    use HasCacheProperty;
+    use HasExtendsProperty;
     use Subscribable;
 
     public const STATUS_WAIT = 'WAIT';

@@ -23,10 +23,12 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
+use Overtrue\LaravelFollow\Followable;
 use Overtrue\LaravelSubscribe\Traits\Subscriber;
 use function auth;
 use function now;
@@ -110,6 +112,15 @@ use function now;
  * @property-read int|null $user_socialites_count
  * @property-read Collection|\Overtrue\LaravelSubscribe\Subscription[] $subscriptions
  * @property-read int|null $subscriptions_count
+ * @property-read Collection|User[] $followers
+ * @property-read int|null $followers_count
+ * @property-read Collection|User[] $followings
+ * @property-read int|null $followings_count
+ * @property-read Collection|\App\Models\Oauth[] $oauths
+ * @property-read int|null $oauths_count
+ * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCount(string $direction = 'desc')
+ * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCountAsc()
+ * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCountDesc()
  */
 class User extends Authenticatable
 {
@@ -122,6 +133,7 @@ class User extends Authenticatable
     use HasExtendsProperty;
     use Filterable;
     use Subscriber;
+    use Followable;
 
     public const GENDER_UNKNOWN = 'UNKNOWN';
     public const GENDER_MALE = 'MALE';
@@ -137,12 +149,6 @@ class User extends Authenticatable
     public const STATUS_ACTIVE = 'ACTIVE';
     public const STATUS_INACTIVATED = 'INACTIVATED';
     public const STATUS_FROZEN = 'FROZEN';
-
-    public const STATUSES = [
-        self::STATUS_INACTIVATED => 'INACTIVATED',
-        self::STATUS_ACTIVE => 'ACTIVE',
-        self::STATUS_FROZEN => 'FROZEN',
-    ];
 
     // 默认缓存信息
     public const DEFAULT_CACHE = [];
@@ -213,9 +219,9 @@ class User extends Authenticatable
         'gender' => self::GENDER_UNKNOWN,
     ];
 
-    public function userSocialites(): HasMany
+    public function oauths(): HasMany
     {
-        return $this->hasMany(UserSocialite::class);
+        return $this->hasMany(Oauth::class);
     }
 
     protected static function booted()
@@ -250,11 +256,6 @@ class User extends Authenticatable
     public function getAvatarAttribute(): string
     {
         return $this->attributes['avatar'] ?? self::DEFAULT_AVATAR;
-    }
-
-    public function getDisplayStatusAttribute(): string
-    {
-        return self::STATUSES[$this->status ?? self::STATUS_ACTIVE];
     }
 
     public function filterKeyword($query, $keyword)
@@ -307,7 +308,7 @@ class User extends Authenticatable
 
     public function attributesToArray(): array
     {
-        if (auth()->check() && $this->is(auth()->user())) {
+        if (auth()->check() && $this->is(Auth::user())) {
             return parent::attributesToArray();
         }
         return Arr::only(parent::attributesToArray(), self::SAFE_FIELDS);

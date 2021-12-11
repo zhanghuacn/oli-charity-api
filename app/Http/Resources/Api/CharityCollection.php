@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources\Api;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Collection;
+use JsonSerializable;
 
 class CharityCollection extends ResourceCollection
 {
-    public function toArray($request)
+    public function toArray($request): array|Collection|JsonSerializable|Arrayable
     {
         return $this->collection->map(function ($item) {
             return [

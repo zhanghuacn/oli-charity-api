@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CharityController;
 use App\Http\Controllers\Api\ExploreController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\UCenterController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +31,9 @@ Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister'
 Route::get('/ucenter/notifications', [UCenterController::class, 'notifications']);
 Route::put('/ucenter/information', [UCenterController::class, 'information']);
 Route::put('/ucenter/privacy', [UCenterController::class, 'privacy']);
+Route::get('/ucenter/follow-charities', [UCenterController::class, 'followCharities']);
+Route::get('/ucenter/follow-events', [UCenterController::class, 'followActivities']);
+Route::get('/ucenter/follow-users', [UCenterController::class, 'followUsers']);
 
 Route::get('/explore/index', [ExploreController::class, 'index']);
 
@@ -38,21 +42,18 @@ Route::get('/news/{news}', [NewsController::class, 'show']);
 
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{charity}', [CharityController::class, 'show']);
+Route::get('/charities/{charity}/events', [CharityController::class, 'activities']);
 Route::post('/charities/{charity}/actions/follow', [CharityController::class, 'subscribe']);
-Route::post('/charities/{charity}/actions/unfollow', [CharityController::class, 'unsubscribe']);
+Route::delete('/charities/{charity}/actions/unfollow', [CharityController::class, 'unsubscribe']);
 
 Route::get('/events', [ActivityController::class, 'index']);
 Route::get('/events/{activity}', [ActivityController::class, 'show']);
 Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'subscribe']);
-Route::post('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
+Route::delete('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
 
-
-
-
-
-
-Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'subscribe']);
-Route::post('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
+Route::get('/users/{user}', [UserController::class, 'show']);
+Route::post('/users/{user}/actions/follow', [UserController::class, 'follow']);
+Route::delete('/users/{user}/actions/unfollow', [UserController::class, 'unfollow']);
 
 
 

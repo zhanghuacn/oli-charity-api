@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\CharityCollection;
 use App\Http\Resources\Api\CharityResource;
 use App\Models\Charity;
@@ -24,6 +25,11 @@ class CharityController extends Controller
     {
         visits($charity)->increment();
         return Response::success(new CharityResource($charity));
+    }
+
+    public function activities(Charity $charity): JsonResponse|JsonResource
+    {
+        return Response::success(new ActivityCollection($charity->activities));
     }
 
     public function subscribe(Charity $charity): JsonResponse|JsonResource

@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\HasCacheProperty;
+use App\Traits\HasExtendsProperty;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Carbon;
 use Overtrue\LaravelSubscribe\Traits\Subscribable;
 
 /**
@@ -27,45 +34,51 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @property array|null $cache 数据缓存
  * @property string $status 审核状态:等待，通过，拒绝
  * @property string|null $remark 审核备注
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \App\Models\Charity $charity
+ * @property-read Charity $charity
  * @property-read string $display_status
- * @method static \Illuminate\Database\Eloquent\Builder|Activity newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Activity newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Activity query()
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereBeginTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereCache($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereCharityId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereContent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereEndTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereExtends($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereLocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereSpecialty($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereTickets($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereTimeline($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $subscribers
+ * @method static Builder|Activity newModelQuery()
+ * @method static Builder|Activity newQuery()
+ * @method static Builder|Activity query()
+ * @method static Builder|Activity whereBeginTime($value)
+ * @method static Builder|Activity whereCache($value)
+ * @method static Builder|Activity whereCharityId($value)
+ * @method static Builder|Activity whereContent($value)
+ * @method static Builder|Activity whereCreatedAt($value)
+ * @method static Builder|Activity whereDeletedAt($value)
+ * @method static Builder|Activity whereDescription($value)
+ * @method static Builder|Activity whereEndTime($value)
+ * @method static Builder|Activity whereExtends($value)
+ * @method static Builder|Activity whereId($value)
+ * @method static Builder|Activity whereIsVisible($value)
+ * @method static Builder|Activity whereLocation($value)
+ * @method static Builder|Activity whereRemark($value)
+ * @method static Builder|Activity whereSpecialty($value)
+ * @method static Builder|Activity whereStatus($value)
+ * @method static Builder|Activity whereTickets($value)
+ * @method static Builder|Activity whereTimeline($value)
+ * @method static Builder|Activity whereTitle($value)
+ * @method static Builder|Activity whereUpdatedAt($value)
+ * @mixin Eloquent
+ * @property-read Collection|User[] $subscribers
  * @property-read int|null $subscribers_count
- * @method static \Illuminate\Database\Eloquent\Builder|Activity orderBySubscribersCount(string $direction = 'desc')
- * @method static \Illuminate\Database\Eloquent\Builder|Activity orderBySubscribersCountAsc()
- * @method static \Illuminate\Database\Eloquent\Builder|Activity orderBySubscribersCountDesc()
+ * @method static Builder|Activity orderBySubscribersCount(string $direction = 'desc')
+ * @method static Builder|Activity orderBySubscribersCountAsc()
+ * @method static Builder|Activity orderBySubscribersCountDesc()
  * @property array|null $images 活动图片
- * @method static \Illuminate\Database\Eloquent\Builder|Activity whereImages($value)
+ * @method static Builder|Activity whereImages($value)
+ * @property int $is_private 是否私有
+ * @method static Builder|Activity whereIsPrivate($value)
+ * @property-read Collection|\App\Models\Staff[] $staffs
+ * @property-read int|null $staffs_count
  */
 class Activity extends Model
 {
     use HasFactory;
+    use HasCacheProperty;
+    use HasExtendsProperty;
     use Subscribable;
 
     public const STATUS_WAIT = 'WAIT';
@@ -128,6 +141,11 @@ class Activity extends Model
     public function charity(): BelongsTo
     {
         return $this->belongsTo(Charity::class);
+    }
+
+    public function staffs(): HasMany
+    {
+        return $this->hasMany(Staff::class);
     }
 
     protected static function booted()

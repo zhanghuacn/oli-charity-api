@@ -3,6 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\ActivityCollection;
+use App\Http\Resources\Api\CharityCollection;
+use App\Http\Resources\Api\NotificationCollection;
+use App\Http\Resources\Api\UserCollection;
+use App\Models\Activity;
+use App\Models\Charity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,7 +19,8 @@ class UCenterController extends Controller
 {
     public function notifications(Request $request): JsonResponse|JsonResource
     {
-        return Response::success(Auth::user()->notifications);
+        $data = Auth::user()->notifications()->simplePaginate($request->input('per_page', 15));
+        return Response::success(new NotificationCollection($data));
     }
 
     public function information(Request $request): JsonResponse|JsonResource
@@ -41,5 +48,36 @@ class UCenterController extends Controller
         Auth::user()->update(['settings->portfolio' => $request['portfolio'], 'settings->records' => $request['records']]);
         Auth::user()->refresh();
         return Response::success(Auth::user()->settings);
+    }
+
+    public function activities(): JsonResponse|JsonResource
+    {
+        return Response::success();
+    }
+
+    public function followCharities(Request $request): JsonResponse|JsonResource
+    {
+        $data = Auth::user()->subscriptions()->withType(Charity::class)
+            ->with('subscribable')->simplePaginate($request->input('per_page', 15));
+        $data->getCollection()->transform(function ($model) {
+            return $model->subscribable;
+        });
+        return Response::success(new CharityCollection($data));
+    }
+
+    public function followActivities(Request $request): JsonResponse|JsonResource
+    {
+        $data = Auth::user()->subscriptions()->withType(Activity::class)
+            ->with('subscribable')->simplePaginate($request->input('per_page', 15));
+        $data->getCollection()->transform(function ($model) {
+            return $model->subscribable;
+        });
+        return Response::success(new ActivityCollection($data));
+    }
+
+    public function followUsers(Request $request): JsonResponse|JsonResource
+    {
+        $data = Auth::user()->followings()->simplePaginate($request->input('per_page', 15));
+        return Response::success(new UserCollection($data));
     }
 }
