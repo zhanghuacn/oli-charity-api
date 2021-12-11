@@ -6,11 +6,9 @@ class ActivityService
 {
     public function order()
     {
-
     }
 
     public function ticket()
     {
-
     }
 }
