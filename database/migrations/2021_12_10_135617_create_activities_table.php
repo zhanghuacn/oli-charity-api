@@ -27,7 +27,7 @@ class CreateActivitiesTable extends Migration
             $table->boolean('is_visible')->default(true)->comment('是否可见');
             $table->boolean('is_private')->default(false)->comment('是否私有');
             $table->json('images')->nullable()->comment('活动图片');
-            $table->json('tickets')->nullable()->comment('门票信息');
+            $table->json('settings')->nullable()->comment('活动设置');
             $table->json('extends')->nullable()->comment('扩展信息');
             $table->json('cache')->nullable()->comment('数据缓存');
             $table->enum('status', ['WAIT', 'PASSED', 'REFUSE'])->comment('审核状态:等待，通过，拒绝');

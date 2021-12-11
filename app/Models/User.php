@@ -274,11 +274,11 @@ class User extends Authenticatable
     }
 
     #[ArrayShape(['token_type' => "string", 'token' => "string"])]
-    public function createDeviceToken(?string $device = null): array
+    public function createDeviceApiToken(string $name, array $role): array
     {
         return [
             'token_type' => 'bearer',
-            'token' => $this->createToken($device ?? Device::PC)->plainTextToken,
+            'token' => $this->createToken($name, $role)->plainTextToken,
         ];
     }
 

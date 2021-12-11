@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Api;
 
 use App\Models\Staff;
+use App\Models\Ticket;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,7 +11,7 @@ class ActivityResource extends JsonResource
 {
     public function toArray($request): array
     {
-        $staff_users =  $this->staffs()->with('user')->get();
+        $staff_users = $this->staffs()->with('user')->get();
         return [
             'id' => $this->id,
             'title' => $this->title,
@@ -25,7 +26,7 @@ class ActivityResource extends JsonResource
             'charity' => $this->charity->only(['id', 'name', 'logo']),
             'price' => $this->tickets['price'],
             'hosts' => new UserCollection(
-                $this->staffs()->with('user')->where('position', Staff::STAFF_HOST)->get()
+                $this->tickets()->with('user')->where('type', Ticket::TYPE_STAFF)->get()
                     ->map(function ($staff) {
                         return $staff->user;
                     })

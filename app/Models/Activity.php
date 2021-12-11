@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
+use App\Traits\HasSettingsProperty;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -77,6 +78,7 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
 class Activity extends Model
 {
     use HasFactory;
+    use HasSettingsProperty;
     use HasCacheProperty;
     use HasExtendsProperty;
     use Subscribable;
@@ -92,11 +94,15 @@ class Activity extends Model
     ];
 
     // 默认缓存信息
-    public const DEFAULT_TICKETS = [
-        'stock' => 0,
-        'price' => 0,
-        'sales' => 0,
+    public const DEFAULT_SETTINGS = [
+        'ticket' => [
+            'stock' => 0,
+            'price' => 0,
+            'sales' => 0,
+        ],
+        'quota' => [],
     ];
+
 
     protected $fillable = [
         'charity_id',
@@ -117,6 +123,7 @@ class Activity extends Model
         'is_visible',
         'is_private',
         'images',
+        'settings',
         'extends',
         'status',
         'remark',
@@ -128,7 +135,7 @@ class Activity extends Model
 
     protected $casts = [
         'images' => 'array',
-        'tickets' => 'array',
+        'setting' => 'array',
         'cache' => 'array',
         'extends' => 'array',
         'is_visible' => 'bool',
@@ -143,16 +150,16 @@ class Activity extends Model
         return $this->belongsTo(Charity::class);
     }
 
-    public function staffs(): HasMany
+    public function tickets(): HasMany
     {
-        return $this->hasMany(Staff::class);
+        return $this->hasMany(Ticket::class);
     }
 
     protected static function booted()
     {
         static::saving(
             function (Activity $activity) {
-                $activity->tickets = $activity->tickets ?? self::DEFAULT_TICKETS;
+                $activity->settings = $activity->settings ?? self::DEFAULT_SETTINGS;
             }
         );
     }

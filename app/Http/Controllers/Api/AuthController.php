@@ -37,7 +37,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        return Response::success($user->createDeviceToken($request['device_name']));
+        return Response::success($user->createDeviceToken('api', ['role:api']));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
@@ -58,7 +58,7 @@ class AuthController extends Controller
             ['provider', '=', $request['driver']],
             ['provider_id', '=', $social_user->id],
         ])->firstOrFail();
-        return Response::success($oauth->user()->createDeviceToken($request['device_name']));
+        return Response::success($oauth->user()->createDeviceToken('api', ['role:api']));
     }
 
     public function socialiteBind(Request $request): JsonResponse|JsonResource
@@ -79,7 +79,7 @@ class AuthController extends Controller
             'provider' => $request['driver'],
             'provider_id' => $social_user->id,
         ]));
-        return Response::success($user->createDeviceToken($request['device_name']));
+        return Response::success($user->createDeviceToken('api', ['role:api']));
     }
 
     public function socialiteRegister(Request $request): JsonResponse|JsonResource
@@ -99,11 +99,11 @@ class AuthController extends Controller
             'email' => $request['email'],
             'password' => $request['password'],
         ]);
-        $user->userSocialites()->save(new UserSocialite([
+        $user->oauths()->create([
             'provider' => $request['driver'],
             'provider_id' => $social_user->id,
-        ]));
+        ]);
         $user->refresh();
-        return Response::success($user->createDeviceToken($request['device_name']));
+        return Response::success($user->createDeviceToken('api', ['role:api']));
     }
 }

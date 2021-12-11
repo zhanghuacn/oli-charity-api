@@ -24,7 +24,7 @@ class CreateTicketsTable extends Migration
             $table->unsignedDecimal('price')->comment('门票价格');
             $table->unsignedDecimal('amount')->comment('捐款总额');
             $table->boolean('anonymous')->default(false)->comment('是否匿名捐款');
-            $table->timestamp('verified_at')->comment('核销时间');
+            $table->timestamp('verified_at')->nullable()->comment('核销时间');
             $table->json('extends')->nullable()->comment('扩展信息');
             $table->timestamps();
             $table->softDeletes();
