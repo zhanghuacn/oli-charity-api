@@ -61,6 +61,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTeamId($value)
  * @method static \Illuminate\Database\Query\Builder|Ticket withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Ticket withoutTrashed()
+ * @property-read \App\Models\Team|null $team
  */
 class Ticket extends Model
 {

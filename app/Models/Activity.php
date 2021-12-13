@@ -83,6 +83,8 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @method static \Illuminate\Database\Query\Builder|Activity onlyTrashed()
  * @method static \Illuminate\Database\Query\Builder|Activity withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Activity withoutTrashed()
+ * @property-read Collection|\App\Models\ActivityApplyRecord[] $applies
+ * @property-read int|null $applies_count
  */
 class Activity extends Model
 {
@@ -166,11 +168,15 @@ class Activity extends Model
         return $this->hasMany(Ticket::class);
     }
 
+    public function applies(): HasMany
+    {
+        return $this->hasMany(ActivityApplyRecord::class);
+    }
+
     protected static function booted()
     {
         static::saving(
             function (Activity $activity) {
-//                $activity->settings = $activity->settings ?? self::DEFAULT_SETTINGS;
             }
         );
     }

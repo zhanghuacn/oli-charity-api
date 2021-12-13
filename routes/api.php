@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CharityController;
 use App\Http\Controllers\Api\ExploreController;
 use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\UCenterController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -56,7 +57,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/charities/{charity}/actions/follow', [CharityController::class, 'subscribe']);
     Route::delete('/charities/{charity}/actions/unfollow', [CharityController::class, 'unsubscribe']);
 
-    Route::get('/events/{activity}/guests', [ActivityController::class, 'guests']);
+    Route::post('/events/{activity}/actions/apply', [TicketController::class, 'apply']);
+    Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);
+    Route::post('/events/{activity}/actions/scan', [TicketController::class, 'scan']);
+    Route::get('/events/{activity}/my-tickets', [TicketController::class, 'myTickets']);
+    Route::get('/events/{activity}/guests', [TicketController::class, 'guests']);
+
     Route::put('/events/{activity}/actions/anonymous', [ActivityController::class, 'anonymous']);
 
     Route::get('/events/{activity}/ranks/donation-personal', [ActivityController::class, 'personRanks']);

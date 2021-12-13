@@ -7,12 +7,15 @@ use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\ActivityResource;
 use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
+use App\Models\ActivityApplyRecord;
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class ActivityController extends Controller
@@ -29,19 +32,9 @@ class ActivityController extends Controller
         return Response::success(new ActivityResource($activity));
     }
 
-    public function guests(Activity $activity): JsonResponse|JsonResource
-    {
-        abort_if($activity->tickets()->where(['user_id' => Auth::id(), 'type' => Ticket::TYPE_STAFF])->doesntExist(), 403, 'Permission denied');
-        $users = $activity->tickets()->with('user')->get()
-            ->map(function ($ticket) {
-                return $ticket->user;
-            });
-        return Response::success(new UserCollection($users));
-    }
-
     public function personRanks(Activity $activity): JsonResponse|JsonResource
     {
-        $this->checkTicket($activity);
+        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
         $ranks = $activity->tickets()->with('user')->orderByDesc('amount')->get()
             ->map(function ($item) {
                 return [
@@ -56,7 +49,7 @@ class ActivityController extends Controller
 
     public function tableRanks(Activity $activity): JsonResponse|JsonResource
     {
-        $this->checkTicket($activity);
+        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
         $ranks = $activity->tickets()->select('table_num', DB::raw('SUM(amount) as total_amount'))
             ->groupBy('table_num')->orderByDesc('total_amount')->get();
         return Response::success($ranks);
@@ -64,7 +57,7 @@ class ActivityController extends Controller
 
     public function teamRanks(Activity $activity): JsonResponse|JsonResource
     {
-        $this->checkTicket($activity);
+        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
         $ranks = $activity->tickets()->with('team')->select('team_id', DB::raw('SUM(amount) as total_amount'))
             ->groupBy('team_id')->get()->map(function ($item) {
                 return [
@@ -78,12 +71,10 @@ class ActivityController extends Controller
 
     public function anonymous(Activity $activity, Request $request): JsonResponse|JsonResource
     {
-        $this->checkTicket($activity);
         $request->validate([
             'enable' => 'required|boolean',
         ]);
-        $activity->tickets()->where(['user_id' => Auth::id()])
-            ->update(['anonymous' => $request['enable']]);
+        $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail()->update(['anonymous' => $request['enable']]);
         return Response::success();
     }
 
@@ -101,13 +92,5 @@ class ActivityController extends Controller
             abort(500, $e->getMessage());
         }
         return Response::success();
-    }
-
-    /**
-     * @param Activity $activity
-     */
-    private function checkTicket(Activity $activity): void
-    {
-        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
     }
 }

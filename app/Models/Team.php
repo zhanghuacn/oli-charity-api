@@ -48,6 +48,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Team withTrashed()
  * @method static Builder|Team withoutTrashed()
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ticket[] $tickets
+ * @property-read int|null $tickets_count
  */
 class Team extends Model
 {
