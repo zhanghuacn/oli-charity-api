@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Overtrue\LaravelSubscribe\Traits\Subscribable;
 
@@ -77,9 +79,15 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @property \Illuminate\Support\Fluent $settings 活动设置
  * @property-read int|null $tickets_count
  * @method static Builder|Activity whereSettings($value)
+ * @method static Builder|Activity filter(?array $input = null)
+ * @method static \Illuminate\Database\Query\Builder|Activity onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Activity withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Activity withoutTrashed()
  */
 class Activity extends Model
 {
+    use Filterable;
+    use SoftDeletes;
     use HasFactory;
     use HasSettingsProperty;
     use HasCacheProperty;

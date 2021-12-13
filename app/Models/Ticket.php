@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -53,11 +54,19 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereVerifiedAt($value)
  * @mixin \Eloquent
+ * @property int|null $team_id
+ * @property string|null $table_num
+ * @method static \Illuminate\Database\Query\Builder|Ticket onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTableNum($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTeamId($value)
+ * @method static \Illuminate\Database\Query\Builder|Ticket withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Ticket withoutTrashed()
  */
 class Ticket extends Model
 {
     use HasFactory;
     use Filterable;
+    use SoftDeletes;
     use HasExtendsProperty;
 
     public const TYPE_DONOR = 'DONOR';
@@ -100,6 +109,11 @@ class Ticket extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class);
     }
 
     protected static function booted()

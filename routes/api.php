@@ -58,6 +58,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/events/{activity}/guests', [ActivityController::class, 'guests']);
     Route::put('/events/{activity}/actions/anonymous', [ActivityController::class, 'anonymous']);
+
+    Route::get('/events/{activity}/ranks/donation-personal', [ActivityController::class, 'personRanks']);
+    Route::get('/events/{activity}/ranks/donation-table', [ActivityController::class, 'tableRanks']);
+    Route::get('/events/{activity}/ranks/donation-teams', [ActivityController::class, 'teamRanks']);
+
     Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'subscribe']);
     Route::delete('/events/{activity}/actions/unfollow', [ActivityController::class, 'unsubscribe']);
 

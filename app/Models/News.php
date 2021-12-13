@@ -6,6 +6,7 @@ use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\News
@@ -45,11 +46,15 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @method static \Illuminate\Database\Eloquent\Builder|News whereUpdatedAt($value)
  * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|News filter(?array $input = null)
+ * @method static \Illuminate\Database\Query\Builder|News onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|News withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|News withoutTrashed()
  */
 class News extends Model
 {
     use HasFactory;
     use Filterable;
+    use SoftDeletes;
 
     protected $fillable = [
         'title',

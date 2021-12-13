@@ -7,6 +7,7 @@ use App\Traits\HasExtendsProperty;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Oauth
@@ -33,11 +34,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereExtends($value)
+ * @method static \Illuminate\Database\Query\Builder|Oauth onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Oauth withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Oauth withoutTrashed()
  */
 class Oauth extends Model
 {
     use HasFactory;
     use Filterable;
+    use SoftDeletes;
     use HasExtendsProperty;
 
     protected $fillable = [

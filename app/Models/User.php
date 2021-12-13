@@ -10,8 +10,6 @@ use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
 use Database\Factories\UserFactory;
 use Eloquent;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use Eloquent;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Hash;
 use Overtrue\LaravelSubscribe\Traits\Subscribable;
 
@@ -74,9 +76,15 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @method static Builder|Charity orderBySubscribersCount(string $direction = 'desc')
  * @method static Builder|Charity orderBySubscribersCountAsc()
  * @method static Builder|Charity orderBySubscribersCountDesc()
+ * @method static Builder|Charity filter(?array $input = null)
+ * @method static \Illuminate\Database\Query\Builder|Charity onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Charity withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Charity withoutTrashed()
  */
 class Charity extends Model
 {
+    use Filterable;
+    use SoftDeletes;
     use HasFactory;
     use HasCacheProperty;
     use HasExtendsProperty;
