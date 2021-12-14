@@ -66,6 +66,7 @@ class Prize extends Model
         'activity_id',
         'lottery_id',
         'name',
+        'images',
         'description',
         'num',
         'winners',

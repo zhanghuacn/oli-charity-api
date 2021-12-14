@@ -18,7 +18,6 @@ class LotteryController extends Controller
 {
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-
         $tickets = $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail();
         $data = $activity->lotteries()->get()->map(function ($item) use ($tickets) {
             return [

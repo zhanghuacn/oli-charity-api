@@ -7,8 +7,6 @@ use App\Http\Resources\Api\ActivityCollection;
 use App\Models\Activity;
 use App\Models\ActivityApplyRecord;
 use App\Models\Ticket;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

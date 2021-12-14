@@ -6,11 +6,14 @@ use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Overtrue\LaravelSubscribe\Traits\Subscribable;
 
 /**
@@ -41,10 +44,10 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @property array|null $cache 数据缓存
  * @property string $status 审核状态:等待，通过，拒绝
  * @property string|null $remark 审核备注
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Activity[] $activities
+ * @property-read Collection|Activity[] $activities
  * @property-read int|null $activities_count
  * @method static Builder|Charity whereAddress($value)
  * @method static Builder|Charity whereCache($value)
@@ -69,7 +72,7 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @method static Builder|Charity whereStripeAccount($value)
  * @method static Builder|Charity whereUpdatedAt($value)
  * @method static Builder|Charity whereWebsite($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $subscribers
+ * @property-read Collection|User[] $subscribers
  * @property-read int|null $subscribers_count
  * @method static Builder|Charity orderBySubscribersCount(string $direction = 'desc')
  * @method static Builder|Charity orderBySubscribersCountAsc()
@@ -141,6 +144,11 @@ class Charity extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
+    }
+
+    public function goods(): MorphMany
+    {
+        return $this->morphMany(Goods::class, 'sourceable');
     }
 
     protected static function booted()

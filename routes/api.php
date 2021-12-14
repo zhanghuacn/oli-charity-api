@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CharityController;
-use App\Http\Controllers\Api\ExploreController;
+use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\LotteryController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\TicketController;
@@ -34,7 +34,8 @@ Route::get('/ucenter/follow-charities', [UCenterController::class, 'followCharit
 Route::get('/ucenter/follow-events', [UCenterController::class, 'followActivities']);
 Route::get('/ucenter/follow-users', [UCenterController::class, 'followUsers']);
 
-Route::get('/explore/index', [ExploreController::class, 'index']);
+Route::get('/explore', [HomeController::class, 'explore']);
+Route::get('/search', [HomeController::class, 'search']);
 
 Route::get('/news', [NewsController::class, 'index']);
 Route::get('/news/{news}', [NewsController::class, 'show']);
