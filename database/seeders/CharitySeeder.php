@@ -23,6 +23,7 @@ class CharitySeeder extends Seeder
         Charity::create([
             'name' => Str::random(10),
             'logo' => Str::random(10),
+            'backdrop' => Str::random(10),
             'website' => 'https://www.qq.com',
             'description' => Str::random(40),
             'introduce' => Str::random(500),

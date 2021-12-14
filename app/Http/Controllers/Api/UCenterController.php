@@ -50,9 +50,14 @@ class UCenterController extends Controller
         return Response::success(Auth::user()->settings);
     }
 
-    public function activities(): JsonResponse|JsonResource
+    public function activities(Request $request): JsonResponse|JsonResource
     {
-        return Response::success();
+        $request->validate([
+            'filter' => 'sometimes|in:CURRENT,UPCOMING,PAST',
+        ]);
+        $request->merge(['user_id' => Auth::id()]);
+        $activities = Activity::filter($request->all())->simplePaginate($request->input('per_page', 15));
+        return Response::success(new ActivityCollection($activities));
     }
 
     public function followCharities(Request $request): JsonResponse|JsonResource

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Traits\Filterable;
+use App\Traits\HasExtendsProperty;
 use Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,7 +55,7 @@ class Team extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use Filterable;
+    use HasExtendsProperty;
 
     protected $fillable = [
         'charity_id',

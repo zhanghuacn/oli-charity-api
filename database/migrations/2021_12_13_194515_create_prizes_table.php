@@ -17,10 +17,13 @@ class CreatePrizesTable extends Migration
             $table->id();
             $table->foreignId('charity_id')->comment('慈善机构')->constrained('charities');
             $table->foreignId('activity_id')->comment('活动')->constrained('activities');
+            $table->foreignId('lottery_id')->comment('抽奖')->constrained('activities');
             $table->string('name')->comment('名称');
             $table->string('description')->nullable()->comment('描述');
             $table->unsignedInteger('num')->comment('奖品数量');
-            $table->json('winner')->nullable()->comment('中奖榜单');
+            $table->json('images')->nullable()->comment('图片');
+            $table->json('winners')->nullable()->comment('中奖榜单');
+            $table->json('extends')->nullable()->comment('扩展信息');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -33,6 +36,8 @@ class CreatePrizesTable extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('prizes');
     }
 }

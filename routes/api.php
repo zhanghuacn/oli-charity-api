@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CharityController;
 use App\Http\Controllers\Api\ExploreController;
+use App\Http\Controllers\Api\LotteryController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\UCenterController;
@@ -51,6 +52,7 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/ucenter/notifications', [UCenterController::class, 'notifications']);
+    Route::get('/ucenter/events', [UCenterController::class, 'activities']);
     Route::put('/ucenter/information', [UCenterController::class, 'information']);
     Route::put('/ucenter/privacy', [UCenterController::class, 'privacy']);
 
@@ -63,6 +65,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/events/{activity}/my-tickets', [TicketController::class, 'myTickets']);
     Route::get('/events/{activity}/guests', [TicketController::class, 'guests']);
 
+    Route::get('/events/{activity}/lotteries', [LotteryController::class, 'index']);
+    Route::get('/events/{activity}/lotteries/{lottery}', [LotteryController::class, 'show']);
+
+    Route::get('/event/my-current', [ActivityController::class, 'myCurrent']);
     Route::put('/events/{activity}/actions/anonymous', [ActivityController::class, 'anonymous']);
 
     Route::get('/events/{activity}/ranks/donation-personal', [ActivityController::class, 'personRanks']);

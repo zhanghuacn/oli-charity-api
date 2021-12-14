@@ -15,7 +15,6 @@ class TicketSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
         Ticket::create([
-            'lottery_code' => '000001',
             'charity_id' => 1,
             'activity_id' => 1,
             'team_id' => 1,

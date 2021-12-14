@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Traits\Filterable;
+use App\ModelFilters\NewsFilter;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -71,5 +72,10 @@ class News extends Model
     public function visits(): Relation
     {
         return visits($this)->relation();
+    }
+
+    public function modelFilter(): ?string
+    {
+        return $this->provideFilter(NewsFilter::class);
     }
 }

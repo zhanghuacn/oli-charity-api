@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\Filterable;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use Eloquent;
@@ -12,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Hash;
 use Overtrue\LaravelSubscribe\Traits\Subscribable;
 
 /**
@@ -83,7 +81,6 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  */
 class Charity extends Model
 {
-    use Filterable;
     use SoftDeletes;
     use HasFactory;
     use HasCacheProperty;

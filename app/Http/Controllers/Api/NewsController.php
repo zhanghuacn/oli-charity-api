@@ -15,7 +15,7 @@ class NewsController extends Controller
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
-        $paginate = News::orderByDesc('id')->simplePaginate($request->input('per_page', 15));
+        $paginate = News::filter($request->all())->simplePaginate($request->input('per_page', 10));
         return Response::success(new NewsCollection($paginate));
     }
 

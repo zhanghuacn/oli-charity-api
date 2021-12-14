@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Api;
 
-use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
@@ -21,7 +20,6 @@ class ActivityCollection extends ResourceCollection
                 'location' => $item->location,
                 'begin_time' => $item->begin_time,
                 'end_time' => $item->end_time,
-                'current' => Carbon::now()->between($item->begin_time, $item->end_time),
             ];
         });
     }

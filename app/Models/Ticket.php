@@ -2,15 +2,11 @@
 
 namespace App\Models;
 
-use App\Traits\Filterable;
 use App\Traits\HasExtendsProperty;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
@@ -66,7 +62,6 @@ use Illuminate\Support\Str;
 class Ticket extends Model
 {
     use HasFactory;
-    use Filterable;
     use SoftDeletes;
     use HasExtendsProperty;
 
@@ -122,6 +117,13 @@ class Ticket extends Model
         static::saving(
             function (Ticket $ticket) {
                 $ticket->code = $user->code ?? Str::uuid();
+                do {
+                    $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
+                    if (Ticket::where(['activity_id' => $ticket->activity_id, 'lottery_code' => $code])->doesntExist()) {
+                        $ticket->lottery_code = $code;
+                        break;
+                    }
+                } while (true);
             }
         );
     }

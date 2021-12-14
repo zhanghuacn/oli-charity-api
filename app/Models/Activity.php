@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
-use App\Traits\Filterable;
+use App\ModelFilters\ActivityFilter;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
+use App\Traits\HasImagesProperty;
 use App\Traits\HasSettingsProperty;
 use Eloquent;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -85,12 +87,15 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @method static \Illuminate\Database\Query\Builder|Activity withoutTrashed()
  * @property-read Collection|\App\Models\ActivityApplyRecord[] $applies
  * @property-read int|null $applies_count
+ * @property-read Collection|\App\Models\Lottery[] $lotteries
+ * @property-read int|null $lotteries_count
  */
 class Activity extends Model
 {
     use Filterable;
     use SoftDeletes;
     use HasFactory;
+    use HasImagesProperty;
     use HasSettingsProperty;
     use HasCacheProperty;
     use HasExtendsProperty;
@@ -143,7 +148,15 @@ class Activity extends Model
     ];
 
     protected $hidden = [
+        'charity_id',
+        'cache',
+        'settings',
+        'extends',
+        'status',
         'is_visible',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     protected $casts = [
@@ -152,6 +165,7 @@ class Activity extends Model
         'cache' => 'array',
         'extends' => 'array',
         'is_visible' => 'bool',
+        'is_private' => 'bool',
     ];
 
     protected $attributes = [
@@ -173,12 +187,22 @@ class Activity extends Model
         return $this->hasMany(ActivityApplyRecord::class);
     }
 
+    public function lotteries(): HasMany
+    {
+        return $this->hasMany(Lottery::class);
+    }
+
     protected static function booted()
     {
         static::saving(
             function (Activity $activity) {
             }
         );
+    }
+
+    public function modelFilter(): ?string
+    {
+        return $this->provideFilter(ActivityFilter::class);
     }
 
     public function getDisplayStatusAttribute(): string

@@ -10,6 +10,5 @@ class TeamController extends Controller
 {
     public function index(Activity $activity)
     {
-
     }
 }

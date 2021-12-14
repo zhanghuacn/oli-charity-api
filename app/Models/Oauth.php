@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\Filterable;
 use App\Traits\HasExtendsProperty;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -41,7 +40,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Oauth extends Model
 {
     use HasFactory;
-    use Filterable;
     use SoftDeletes;
     use HasExtendsProperty;
 

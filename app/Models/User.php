@@ -129,7 +129,6 @@ class User extends Authenticatable
     use HasSettingsProperty;
     use HasCacheProperty;
     use HasExtendsProperty;
-    use Filterable;
     use Subscriber;
     use Followable;
 
@@ -255,26 +254,11 @@ class User extends Authenticatable
         return $this->attributes['avatar'] ?? self::DEFAULT_AVATAR;
     }
 
-    public function filterKeyword($query, $keyword)
-    {
-        if (empty($keyword)) {
-            return $query;
-        }
-
-        $keyword = sprintf('%%%s%%', $keyword);
-
-        return $query->where(
-            function ($q) use ($keyword) {
-                $q->where('name', 'like', $keyword)->orWhere('username', 'like', $keyword);
-            }
-        );
-    }
-
     #[ArrayShape(['token_type' => "string", 'token' => "string"])]
     public function createDeviceToken($name, $role): array
     {
         return [
-            'token_type' => 'bearer',
+            'token_type' => 'Bearer',
             'token' => $this->createToken($name, $role)->plainTextToken,
         ];
     }

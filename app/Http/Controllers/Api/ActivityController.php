@@ -4,32 +4,42 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
-use App\Http\Resources\Api\ActivityResource;
-use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\ActivityApplyRecord;
 use App\Models\Ticket;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class ActivityController extends Controller
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
-        $paginate = Activity::orderByDesc('id')->simplePaginate($request->input('per_page', 15));
-        return Response::success(new ActivityCollection($paginate));
+        $activities = Activity::filter($request->all())->simplePaginate($request->input('per_page', 15));
+        return Response::success(new ActivityCollection($activities));
     }
 
     public function show(Activity $activity): JsonResponse|JsonResource
     {
+        $data['hosts'] = $activity->tickets()->with('user')
+            ->where('type', Ticket::TYPE_STAFF)->get()
+            ->map(function ($staff) {
+                return $staff->user;
+            });
+        $data['is_follow'] = Auth::check() && $activity->isSubscribedBy(Auth::user());
+        if ($activity->is_private && Auth::check()) {
+            $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id(), 'status' => ActivityApplyRecord::STATUS_PASSED])->first();
+            if ($activityApplyRecord->exists()) {
+                $data['apply_status'] = $activityApplyRecord->status;
+            }
+        }
         visits($activity)->increment();
-        return Response::success(new ActivityResource($activity));
+        return Response::success(array_merge($activity->toArray(), $data));
     }
 
     public function personRanks(Activity $activity): JsonResponse|JsonResource

@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable()->comment('邮箱认证时间');
             $table->string('password')->comment('密码');
             $table->string('avatar')->nullable()->comment('头像');
+            $table->string('backdrop')->nullable()->comment('背景图');
             $table->string('profile')->nullable()->comment('简介');
             $table->string('first_name')->nullable()->comment('名');
             $table->string('middle_name')->nullable()->comment('中间名');
