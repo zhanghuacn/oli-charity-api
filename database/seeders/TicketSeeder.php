@@ -10,10 +10,7 @@ class TicketSeeder extends Seeder
 {
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Ticket::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-
         Ticket::create([
             'charity_id' => 1,
             'activity_id' => 1,

@@ -18,10 +18,7 @@ class PrizeSeeder extends Seeder
      */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Prize::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-
         Prize::create([
             'charity_id' => 1,
             'activity_id' => 1,
@@ -29,6 +26,7 @@ class PrizeSeeder extends Seeder
             'name' => Str::random(10),
             'description' => Str::random(30),
             'num' => 5,
+            'goods_id' => 1
         ]);
     }
 }

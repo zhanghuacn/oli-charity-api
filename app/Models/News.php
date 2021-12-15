@@ -50,6 +50,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Query\Builder|News onlyTrashed()
  * @method static \Illuminate\Database\Query\Builder|News withTrashed()
  * @method static \Illuminate\Database\Query\Builder|News withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|News paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|News simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|News whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|News whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|News whereLike(string $column, string $value, string $boolean = 'and')
  */
 class News extends Model
 {

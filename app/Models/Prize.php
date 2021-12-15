@@ -53,6 +53,12 @@ use function json_decode;
  * @method static Builder|Prize withTrashed()
  * @method static Builder|Prize withoutTrashed()
  * @mixin Eloquent
+ * @property int $lottery_id 抽奖
+ * @property int $goods_id 商品
+ * @property Fluent $images
+ * @property-read \App\Models\Goods $goods
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize whereGoodsId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize whereLotteryId($value)
  */
 class Prize extends Model
 {
@@ -104,6 +110,11 @@ class Prize extends Model
     public function lottery(): BelongsTo
     {
         return $this->belongsTo(Lottery::class);
+    }
+
+    public function goods(): BelongsTo
+    {
+        return $this->belongsTo(Goods::class);
     }
 
     public function setWinnersAttribute(array $winners)

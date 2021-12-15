@@ -86,16 +86,16 @@ class ActivityController extends Controller
         return Response::success();
     }
 
-    public function subscribe(Activity $activity): JsonResponse|JsonResource
+    public function favorite(Activity $activity): JsonResponse|JsonResource
     {
-        Auth::user()->subscribe($activity);
+        Auth::user()->favorite($activity);
         return Response::success();
     }
 
-    public function unsubscribe(Activity $activity): JsonResponse|JsonResource
+    public function unfavorite(Activity $activity): JsonResponse|JsonResource
     {
         try {
-            Auth::user()->unsubscribe($activity);
+            Auth::user()->unfavorite($activity);
         } catch (\Exception $e) {
             abort(500, $e->getMessage());
         }

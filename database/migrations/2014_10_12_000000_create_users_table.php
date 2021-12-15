@@ -25,7 +25,7 @@ class CreateUsersTable extends Migration
             $table->string('profile')->nullable()->comment('简介');
             $table->string('first_name')->nullable()->comment('名');
             $table->string('middle_name')->nullable()->comment('中间名');
-            $table->string('last_name')->nullable()->comment('性');
+            $table->string('last_name')->nullable()->comment('姓');
             $table->enum('gender', ['UNKNOWN', 'FEMALE', 'MALE'])->default('unknown')->comment('性别：未知/女/男');
             $table->string('phone')->unique()->nullable()->comment('电话');
             $table->date('birthday')->nullable()->comment('生日');

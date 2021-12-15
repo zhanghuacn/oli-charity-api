@@ -14,11 +14,13 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Overtrue\LaravelSubscribe\Traits\Subscribable;
+use Illuminate\Support\Fluent;
+use Overtrue\LaravelFavorite\Traits\Favoriteable;
 
 /**
  * App\Models\Activity
@@ -76,19 +78,30 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @method static Builder|Activity whereImages($value)
  * @property int $is_private 是否私有
  * @method static Builder|Activity whereIsPrivate($value)
- * @property-read Collection|\App\Models\Staff[] $staffs
+ * @property-read Collection|Staff[] $staffs
  * @property-read int|null $staffs_count
- * @property \Illuminate\Support\Fluent $settings 活动设置
+ * @property Fluent $settings 活动设置
  * @property-read int|null $tickets_count
  * @method static Builder|Activity whereSettings($value)
  * @method static Builder|Activity filter(?array $input = null)
  * @method static \Illuminate\Database\Query\Builder|Activity onlyTrashed()
  * @method static \Illuminate\Database\Query\Builder|Activity withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Activity withoutTrashed()
- * @property-read Collection|\App\Models\ActivityApplyRecord[] $applies
+ * @property-read Collection|ActivityApplyRecord[] $applies
  * @property-read int|null $applies_count
- * @property-read Collection|\App\Models\Lottery[] $lotteries
+ * @property-read Collection|Lottery[] $lotteries
  * @property-read int|null $lotteries_count
+ * @property-read Collection|\App\Models\Goods[] $goods
+ * @property-read int|null $goods_count
+ * @method static Builder|Activity paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static Builder|Activity simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static Builder|Activity whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static Builder|Activity whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static Builder|Activity whereLike(string $column, string $value, string $boolean = 'and')
+ * @property-read Collection|\App\Models\User[] $favoriters
+ * @property-read int|null $favoriters_count
+ * @property-read Collection|\Overtrue\LaravelFavorite\Favorite[] $favorites
+ * @property-read int|null $favorites_count
  */
 class Activity extends Model
 {
@@ -99,7 +112,7 @@ class Activity extends Model
     use HasSettingsProperty;
     use HasCacheProperty;
     use HasExtendsProperty;
-    use Subscribable;
+    use Favoriteable;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
@@ -190,6 +203,11 @@ class Activity extends Model
     public function lotteries(): HasMany
     {
         return $this->hasMany(Lottery::class);
+    }
+
+    public function goods(): BelongsToMany
+    {
+        return $this->belongsToMany(Goods::class);
     }
 
     protected static function booted()

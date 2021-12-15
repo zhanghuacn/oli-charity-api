@@ -15,8 +15,8 @@ class CreateLotteriesTable extends Migration
     {
         Schema::create('lotteries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('charity_id')->comment('慈善机构')->constrained('charities');
-            $table->foreignId('activity_id')->comment('活动')->constrained('activities');
+            $table->unsignedBigInteger('charity_id')->comment('慈善机构');
+            $table->unsignedBigInteger('activity_id')->comment('活动');
             $table->string('name')->comment('名称');
             $table->string('description')->nullable()->comment('描述');
             $table->json('images')->nullable()->comment('图片');
@@ -37,7 +37,6 @@ class CreateLotteriesTable extends Migration
      */
     public function down()
     {
-        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('lotteries');
     }
 }

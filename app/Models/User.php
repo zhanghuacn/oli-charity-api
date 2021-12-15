@@ -24,12 +24,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
+use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
+use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
-use Overtrue\LaravelSubscribe\Traits\Subscriber;
-use function auth;
-use function now;
 
 /**
  * App\Models\User
@@ -119,6 +118,18 @@ use function now;
  * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCount(string $direction = 'desc')
  * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCountAsc()
  * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCountDesc()
+ * @property string|null $backdrop 背景图
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereBackdrop($value)
+ * @property string|null $stripe_id
+ * @property string|null $pm_type
+ * @property string|null $pm_last_four
+ * @property string|null $trial_ends_at
+ * @property-read Collection|\Overtrue\LaravelFavorite\Favorite[] $favorites
+ * @property-read int|null $favorites_count
+ * @method static \Illuminate\Database\Eloquent\Builder|User wherePmLastFour($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User wherePmType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereStripeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereTrialEndsAt($value)
  */
 class User extends Authenticatable
 {
@@ -129,8 +140,9 @@ class User extends Authenticatable
     use HasSettingsProperty;
     use HasCacheProperty;
     use HasExtendsProperty;
-    use Subscriber;
+    use Favoriter;
     use Followable;
+    use Billable;
 
     public const GENDER_UNKNOWN = 'UNKNOWN';
     public const GENDER_MALE = 'MALE';
@@ -235,6 +247,12 @@ class User extends Authenticatable
                 if ($user->isDirty('status') && $user->status === self::STATUS_FROZEN) {
                     $user->frozen_at = now();
                 }
+            }
+        );
+
+        static::created(
+            function (User $user) {
+                $user->createAsStripeCustomer();
             }
         );
     }

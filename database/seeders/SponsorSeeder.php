@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Charity;
+use App\Models\Sponsor;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class CharitySeeder extends Seeder
+class SponsorSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,19 +16,18 @@ class CharitySeeder extends Seeder
      */
     public function run()
     {
-        Charity::truncate();
-        Charity::create([
+        Sponsor::truncate();
+        Sponsor::create([
             'name' => Str::random(10),
             'logo' => Str::random(10),
             'backdrop' => Str::random(10),
             'website' => 'https://www.qq.com',
             'description' => Str::random(40),
             'introduce' => Str::random(500),
-            'staff_num' => 10,
             'contact' => Str::random(10),
             'phone' => '1311111111',
             'mobile' => '28766622',
-            'email' => Str::random(10).'@gmail.com',
+            'email' => Str::random(10) . '@gmail.com',
         ]);
     }
 }

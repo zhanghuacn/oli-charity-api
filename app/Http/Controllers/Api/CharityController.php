@@ -32,16 +32,16 @@ class CharityController extends Controller
         return Response::success(new ActivityCollection($charity->activities));
     }
 
-    public function subscribe(Charity $charity): JsonResponse|JsonResource
+    public function favorite(Charity $charity): JsonResponse|JsonResource
     {
-        Auth::user()->subscribe($charity);
+        Auth::user()->favorite($charity);
         return Response::success();
     }
 
-    public function unsubscribe(Charity $charity): JsonResponse|JsonResource
+    public function unfavorite(Charity $charity): JsonResponse|JsonResource
     {
         try {
-            Auth::user()->unsubscribe($charity);
+            Auth::user()->unfavorite($charity);
         } catch (\Exception $e) {
             abort(500, $e->getMessage());
         }

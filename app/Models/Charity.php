@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Overtrue\LaravelSubscribe\Traits\Subscribable;
+use Overtrue\LaravelFavorite\Traits\Favoriteable;
 
 /**
  * App\Models\Charity
@@ -81,6 +81,16 @@ use Overtrue\LaravelSubscribe\Traits\Subscribable;
  * @method static \Illuminate\Database\Query\Builder|Charity onlyTrashed()
  * @method static \Illuminate\Database\Query\Builder|Charity withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Charity withoutTrashed()
+ * @property string $backdrop 背景图
+ * @property-read Collection|\App\Models\Goods[] $goods
+ * @property-read int|null $goods_count
+ * @property-read Collection|\App\Models\Order[] $orders
+ * @property-read int|null $orders_count
+ * @method static Builder|Charity whereBackdrop($value)
+ * @property-read Collection|\App\Models\User[] $favoriters
+ * @property-read int|null $favoriters_count
+ * @property-read Collection|\Overtrue\LaravelFavorite\Favorite[] $favorites
+ * @property-read int|null $favorites_count
  */
 class Charity extends Model
 {
@@ -88,7 +98,7 @@ class Charity extends Model
     use HasFactory;
     use HasCacheProperty;
     use HasExtendsProperty;
-    use Subscribable;
+    use Favoriteable;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
@@ -148,7 +158,12 @@ class Charity extends Model
 
     public function goods(): MorphMany
     {
-        return $this->morphMany(Goods::class, 'sourceable');
+        return $this->morphMany(Goods::class, 'goodsable');
+    }
+
+    public function orders(): MorphMany
+    {
+        return $this->morphMany(Order::class, 'orderable');
     }
 
     protected static function booted()

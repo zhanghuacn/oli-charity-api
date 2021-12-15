@@ -15,9 +15,9 @@ class CreateTeamsTable extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('charity_id')->comment('机构')->constrained('charities');
-            $table->foreignId('activity_id')->comment('活动')->constrained('activities');
-            $table->foreignId('user_id')->comment('创建人')->constrained('users');
+            $table->unsignedBigInteger('charity_id')->comment('机构');
+            $table->unsignedBigInteger('activity_id')->comment('活动');
+            $table->unsignedBigInteger('user_id')->comment('创建人');
             $table->string('name')->comment('名称');
             $table->string('description')->nullable()->comment('描述');
             $table->unsignedInteger('num')->comment('团队人数限制');
@@ -34,7 +34,6 @@ class CreateTeamsTable extends Migration
      */
     public function down()
     {
-        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('teams');
     }
 }

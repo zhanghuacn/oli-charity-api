@@ -51,6 +51,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Query\Builder|Lottery withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Lottery withoutTrashed()
  * @mixin \Eloquent
+ * @property \Illuminate\Support\Fluent $images 图片
+ * @method static \Illuminate\Database\Eloquent\Builder|Lottery whereImages($value)
  */
 class Lottery extends Model
 {

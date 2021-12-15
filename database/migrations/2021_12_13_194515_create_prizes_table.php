@@ -15,10 +15,10 @@ class CreatePrizesTable extends Migration
     {
         Schema::create('prizes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('charity_id')->comment('机构')->constrained('charities');
-            $table->foreignId('activity_id')->comment('活动')->constrained('activities');
-            $table->foreignId('lottery_id')->comment('抽奖')->constrained('lotteries');
-            $table->foreignId('goods_id')->comment('商品')->constrained('goods');
+            $table->unsignedBigInteger('charity_id')->comment('机构');
+            $table->unsignedBigInteger('activity_id')->comment('活动');
+            $table->unsignedBigInteger('lottery_id')->comment('抽奖');
+            $table->unsignedBigInteger('goods_id')->comment('商品');
             $table->string('name')->comment('名称');
             $table->string('description')->nullable()->comment('描述');
             $table->unsignedInteger('num')->comment('奖品数量');
@@ -36,8 +36,6 @@ class CreatePrizesTable extends Migration
      */
     public function down()
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('prizes');
     }
 }

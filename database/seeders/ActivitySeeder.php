@@ -11,17 +11,9 @@ use Nette\Utils\Random;
 
 class ActivitySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Activity::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-
         Activity::create([
             'charity_id' => 1,
             'title' => Str::random(10),

@@ -15,9 +15,9 @@ class CreateActivityApplyRecordsTable extends Migration
     {
         Schema::create('activity_apply_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('charity_id')->comment('慈善机构')->constrained('charities');
-            $table->foreignId('activity_id')->comment('活动')->constrained('activities');
-            $table->foreignId('user_id')->comment('用户')->constrained('users');
+            $table->unsignedBigInteger('charity_id')->comment('慈善机构');
+            $table->unsignedBigInteger('activity_id')->comment('活动');
+            $table->unsignedBigInteger('user_id')->comment('用户');
             $table->enum('status', ['WAIT', 'PASSED', 'REFUSE'])->default('WAIT')->comment('审核状态:等待，通过，拒绝');
             $table->unsignedBigInteger('reviewer')->nullable()->comment('审核人');
             $table->unsignedBigInteger('remark')->nullable()->comment('备注');
@@ -35,7 +35,6 @@ class CreateActivityApplyRecordsTable extends Migration
      */
     public function down()
     {
-        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('activity_apply_records');
     }
 }

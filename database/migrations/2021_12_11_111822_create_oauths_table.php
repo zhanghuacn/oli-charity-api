@@ -15,7 +15,7 @@ class CreateOauthsTable extends Migration
     {
         Schema::create('oauths', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->unsignedBigInteger('user_id')->comment('用户');
             $table->enum('provider', ['GOOGLE', 'FACEBOOK', 'TWITTER', 'APPLE'])->comment('第三方登录提供者');
             $table->string('provider_id')->unique()->comment('第三方登录ID');
             $table->json('extends')->nullable()->comment('扩展信息');
@@ -31,7 +31,6 @@ class CreateOauthsTable extends Migration
      */
     public function down()
     {
-        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('oauths');
     }
 }

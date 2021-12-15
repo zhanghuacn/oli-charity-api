@@ -9,17 +9,9 @@ use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         User::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-
         User::create([
             'username' => 'admin',
             'email' => 'admin@admin.com',
