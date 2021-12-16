@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActivityGoodsTable extends Migration
+class AddNotificationCountToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateActivityGoodsTable extends Migration
      */
     public function up()
     {
-        Schema::create('activity_goods', function (Blueprint $table) {
-            $table->unsignedBigInteger('activity_id');
-            $table->unsignedBigInteger('goods_id');
-            $table->unique(['activity_id', 'goods_id']);
+        Schema::table('users', function (Blueprint $table) {
+            //
         });
     }
 
@@ -27,6 +25,8 @@ class CreateActivityGoodsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('activity_goods');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 }

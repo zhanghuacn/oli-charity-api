@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
 use Eloquent;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
@@ -48,8 +50,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Team withTrashed()
  * @method static Builder|Team withoutTrashed()
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ticket[] $tickets
+ * @property-read Collection|Ticket[] $tickets
  * @property-read int|null $tickets_count
+ * @property int|null $owner_id 创建人
+ * @property-read \App\Models\User $owner
+ * @method static \Illuminate\Database\Eloquent\Builder|Team whereOwnerId($value)
  */
 class Team extends Model
 {
@@ -63,12 +68,17 @@ class Team extends Model
         'name',
         'description',
         'num',
-        'creator_id',
+        'owner_id',
         'extends'
     ];
 
     protected $casts = [
         'extends' => 'array',
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
     ];
 
     public function charity(): BelongsTo
@@ -81,8 +91,13 @@ class Team extends Model
         return $this->belongsTo(Activity::class);
     }
 
-    public function tickets(): HasMany
+    public function tickets(): BelongsToMany
     {
-        return $this->hasMany(Ticket::class);
+        return $this->belongsToMany(Ticket::class, 'team_ticket');
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'id', 'owner_id');
     }
 }

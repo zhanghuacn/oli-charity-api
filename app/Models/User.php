@@ -252,7 +252,7 @@ class User extends Authenticatable
 
         static::created(
             function (User $user) {
-                $user->createAsStripeCustomer();
+                $user->createOrGetStripeCustomer();
             }
         );
     }

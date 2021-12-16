@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\GoodsController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\LotteryController;
 use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\UCenterController;
 use App\Http\Controllers\Api\UserController;
@@ -65,6 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events/{activity}/actions/scan', [TicketController::class, 'scan']);
     Route::get('/events/{activity}/my-tickets', [TicketController::class, 'myTickets']);
     Route::get('/events/{activity}/guests', [TicketController::class, 'guests']);
+    Route::put('/events/{activity}/actions/anonymous', [TicketController::class, 'anonymous']);
 
     Route::get('/events/{activity}/lotteries', [LotteryController::class, 'index']);
     Route::get('/events/{activity}/lotteries/{lottery}', [LotteryController::class, 'show']);
@@ -74,11 +76,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events/{activity}/goods/{goods}/actions/order', [GoodsController::class, 'order']);
 
     Route::get('/event/my-current', [ActivityController::class, 'myCurrent']);
-    Route::put('/events/{activity}/actions/anonymous', [ActivityController::class, 'anonymous']);
 
     Route::get('/events/{activity}/ranks/donation-personal', [ActivityController::class, 'personRanks']);
     Route::get('/events/{activity}/ranks/donation-table', [ActivityController::class, 'tableRanks']);
     Route::get('/events/{activity}/ranks/donation-teams', [ActivityController::class, 'teamRanks']);
+    Route::get('/events/{activity}/donation/my-history', [ActivityController::class, 'history']);
+
+    Route::get('/events/{activity}/teams/search', [TeamController::class, 'search']);
+    Route::post('/events/{activity}/teams', [TeamController::class, 'store']);
+    Route::put('/events/{activity}/teams', [TeamController::class, 'update']);
+    Route::post('/events/{activity}/teams/actions/invite', [TeamController::class, 'invite']);
+    Route::post('/events/{activity}/teams/actions/accept', [TeamController::class, 'acceptInvite']);
+    Route::post('/events/{activity}/teams/actions/deny', [TeamController::class, 'denyInvite']);
+    Route::post('/events/{activity}/teams/actions/quit', [TeamController::class, 'quit']);
 
     Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'favorite']);
     Route::delete('/events/{activity}/actions/unfollow', [ActivityController::class, 'unfavorite']);

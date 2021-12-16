@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Ticket;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class TicketSeeder extends Seeder
 {
@@ -12,14 +13,26 @@ class TicketSeeder extends Seeder
     {
         Ticket::truncate();
         Ticket::create([
+            'code' => Str::uuid(),
+            'lottery_code' => '123456',
             'charity_id' => 1,
             'activity_id' => 1,
-            'team_id' => 1,
             'table_num' => 1,
             'user_id' => 1,
             'type' => Ticket::TYPE_DONOR,
             'price' => 100,
             'amount' => 100,
+        ]);
+        Ticket::create([
+            'code' => Str::uuid(),
+            'lottery_code' => '654321',
+            'charity_id' => 1,
+            'activity_id' => 1,
+            'table_num' => 1,
+            'user_id' => 2,
+            'type' => Ticket::TYPE_DONOR,
+            'price' => 100,
+            'amount' => 200,
         ]);
     }
 }

@@ -38,6 +38,15 @@ class TicketController extends Controller
         return Response::success();
     }
 
+    public function anonymous(Activity $activity, Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'enable' => 'required|boolean',
+        ]);
+        $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail()->update(['anonymous' => $request['enable']]);
+        return Response::success();
+    }
+
     public function scan(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         abort_if($activity->tickets()->where(['user_id' => Auth::id(), 'type' => Ticket::TYPE_STAFF])->doesntExist(), 403, 'Permission denied');

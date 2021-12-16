@@ -17,8 +17,8 @@ class CharityResource extends JsonResource
             'introduce' => $this->introduce,
             'events' => $this->activities->count(),
             'donations' => optional($this->setting)->donations ?? 0,
-            'members' => $this->subscribers()->count(),
-            'is_follow' => Auth::check() ? $this->isSubscribedBy(Auth::user()) : false,
+            'members' => $this->favoriters()->count(),
+            'is_follow' => Auth::check() ? $this->hasBeenFavoritedBy(Auth::user()) : false,
         ];
     }
 }

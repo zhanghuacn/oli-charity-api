@@ -24,6 +24,7 @@ class CreateOrdersTable extends Migration
             $table->decimal('fee_amount')->comment('手续费');
             $table->decimal('total_amount')->comment('实际到手金额');
             $table->string('payment_no')->unique()->comment('交易号');
+            $table->enum('payment_type', ['ONLINE', 'OFFLINE'])->comment('支付类型');
             $table->enum('payment_method', ['STRIPE', 'BANK'])->comment('支付方式');
             $table->enum('payment_status', ['UNPAID', 'IN_PAYMENT', 'PAID', 'CLOSED'])->default('UNPAID')->comment('订单支付状态');
             $table->timestamp('payment_time')->nullable()->comment('支付时间');

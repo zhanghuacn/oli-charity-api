@@ -19,5 +19,12 @@ class UserSeeder extends Seeder
             'password' => 'admin',
             'profile' => Str::random(20),
         ]);
+        User::create([
+            'username' => 'zhanghua',
+            'email' => 'zhanghua@163.com',
+            'name' => '张华',
+            'password' => 'zhanghua',
+            'profile' => Str::random(20),
+        ]);
     }
 }

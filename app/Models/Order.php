@@ -94,6 +94,8 @@ use Kra8\Snowflake\Snowflake;
  * @method static Builder|Order wherePaymentTime($value)
  * @method static Builder|Order whereTotalAmount($value)
  * @method static Builder|Order whereType($value)
+ * @property string|null $payment_type
+ * @method static Builder|Order wherePaymentType($value)
  */
 class Order extends Model
 {
@@ -125,6 +127,7 @@ class Order extends Model
         'fee_amount',
         'total_amount',
         'payment_no',
+        'payment_type',
         'payment_method',
         'payment_status',
         'payment_time',
@@ -149,21 +152,6 @@ class Order extends Model
         return $this->morphTo();
     }
 
-//    public function activity(): BelongsTo
-//    {
-//        return $this->belongsTo(Activity::class, 'orderable_id', 'id');
-//    }
-//
-//    public function charity(): BelongsTo
-//    {
-//        return $this->belongsTo(Charity::class, 'orderable_id', 'id');
-//    }
-//
-//    public function goods(): BelongsTo
-//    {
-//        return $this->belongsTo(Goods::class, 'orderable_id', 'id');
-//    }
-
     protected static function booted()
     {
         static::saving(
@@ -177,5 +165,4 @@ class Order extends Model
     {
         return $this->provideFilter(OrderFilter::class);
     }
-
 }

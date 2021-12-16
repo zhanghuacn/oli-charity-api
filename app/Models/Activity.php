@@ -16,11 +16,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Fluent;
+use Overtrue\LaravelFavorite\Favorite;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
+use Overtrue\LaravelFavorite\Traits\Favoriter;
 
 /**
  * App\Models\Activity
@@ -91,17 +95,19 @@ use Overtrue\LaravelFavorite\Traits\Favoriteable;
  * @property-read int|null $applies_count
  * @property-read Collection|Lottery[] $lotteries
  * @property-read int|null $lotteries_count
- * @property-read Collection|\App\Models\Goods[] $goods
+ * @property-read Collection|Goods[] $goods
  * @property-read int|null $goods_count
  * @method static Builder|Activity paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
  * @method static Builder|Activity simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
  * @method static Builder|Activity whereBeginsWith(string $column, string $value, string $boolean = 'and')
  * @method static Builder|Activity whereEndsWith(string $column, string $value, string $boolean = 'and')
  * @method static Builder|Activity whereLike(string $column, string $value, string $boolean = 'and')
- * @property-read Collection|\App\Models\User[] $favoriters
+ * @property-read Collection|User[] $favoriters
  * @property-read int|null $favoriters_count
- * @property-read Collection|\Overtrue\LaravelFavorite\Favorite[] $favorites
+ * @property-read Collection|Favorite[] $favorites
  * @property-read int|null $favorites_count
+ * @property-read Collection|\App\Models\Order[] $orders
+ * @property-read int|null $orders_count
  */
 class Activity extends Model
 {
@@ -208,6 +214,16 @@ class Activity extends Model
     public function goods(): BelongsToMany
     {
         return $this->belongsToMany(Goods::class);
+    }
+
+    public function orders(): MorphMany
+    {
+        return $this->morphMany(Order::class, 'orderable');
+    }
+
+    public function currentTicket(): Model
+    {
+        return $this->tickets()->where(['user_id' => Auth::id()])->first();
     }
 
     protected static function booted()

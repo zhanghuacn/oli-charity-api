@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
 use App\Models\Activity;
 use App\Models\ActivityApplyRecord;
+use App\Models\Order;
+use App\Models\TeamInvite;
 use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,11 +31,24 @@ class ActivityController extends Controller
             ->map(function ($staff) {
                 return $staff->user;
             });
-        $data['is_follow'] = Auth::check() && $activity->isSubscribedBy(Auth::user());
-        if ($activity->is_private && Auth::check()) {
-            $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id(), 'status' => ActivityApplyRecord::STATUS_PASSED])->first();
-            if ($activityApplyRecord->exists()) {
-                $data['apply_status'] = $activityApplyRecord->status;
+        $data['is_follow'] = Auth::check() && $activity->hasBeenFavoritedBy(Auth::user());
+        if (Auth::check()) {
+            if ($activity->is_private) {
+                $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id(), 'status' => ActivityApplyRecord::STATUS_PASSED])->first();
+                if ($activityApplyRecord->exists()) {
+                    $data['apply_status'] = $activityApplyRecord->status;
+                }
+            }
+            $teamInvite = TeamInvite::whereTicketId($activity->currentTicket()->id)->first();
+            if ($teamInvite->exists()) {
+                $data['invite'] = [
+                    'inviter_id' => $teamInvite->inviter->id,
+                    'inviter_name' => $teamInvite->inviter->name,
+                    'inviter_avatar' => $teamInvite->inviter->avatar,
+                    'team_name' => $teamInvite->team->name,
+                    'accept_token' => $teamInvite->accept_token,
+                    'deny_token' => $teamInvite->deny_token,
+                ];
             }
         }
         visits($activity)->increment();
@@ -77,13 +92,17 @@ class ActivityController extends Controller
         return Response::success($ranks);
     }
 
-    public function anonymous(Activity $activity, Request $request): JsonResponse|JsonResource
+    public function history(Activity $activity): JsonResponse|JsonResource
     {
-        $request->validate([
-            'enable' => 'required|boolean',
+        $ranks = $activity->tickets()->selectRaw('user_id, amount, (RANK() OVER(ORDER BY amount DESC)) as ranks')->get()
+            ->firstWhere('user_id', '=', Auth::id());
+        $orders = $activity->orders()->where(['user_id' => Auth::id(), 'payment_status' => Order::STATUS_PAID])
+            ->orderByDesc('payment_time')->get(['payment_type', 'amount', 'payment_time']);
+        return Response::success([
+            'rank' => $ranks->ranks,
+            'total_amount' => $ranks->amount,
+            'records' => $orders,
         ]);
-        $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail()->update(['anonymous' => $request['enable']]);
-        return Response::success();
     }
 
     public function favorite(Activity $activity): JsonResponse|JsonResource
