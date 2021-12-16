@@ -7,7 +7,6 @@ use App\Http\Resources\Api\GoodsCollection;
 use App\Http\Resources\Api\GoodsResource;
 use App\Models\Activity;
 use App\Models\Goods;
-use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,14 +18,11 @@ class GoodsController extends Controller
 {
     private OrderService $orderService;
 
-    /**
-     * @param OrderService $orderService
-     */
     public function __construct(OrderService $orderService)
     {
+        parent::__construct();
         $this->orderService = $orderService;
     }
-
 
     public function index(Activity $activity): JsonResponse|JsonResource
     {

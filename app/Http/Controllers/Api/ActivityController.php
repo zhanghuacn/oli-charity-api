@@ -9,6 +9,7 @@ use App\Models\ActivityApplyRecord;
 use App\Models\Order;
 use App\Models\TeamInvite;
 use App\Models\Ticket;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,6 +19,14 @@ use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class ActivityController extends Controller
 {
+    private OrderService $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        parent::__construct();
+        $this->orderService = $orderService;
+    }
+
     public function index(Request $request): JsonResponse|JsonResource
     {
         $activities = Activity::filter($request->all())->simplePaginate($request->input('per_page', 15));
@@ -102,6 +111,20 @@ class ActivityController extends Controller
             'rank' => $ranks->ranks,
             'total_amount' => $ranks->amount,
             'records' => $orders,
+        ]);
+    }
+
+    public function order(Activity $activity, Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'method' => 'sometimes|in:STRIPE',
+            'amount' => 'required|numeric|min:1|not_in:0',
+        ]);
+        abort_if(empty($activity->charity->stripe_account), 500, 'No stripe connect account opened');
+        $order = $this->orderService->activity(Auth::user(), $activity, $request->amount);
+        return Response::success([
+            'order_id' => $order->order_sn,
+            'client_secret' => $order->extends['client_secret']
         ]);
     }
 

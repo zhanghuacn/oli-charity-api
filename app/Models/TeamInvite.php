@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 /**
  * App\Models\TeamInvite
@@ -85,4 +87,13 @@ class TeamInvite extends Model
         return $this->belongsTo(Ticket::class);
     }
 
+    protected static function booted()
+    {
+        static::saving(
+            function (TeamInvite $teamInvite) {
+                $teamInvite->accept_token = $teamInvite->accept_token ?? md5(Str::uuid());
+                $teamInvite->deny_token = $teamInvite->deny_token ?? md5(Str::uuid());
+            }
+        );
+    }
 }

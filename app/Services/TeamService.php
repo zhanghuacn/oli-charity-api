@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Models\Team;
 use App\Models\TeamInvite;
 use App\Models\Ticket;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class TeamService
@@ -16,8 +14,6 @@ class TeamService
         $invite = new TeamInvite();
         $invite->type = TeamInvite::TYPE_INVITE;
         $invite->inviter_id = Auth::id();
-        $invite->accept_token = md5(uniqid(microtime()));
-        $invite->deny_token = md5(uniqid(microtime()));
         $invite->ticket()->associate($ticket);
         $invite->team()->associate($team);
         $invite->save();
@@ -43,5 +39,4 @@ class TeamService
     {
         $invite->delete();
     }
-
 }

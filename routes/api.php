@@ -76,7 +76,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events/{activity}/goods/{goods}/actions/order', [GoodsController::class, 'order']);
 
     Route::get('/event/my-current', [ActivityController::class, 'myCurrent']);
-
     Route::get('/events/{activity}/ranks/donation-personal', [ActivityController::class, 'personRanks']);
     Route::get('/events/{activity}/ranks/donation-table', [ActivityController::class, 'tableRanks']);
     Route::get('/events/{activity}/ranks/donation-teams', [ActivityController::class, 'teamRanks']);
@@ -90,9 +89,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events/{activity}/teams/actions/deny', [TeamController::class, 'denyInvite']);
     Route::post('/events/{activity}/teams/actions/quit', [TeamController::class, 'quit']);
 
+    Route::post('/events/{activity}/actions/donation', [ActivityController::class, 'order']);
     Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'favorite']);
     Route::delete('/events/{activity}/actions/unfollow', [ActivityController::class, 'unfavorite']);
 
+    Route::post('/charities/{charity}/actions/donation', [CharityController::class, 'order']);
     Route::post('/charities/{charity}/actions/follow', [CharityController::class, 'favorite']);
     Route::delete('/charities/{charity}/actions/unfollow', [CharityController::class, 'unfavorite']);
 
