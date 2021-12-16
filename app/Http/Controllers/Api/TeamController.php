@@ -27,6 +27,44 @@ class TeamController extends Controller
         $this->teamService = $teamService;
     }
 
+    public function show(Activity $activity): JsonResponse|JsonResource
+    {
+        $ticket = $activity->currentTicket();
+        abort_if(empty($ticket->current_team_id), 422, 'Not joined any team');
+        $ranks = $activity->tickets()
+            ->selectRaw('current_team_id, sum(amount) as total_amount, (RANK() OVER(ORDER BY sum(amount) DESC)) as ranks')
+            ->whereNotNull('current_team_id')
+            ->groupBy('current_team_id')->get()
+            ->firstWhere('current_team_id', '=', $ticket->current_team_id);
+        $data = [
+            'id' => $ticket->currentTeam->id,
+            'name' => $ticket->currentTeam->name,
+            'rank' => $ranks->ranks,
+            'total_amount' => $ranks->total_amount,
+            'members' => Ticket::whereCurrentTeamId($ticket->current_team_id)->with('user')->get()
+                ->transform(function ($item) {
+                    return [
+                        'id' => $item->user->id,
+                        'name' => $item->user->name,
+                        'avatar' => $item->user->avatar,
+                        'profile' => $item->user->profile,
+                        'total_amount' => $item->amount,
+                    ];
+                }),
+            'invite' => TeamInvite::whereTeamId($ticket->current_team_id)->with('ticket.user')->get()
+                ->transform(function ($item) {
+                    return [
+                        'id' => $item->ticket->user->id,
+                        'name' => $item->ticket->user->name,
+                        'avatar' => $item->ticket->user->avatar,
+                        'profile' => $item->ticket->user->profile,
+                        'total_amount' => $item->ticket->amount,
+                    ];
+                })
+        ];
+        return Response::success($data);
+    }
+
     public function search(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         $request->validate([

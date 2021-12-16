@@ -82,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/events/{activity}/donation/my-history', [ActivityController::class, 'history']);
 
     Route::get('/events/{activity}/teams/search', [TeamController::class, 'search']);
+    Route::get('/events/{activity}/teams/details', [TeamController::class, 'show']);
     Route::post('/events/{activity}/teams', [TeamController::class, 'store']);
     Route::put('/events/{activity}/teams', [TeamController::class, 'update']);
     Route::post('/events/{activity}/teams/actions/invite', [TeamController::class, 'invite']);
