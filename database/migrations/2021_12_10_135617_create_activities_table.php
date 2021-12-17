@@ -19,8 +19,6 @@ class CreateActivitiesTable extends Migration
             $table->string('title')->comment('活动标题');
             $table->string('description')->nullable()->comment('描述');
             $table->text('content')->nullable()->comment('活动内容');
-            $table->json('specialty')->nullable()->comment('特点');
-            $table->json('timeline')->nullable()->comment('时间线');
             $table->string('location')->comment('活动地点');
             $table->timestamp('begin_time')->comment('活动开始时间');
             $table->timestamp('end_time')->comment('活动结束时间');

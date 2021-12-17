@@ -6,8 +6,10 @@ use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\Goods;
 use App\Models\Order;
+use App\Models\Transfer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -110,6 +112,42 @@ class OrderService
                     ]
                 ]);
                 $order->orderable()->associate($charity);
+                $order->save();
+                return $order;
+            });
+        } catch (Throwable $e) {
+            abort(500, $e->getMessage());
+        }
+    }
+
+    public function transfer(Activity $activity, Model $ticket, mixed $amount, mixed $voucher): Order
+    {
+        try {
+            return DB::transaction(function () use ($voucher, $amount, $ticket, $activity) {
+                $transfer = new Transfer();
+                $transfer->charity_id = $activity->charity_id;
+                $transfer->activity_id = $activity->id;
+                $transfer->ticket_id = $ticket->id;
+                $transfer->user_id = $ticket->user_id;
+                $transfer->amount = $amount;
+                $transfer->voucher = $voucher;
+                $transfer->save();
+
+                $order = new Order([
+                    'user_id' => Auth::id(),
+                    'type' => Order::TYPE_ACTIVITY,
+                    'charity_id' => $activity->charity->id,
+                    'currency' => 'aud',
+                    'amount' => $amount,
+                    'fee_amount' => 0,
+                    'total_amount' => $amount,
+                    'payment_type' => Order::PAYMENT_OFFLINE,
+                    'payment_no' => '',
+                    'extends' => [
+                        'transfer_sn' => $transfer->transfer_sn,
+                    ]
+                ]);
+                $order->orderable()->associate($activity);
                 $order->save();
                 return $order;
             });

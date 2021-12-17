@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\ModelFilters\TicketFilter;
 use App\Traits\HasExtendsProperty;
 use Eloquent;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,16 +70,29 @@ use Illuminate\Support\Str;
  * @property-read \Illuminate\Database\Eloquent\Collection|Ticket[] $teams
  * @property-read int|null $teams_count
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCurrentTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Ticket extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use Filterable;
     use HasExtendsProperty;
 
     public const TYPE_DONOR = 'DONOR';
     public const TYPE_STAFF = 'STAFF';
     public const TYPE_SPONSOR = 'SPONSOR';
+
+    public const ROLE_HOST = 'HOST';
+    public const ROLE_WORKER = 'WORKER';
+
+    public const DEFAULT_EXTENDS = [
+        'role' => '',
+    ];
 
     protected $fillable = [
         'code',
@@ -187,14 +202,12 @@ class Ticket extends Model
         static::saving(
             function (Ticket $ticket) {
                 $ticket->code = $user->code ?? Str::uuid();
-                do {
-                    $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
-                    if (Ticket::where(['activity_id' => $ticket->activity_id, 'lottery_code' => $code])->doesntExist()) {
-                        $ticket->lottery_code = $code;
-                        break;
-                    }
-                } while (true);
             }
         );
+    }
+
+    public function modelFilter(): ?string
+    {
+        return $this->provideFilter(TicketFilter::class);
     }
 }

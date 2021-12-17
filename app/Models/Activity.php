@@ -140,6 +140,10 @@ class Activity extends Model
         'quota' => [],
     ];
 
+    public const DEFAULT_EXTENDS = [
+        'specialty' => [],
+        'timeline' => []
+    ];
 
     protected $fillable = [
         'charity_id',
@@ -173,6 +177,7 @@ class Activity extends Model
         'extends',
         'status',
         'is_visible',
+        'remark',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -234,11 +239,6 @@ class Activity extends Model
         );
     }
 
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(ActivityFilter::class);
-    }
-
     public function getDisplayStatusAttribute(): string
     {
         return self::STATUSES[$this->status ?? self::STATUS_WAIT];
@@ -247,5 +247,10 @@ class Activity extends Model
     public function visits(): Relation
     {
         return visits($this)->relation();
+    }
+
+    public function modelFilter(): ?string
+    {
+        return $this->provideFilter(ActivityFilter::class);
     }
 }

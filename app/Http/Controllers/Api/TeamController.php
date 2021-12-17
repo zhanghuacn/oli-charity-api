@@ -40,6 +40,7 @@ class TeamController extends Controller
             'id' => $ticket->currentTeam->id,
             'name' => $ticket->currentTeam->name,
             'rank' => $ranks->ranks,
+            'seat_num' => $ticket->table_num,
             'total_amount' => $ranks->total_amount,
             'members' => Ticket::whereCurrentTeamId($ticket->current_team_id)->with('user')->get()
                 ->transform(function ($item) {
@@ -70,7 +71,7 @@ class TeamController extends Controller
         $request->validate([
             'keyword' => 'required',
         ]);
-        $users = $activity->tickets()->whereNull('current_team_id')
+        $data = $activity->tickets()->whereNull('current_team_id')
             ->whereHas('user', function (Builder $query) use ($request) {
                 $query->where('username', 'like', $request->keyword . '%')
                     ->orWhere('email', 'like', $request->keyword . '%');
@@ -81,9 +82,10 @@ class TeamController extends Controller
                     'avatar' => optional($item->user)->avatar,
                     'profile' => optional($item->user)->profile,
                     'ticket' => $item->code,
+                    'is_invite' => TeamInvite::whereTicketId($item->id)->exists()
                 ];
             });
-        return Response::success($users);
+        return Response::success($data);
     }
 
     /**

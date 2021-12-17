@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
 use Eloquent;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,11 +56,17 @@ use Illuminate\Support\Carbon;
  * @property int|null $owner_id 创建人
  * @property-read \App\Models\User $owner
  * @method static \Illuminate\Database\Eloquent\Builder|Team whereOwnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Team paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Team simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Team whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Team whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Team whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Team extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use Filterable;
     use HasExtendsProperty;
 
     protected $fillable = [

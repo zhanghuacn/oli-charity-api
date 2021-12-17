@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\LotteryController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\UCenterController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WebhookController;
@@ -90,7 +91,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events/{activity}/teams/actions/deny', [TeamController::class, 'denyInvite']);
     Route::post('/events/{activity}/teams/actions/quit', [TeamController::class, 'quit']);
 
+    Route::get('/events/{activity}/transfers', [TransferController::class, 'index']);
     Route::post('/events/{activity}/actions/donation', [ActivityController::class, 'order']);
+    Route::post('/events/{activity}/actions/transfer', [TransferController::class, 'transfer']);
+    Route::post('/events/{activity}/actions/verify-transfer', [TransferController::class, 'check']);
+
     Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'favorite']);
     Route::delete('/events/{activity}/actions/unfollow', [ActivityController::class, 'unfavorite']);
 

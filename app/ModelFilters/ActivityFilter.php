@@ -26,6 +26,26 @@ class ActivityFilter extends ModelFilter
             'CURRENT' => $this->where('begin_time', '<=', Carbon::now())->where('end_time', '>=', Carbon::now()),
             'UPCOMING' => $this->where('begin_time', '>', Carbon::now()),
             'PAST' => $this->where('end_time', '<', Carbon::now()),
+            default => $this->where('1', '=', 1),
         };
+    }
+
+    public function sort($value)
+    {
+        switch ($value) {
+            case 'ASC':
+                $this->orderBy('id');
+                break;
+            default:
+                $this->orderBy('created_at', 'desc')->orderBy('id', 'desc');
+                break;
+        }
+    }
+
+    public function setup()
+    {
+        if (!$this->input('sort')) {
+            $this->push('sort', 'default');
+        }
     }
 }

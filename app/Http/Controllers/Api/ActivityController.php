@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
+use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\ActivityApplyRecord;
 use App\Models\Order;
@@ -35,12 +36,21 @@ class ActivityController extends Controller
 
     public function show(Activity $activity): JsonResponse|JsonResource
     {
-        $data['hosts'] = $activity->tickets()->with('user')
-            ->where('type', Ticket::TYPE_STAFF)->get()
+        $data['hosts'] = new UserCollection($activity->tickets()->with('user')
+            ->where('type', '=', Ticket::TYPE_STAFF)
+            ->whereJsonContains('extends->host', Ticket::ROLE_HOST)->get()
             ->map(function ($staff) {
                 return $staff->user;
-            });
+            }));
         $data['is_follow'] = Auth::check() && $activity->hasBeenFavoritedBy(Auth::user());
+        $data['specialty'] = $activity->getExtends()['specialty'];
+        $data['timeline'] = $activity->getExtends()['timeline'];
+        $data['charity'] = [
+            'id' => $activity->charity->id,
+            'name' => $activity->charity->name,
+            'logo' => $activity->charity->logo,
+        ];
+        $data['price'] = $activity->getSettings()['ticket']['price'];
         if (Auth::check()) {
             if ($activity->is_private) {
                 $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id(), 'status' => ActivityApplyRecord::STATUS_PASSED])->first();
@@ -49,7 +59,7 @@ class ActivityController extends Controller
                 }
             }
             $teamInvite = TeamInvite::whereTicketId($activity->currentTicket()->id)->first();
-            if ($teamInvite->exists()) {
+            if ($teamInvite) {
                 $data['invite'] = [
                     'inviter_id' => $teamInvite->inviter->id,
                     'inviter_name' => $teamInvite->inviter->name,
@@ -59,8 +69,9 @@ class ActivityController extends Controller
                     'deny_token' => $teamInvite->deny_token,
                 ];
             }
+            $data['role'] = $activity->currentTicket()->type;
         }
-        visits($activity)->increment();
+//        visits($activity)->increment();
         return Response::success(array_merge($activity->toArray(), $data));
     }
 

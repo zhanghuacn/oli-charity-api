@@ -111,6 +111,9 @@ class Order extends Model
     public const ORDER_PAY_STRIPE = 'STRIPE';
     public const ORDER_PAY_BANK = 'BANK';
 
+    public const PAYMENT_OFFLINE = 'OFFLINE';
+    public const PAYMENT_ONLINE = 'ONLINE ';
+
     public const STATUS_UNPAID = 'UNPAID';
     public const STATUS_IN_PAYMENT = 'IN_PAYMENT';
     public const STATUS_PAID = 'PAID';
@@ -156,7 +159,7 @@ class Order extends Model
     {
         static::saving(
             function (Order $order) {
-                $order->order_sn = app('Kra8\Snowflake\Snowflake')->next();
+                $order->order_sn = $order->order_sn ?? app('Kra8\Snowflake\Snowflake')->next();
             }
         );
     }

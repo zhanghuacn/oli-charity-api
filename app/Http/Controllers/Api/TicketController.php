@@ -56,6 +56,13 @@ class TicketController extends Controller
         $ticket = Ticket::where(['code' => $request['code']])->firstOrFail();
         abort_if($ticket->verified_at != null, 400, 'Do not repeat the verification');
         $ticket->verified_at = Carbon::now();
+        do {
+            $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
+            if (Ticket::where(['activity_id' => $ticket->activity_id, 'lottery_code' => $code])->doesntExist()) {
+                $ticket->lottery_code = $code;
+                break;
+            }
+        } while (true);
         $ticket->save();
         return Response::success([
             'table_num' => $ticket->table_num,
@@ -69,13 +76,26 @@ class TicketController extends Controller
         return Response::success($ticket);
     }
 
-    public function guests(Activity $activity): JsonResponse|JsonResource
+    public function guests(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        $request->validate([
+            'filter' => 'sometimes|in:COMPLETED,INCOMPLETE',
+            'name' => 'sometimes|string',
+            'sort' => 'sometimes|in:ASC,DESC',
+        ]);
         abort_if($activity->tickets()->where(['user_id' => Auth::id(), 'type' => Ticket::TYPE_STAFF])->doesntExist(), 403, 'Permission denied');
-        $users = $activity->tickets()->with('user')->get()
-            ->map(function ($ticket) {
-                return $ticket->user;
+        $data = $activity->tickets()->with('user')->filter($request->all())->get()
+            ->transform(function ($item) {
+                return [
+                    'id' => $item->user->id,
+                    'type' => $item->type,
+                    'name' => $item->user->name,
+                    'avatar' => $item->user->avatar,
+                    'profile' => $item->user->profile,
+                    'lottery_code' => $item->lottery_code,
+                    'is_sign' => !is_null($item->verified_at)
+                ];
             });
-        return Response::success(new UserCollection($users));
+        return Response::success($data);
     }
 }
