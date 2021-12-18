@@ -1,4 +1,4 @@
-id: 27053
+id: 27055
 name: oli-charity-api
 environments:
     production:
@@ -10,15 +10,25 @@ environments:
             - 'php artisan event:cache'
             - 'npm ci && npm run prod && rm -rf node_modules'
     staging:
-        storage: oli-charity-staging
+        storage: my-bucket-charity
+        database: charity-test
+        queue-concurrency: 50
+        queue-timeout: 300
+        queue-memory: 1024
+        queue-database-session-persist: true
+        concurrency: 50
         memory: 1024
+        cli-timeout: 60
         cli-memory: 512
         runtime: 'php-8.1:al2'
-        database: charity
-        octane: true
-        octane-database-session-persist: true
-        octane-database-session-ttl: 10
         build:
-            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install'
+            - 'composer install'
             - 'php artisan event:cache'
-            - 'npm ci && npm run dev && rm -rf node_modules'
+        firewall:
+          rate-limit: 1000
+          bot-control:
+            - CategorySearchEngine
+            - CategorySocialMedia
+            - CategoryScrapingFramework
+        deploy:
+          - 'php artisan migrate --force'
