@@ -145,6 +145,11 @@ class Order extends Model
         'extends' => 'array',
     ];
 
+    public function charity(): BelongsTo
+    {
+        return $this->belongsTo(Charity::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

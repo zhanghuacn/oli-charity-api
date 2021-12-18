@@ -61,7 +61,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ucenter/events', [UcenterController::class, 'activities']);
     Route::put('/ucenter/information', [UcenterController::class, 'information']);
     Route::put('/ucenter/privacy', [UcenterController::class, 'privacy']);
-    Route::get('/ucenter/donation-history', [UcenterController::class, 'history']);
     Route::get('/ucenter/chart-history', [UcenterController::class, 'chart']);
 
     Route::post('/events/{activity}/actions/apply', [TicketController::class, 'apply']);
@@ -107,6 +106,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/users/{user}/actions/follow', [UserController::class, 'follow']);
     Route::delete('/users/{user}/actions/unfollow', [UserController::class, 'unfollow']);
+    Route::get('/users/{user}/donation-history', [UserController::class, 'history']);
+    Route::get('/users/{user}/charts/constitute', [UserController::class, 'constitute']);
+    Route::get('/users/{user}/charts/history', [UserController::class, 'chart']);
 });
 
 

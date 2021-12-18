@@ -13,9 +13,9 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'avatar' => $this->avatar,
             'profile' => $this->profile,
-            'events' => 0,
-            'donations' => 0,
-            'members' => 0,
+            'events' => $this->tickets()->count(),
+            'donations' => $this->orders()->count(),
+            'members' => $this->followings()->count(),
             'is_follow' => $this->has_followed ?? false,
         ];
     }

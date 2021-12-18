@@ -228,6 +228,16 @@ class User extends Authenticatable
         'gender' => self::GENDER_UNKNOWN,
     ];
 
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function oauths(): HasMany
     {
         return $this->hasMany(Oauth::class);

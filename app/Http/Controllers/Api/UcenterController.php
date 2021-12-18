@@ -74,32 +74,12 @@ class UcenterController extends Controller
         $data['total_amount'] = Order::filter($request->all())->sum('amount');
         $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
+        $total = 0;
         for ($i = 1; $i <= 12; $i++) {
-            $data['received'][$i] = array_key_exists($i, $received) ? $received[strval($i)] : 0;
+            $total += array_key_exists($i, $received) ? $received[strval($i)] : 0;
+            $data['received'][$i] = $total;
         }
         return Response::success($data);
-    }
-
-    public function history(Request $request): JsonResponse|JsonResource
-    {
-        $request->merge([
-            'user_id' => Auth::id(),
-            'payment_status' => Order::STATUS_PAID,
-        ]);
-        $orders = Order::filter($request->all())->simplePaginate($request->input('per_page', 10));
-        $orders->getCollection()->transform(function (Order $order) {
-            return [
-                'id' => $order->order_sn,
-                'amount' => $order->amount,
-                'time' => $order->payment_time,
-                'orderable' => [
-                    'id' => $order->orderable->id,
-                    'name' => $order->orderable->name,
-                    'type' => $order->type,
-                ],
-            ];
-        });
-        return Response::success($orders);
     }
 
     public function followCharities(Request $request): JsonResponse|JsonResource

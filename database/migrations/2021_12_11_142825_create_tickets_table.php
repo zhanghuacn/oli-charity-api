@@ -28,6 +28,7 @@ class CreateTicketsTable extends Migration
             $table->boolean('anonymous')->default(false)->comment('是否匿名捐款');
             $table->timestamp('verified_at')->nullable()->comment('核销时间');
             $table->json('extends')->nullable()->comment('扩展信息');
+            $table->unique(['activity_id', 'user_id']);
             $table->timestamps();
             $table->softDeletes();
         });
