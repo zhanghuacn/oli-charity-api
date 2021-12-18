@@ -9,13 +9,15 @@ use App\Http\Resources\Api\NotificationCollection;
 use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\Charity;
+use App\Models\Order;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
-class UCenterController extends Controller
+class UcenterController extends Controller
 {
     public function notifications(Request $request): JsonResponse|JsonResource
     {
@@ -58,6 +60,46 @@ class UCenterController extends Controller
         $request->merge(['user_id' => Auth::id()]);
         $activities = Activity::filter($request->all())->simplePaginate($request->input('per_page', 15));
         return Response::success(new ActivityCollection($activities));
+    }
+
+    public function chart(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'year' => 'sometimes|date_format:"Y"',
+        ]);
+        $request->merge([
+            'user_id' => Auth::id(),
+            'payment_status' => Order::STATUS_PAID,
+        ]);
+        $data['total_amount'] = Order::filter($request->all())->sum('amount');
+        $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
+            ->groupBy('date')->pluck('total_amount', 'date')->toArray();
+        for ($i = 1; $i <= 12; $i++) {
+            $data['received'][$i] = array_key_exists($i, $received) ? $received[strval($i)] : 0;
+        }
+        return Response::success($data);
+    }
+
+    public function history(Request $request): JsonResponse|JsonResource
+    {
+        $request->merge([
+            'user_id' => Auth::id(),
+            'payment_status' => Order::STATUS_PAID,
+        ]);
+        $orders = Order::filter($request->all())->simplePaginate($request->input('per_page', 10));
+        $orders->getCollection()->transform(function (Order $order) {
+            return [
+                'id' => $order->order_sn,
+                'amount' => $order->amount,
+                'time' => $order->payment_time,
+                'orderable' => [
+                    'id' => $order->orderable->id,
+                    'name' => $order->orderable->name,
+                    'type' => $order->type,
+                ],
+            ];
+        });
+        return Response::success($orders);
     }
 
     public function followCharities(Request $request): JsonResponse|JsonResource

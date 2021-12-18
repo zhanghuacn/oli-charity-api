@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TransferController;
-use App\Http\Controllers\Api\UCenterController;
+use App\Http\Controllers\Api\UcenterController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WebhookController;
 use Illuminate\Support\Facades\Route;
@@ -35,9 +35,9 @@ Route::post('/auth/social-login', [AuthController::class, 'socialiteLogin']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
 
-Route::get('/ucenter/follow-charities', [UCenterController::class, 'followCharities']);
-Route::get('/ucenter/follow-events', [UCenterController::class, 'followActivities']);
-Route::get('/ucenter/follow-users', [UCenterController::class, 'followUsers']);
+Route::get('/ucenter/follow-charities', [UcenterController::class, 'followCharities']);
+Route::get('/ucenter/follow-events', [UcenterController::class, 'followActivities']);
+Route::get('/ucenter/follow-users', [UcenterController::class, 'followUsers']);
 
 Route::get('/explore', [HomeController::class, 'explore']);
 Route::get('/search', [HomeController::class, 'search']);
@@ -57,10 +57,12 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('/ucenter/notifications', [UCenterController::class, 'notifications']);
-    Route::get('/ucenter/events', [UCenterController::class, 'activities']);
-    Route::put('/ucenter/information', [UCenterController::class, 'information']);
-    Route::put('/ucenter/privacy', [UCenterController::class, 'privacy']);
+    Route::get('/ucenter/notifications', [UcenterController::class, 'notifications']);
+    Route::get('/ucenter/events', [UcenterController::class, 'activities']);
+    Route::put('/ucenter/information', [UcenterController::class, 'information']);
+    Route::put('/ucenter/privacy', [UcenterController::class, 'privacy']);
+    Route::get('/ucenter/donation-history', [UcenterController::class, 'history']);
+    Route::get('/ucenter/chart-history', [UcenterController::class, 'chart']);
 
     Route::post('/events/{activity}/actions/apply', [TicketController::class, 'apply']);
     Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);

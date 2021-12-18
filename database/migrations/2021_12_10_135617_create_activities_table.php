@@ -16,7 +16,7 @@ class CreateActivitiesTable extends Migration
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('charity_id')->comment('机构');
-            $table->string('title')->comment('活动标题');
+            $table->string('name')->comment('活动名称');
             $table->string('description')->nullable()->comment('描述');
             $table->text('content')->nullable()->comment('活动内容');
             $table->string('location')->comment('活动地点');
