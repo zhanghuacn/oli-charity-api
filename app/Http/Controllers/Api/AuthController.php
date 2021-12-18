@@ -23,7 +23,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
         $user = User::create($request->all());
-        return Response::success($user->createDeviceToken($request->input('device_name')));
+        return Response::success($user->createDeviceToken('api', ['role:api']));
     }
 
     public function login(Request $request): JsonResponse|JsonResource
@@ -107,3 +107,4 @@ class AuthController extends Controller
         return Response::success($user->createDeviceToken('api', ['role:api']));
     }
 }
+

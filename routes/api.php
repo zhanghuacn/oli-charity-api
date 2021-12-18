@@ -59,7 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/ucenter/notifications', [UcenterController::class, 'notifications']);
     Route::get('/ucenter/events', [UcenterController::class, 'activities']);
-    Route::put('/ucenter/information', [UcenterController::class, 'information']);
+    Route::get('/ucenter/information', [UcenterController::class, 'show']);
+    Route::put('/ucenter/information', [UcenterController::class, 'update']);
     Route::put('/ucenter/privacy', [UcenterController::class, 'privacy']);
     Route::get('/ucenter/chart-history', [UcenterController::class, 'chart']);
 

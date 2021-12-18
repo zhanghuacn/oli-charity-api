@@ -17,7 +17,7 @@ class NewsFilter extends ModelFilter
     public function sort($value)
     {
         switch ($value) {
-            case 'asc':
+            case 'ASC':
                 $this->orderBy('id');
                 break;
             default:

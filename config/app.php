@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\TelescopeServiceProvider;
+
 return [
 
     /*
@@ -174,8 +176,11 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
         App\Providers\VaporUiServiceProvider::class,
         EloquentFilter\ServiceProvider::class,
+        \Laravel\Telescope\TelescopeServiceProvider::class,
+        TelescopeServiceProvider::class
 
     ],
 

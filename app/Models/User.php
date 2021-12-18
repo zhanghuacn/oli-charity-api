@@ -282,12 +282,26 @@ class User extends Authenticatable
         return $this->attributes['avatar'] ?? self::DEFAULT_AVATAR;
     }
 
-    #[ArrayShape(['token_type' => "string", 'token' => "string"])]
+    #[ArrayShape(['token_type' => "string", 'token' => "string", 'user' => "array"])]
     public function createDeviceToken($name, $role): array
     {
         return [
             'token_type' => 'Bearer',
             'token' => $this->createToken($name, $role)->plainTextToken,
+            'user' => [
+                'id' => $this->id,
+                'birthday' => $this->birthday,
+                'gender' => $this->gender,
+                'last_name' => $this->last_name,
+                'middle_name' => $this->middle_name,
+                'first_name' => $this->first_name,
+                'profile' => $this->profile,
+                'name' => $this->name,
+                'avatar' => $this->avatar,
+                'is_public_records' => $this->extends['records'],
+                'is_public_portfolio' => $this->extends['portfolio'],
+                'backdrop' => $this->backdrop,
+            ]
         ];
     }
 

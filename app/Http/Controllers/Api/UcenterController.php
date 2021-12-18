@@ -7,6 +7,7 @@ use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\CharityCollection;
 use App\Http\Resources\Api\NotificationCollection;
 use App\Http\Resources\Api\UserCollection;
+use App\Http\Resources\Api\UserResource;
 use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\Order;
@@ -25,7 +26,12 @@ class UcenterController extends Controller
         return Response::success(new NotificationCollection($data));
     }
 
-    public function information(Request $request): JsonResponse|JsonResource
+    public function show(Request $request): JsonResponse|JsonResource
+    {
+        return Response::success(Auth::user());
+    }
+
+    public function update(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
             'avatar' => 'sometimes|url',
