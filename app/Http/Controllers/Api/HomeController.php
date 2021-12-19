@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\CharityCollection;
 use App\Http\Resources\Api\NewsCollection;
+use App\Http\Resources\Api\SponsorCollection;
 use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\News;
+use App\Models\Sponsor;
 use App\Models\User;
+use App\Search\Search;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -34,15 +37,35 @@ class HomeController extends Controller
         $request->validate([
             'keyword' => 'required|string',
         ]);
-        $charities = Charity::search($request->keyword)->get();
-        $events = Activity::search($request->keyword)->get();
-        $news = News::search($request->keyword)->get();
-        $peoples = User::search($request->keyword)->get();
+        $data = [];
+        $searches = Search::search($request->keyword)->get();
+        foreach ($searches as $model) {
+            switch (get_class($model)) {
+                case Charity::class:
+                    $data['charities'][] = $model;
+                    break;
+                case Activity::class:
+                    $data['activities'][] = $model;
+                    break;
+                case News::class:
+                    $data['news'][] = $model;
+                    break;
+                case User::class:
+                    $data['users'][] = $model;
+                    break;
+                case Sponsor::class:
+                    $data['sponsors'][] = $model;
+                    break;
+                default:
+                    throw new \Exception('Unexpected value');
+            }
+        }
         return Response::success([
-            'charities' => new CharityCollection($charities),
-            'events' => new ActivityCollection($events),
-            'news' => new NewsCollection($news),
-            'peoples' => new UserCollection($peoples),
+            'charities' => new CharityCollection(collect($data['charities'])),
+            'events' => new ActivityCollection(collect($data['charities'])),
+            'news' => new NewsCollection(collect($data['charities'])),
+            'peoples' => new UserCollection(collect($data['charities'])),
+            'sponsors' => new SponsorCollection(collect($data['charities'])),
         ]);
     }
 }

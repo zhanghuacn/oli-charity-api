@@ -162,4 +162,9 @@ class Sponsor extends Model
     {
         return 'sponsors_index';
     }
+
+    public function shouldBeSearchable(): bool
+    {
+        return $this->status == self::STATUS_PASSED;
+    }
 }

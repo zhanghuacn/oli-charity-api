@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "algolia/algoliasearch-client-php": "^3.1",
+        "algolia/scout-extended": "^1.20",
         "awssat/laravel-visits": "^3.0",
         "brainmaestro/composer-git-hooks": "^2.8",
         "friendsofphp/php-cs-fixer": "^3.3",
@@ -85,8 +85,7 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": [
-            ]
+            "dont-discover": []
         },
         "hooks": {
             "pre-commit": [

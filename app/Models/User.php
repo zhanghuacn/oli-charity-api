@@ -347,4 +347,9 @@ class User extends Authenticatable
     {
         return 'users_index';
     }
+
+    public function shouldBeSearchable(): bool
+    {
+        return $this->is_visible && $this->status == self::STATUS_ACTIVE;
+    }
 }

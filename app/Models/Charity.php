@@ -190,4 +190,9 @@ class Charity extends Model
     {
         return 'charities_index';
     }
+
+    public function shouldBeSearchable(): bool
+    {
+        return $this->status == self::STATUS_PASSED;
+    }
 }

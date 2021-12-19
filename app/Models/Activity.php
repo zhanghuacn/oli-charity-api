@@ -263,4 +263,9 @@ class Activity extends Model
     {
         return 'activities_index';
     }
+
+    public function shouldBeSearchable(): bool
+    {
+        return $this->status == self::STATUS_PASSED;
+    }
 }

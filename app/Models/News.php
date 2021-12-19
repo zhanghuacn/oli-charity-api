@@ -99,4 +99,9 @@ class News extends Model
     {
         return 'news_index';
     }
+
+    public function shouldBeSearchable(): bool
+    {
+        return $this->published_at != null;
+    }
 }
