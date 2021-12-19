@@ -62,6 +62,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @mixin \Eloquent
  * @property string|null $transfer_sn
  * @method static \Illuminate\Database\Eloquent\Builder|Transfer whereTransferSn($value)
+ * @property string $code 转账编号
+ * @method static \Illuminate\Database\Eloquent\Builder|Transfer whereCode($value)
  */
 class Transfer extends Model
 {

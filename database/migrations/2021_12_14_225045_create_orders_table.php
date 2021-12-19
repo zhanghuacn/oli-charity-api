@@ -16,7 +16,7 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_sn')->unique()->comment('订单编号');
-            $table->enum('type', ['CHARITY', 'ACTIVITY', 'BAZAAR'])->comment('订单:机构捐赠，活动捐赠，义卖商品');
+            $table->enum('type', ['CHARITY', 'ACTIVITY', 'BAZAAR','TICKETS'])->comment('订单:机构捐赠，活动捐赠，义卖商品, 门票');
             $table->unsignedBigInteger('user_id')->comment('用户');
             $table->unsignedBigInteger('charity_id')->comment('机构');
             $table->string('currency')->comment('货币类型');

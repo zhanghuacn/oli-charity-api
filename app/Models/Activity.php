@@ -108,6 +108,12 @@ use Overtrue\LaravelFavorite\Traits\Favoriter;
  * @property-read int|null $favorites_count
  * @property-read Collection|\App\Models\Order[] $orders
  * @property-read int|null $orders_count
+ * @property string $name 活动名称
+ * @property string $price 门票价格
+ * @property int $stocks 门票库存
+ * @method static Builder|Activity whereName($value)
+ * @method static Builder|Activity wherePrice($value)
+ * @method static Builder|Activity whereStocks($value)
  */
 class Activity extends Model
 {
@@ -131,18 +137,15 @@ class Activity extends Model
     ];
 
     // 默认缓存信息
-    public const DEFAULT_SETTINGS = [
-        'ticket' => [
-            'stock' => 0,
-            'price' => 0,
-            'sales' => 0,
-        ],
-        'quota' => [],
-    ];
+    public const DEFAULT_SETTINGS = [];
 
     public const DEFAULT_EXTENDS = [
         'specialty' => [],
         'timeline' => []
+    ];
+
+    public const DEFAULT_CACHE = [
+        'sales' => 0,
     ];
 
     protected $fillable = [

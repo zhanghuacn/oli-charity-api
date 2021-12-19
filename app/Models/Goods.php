@@ -114,6 +114,11 @@ class Goods extends Model
         return $this->morphTo();
     }
 
+    public function activities(): BelongsToMany
+    {
+        return $this->belongsToMany(Activity::class);
+    }
+
     public function orders(): MorphMany
     {
         return $this->morphMany(Order::class, 'orderable');

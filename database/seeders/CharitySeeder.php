@@ -29,6 +29,7 @@ class CharitySeeder extends Seeder
             'phone' => '1311111111',
             'mobile' => '28766622',
             'email' => Str::random(10).'@gmail.com',
+            'stripe_account' => 'acct_1Jyt5XHfJ1sl7zIL'
         ]);
     }
 }

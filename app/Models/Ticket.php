@@ -201,7 +201,7 @@ class Ticket extends Model
     {
         static::saving(
             function (Ticket $ticket) {
-                $ticket->code = $user->code ?? Str::uuid();
+                $ticket->code = $ticket->code ?? Str::uuid();
             }
         );
     }

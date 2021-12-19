@@ -77,7 +77,7 @@ class ActivityController extends Controller
 
     public function personRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
+        abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
         $ranks = $activity->tickets()->with('user')->orderByDesc('amount')->get()
             ->map(function ($item) {
                 return [
@@ -92,7 +92,7 @@ class ActivityController extends Controller
 
     public function tableRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
+        abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
         $ranks = $activity->tickets()->select('table_num', DB::raw('SUM(amount) as total_amount'))
             ->groupBy('table_num')->orderByDesc('total_amount')->get();
         return Response::success($ranks);
@@ -100,12 +100,13 @@ class ActivityController extends Controller
 
     public function teamRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
-        $ranks = $activity->tickets()->with('team')->select('team_id', DB::raw('SUM(amount) as total_amount'))
-            ->groupBy('team_id')->get()->map(function ($item) {
+        abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
+        $ranks = $activity->tickets()->with('currentTeam')->whereNotNull('current_team_id')
+            ->select('current_team_id', DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('current_team_id')->get()->map(function ($item) {
                 return [
-                    'id' => $item->team->id,
-                    'name' => $item->team->name,
+                    'id' => $item->currentTeam->id,
+                    'name' => $item->currentTeam->name,
                     'total_amount' => $item->total_amount,
                 ];
             });
@@ -134,7 +135,7 @@ class ActivityController extends Controller
         abort_if(empty($activity->charity->stripe_account), 500, 'No stripe connect account opened');
         $order = $this->orderService->activity(Auth::user(), $activity, $request->amount);
         return Response::success([
-            'order_id' => $order->order_sn,
+            'order_sn' => $order->order_sn,
             'client_secret' => $order->extends['client_secret']
         ]);
     }

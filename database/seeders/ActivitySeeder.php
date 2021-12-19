@@ -16,12 +16,14 @@ class ActivitySeeder extends Seeder
         Activity::truncate();
         Activity::create([
             'charity_id' => 1,
-            'title' => Str::random(10),
+            'name' => Str::random(10),
             'description' => Str::random(40),
             'content' => Str::random(100),
             'location' => 'beijing',
             'begin_time' => Carbon::now(),
             'end_time' => Carbon::now()->addDays(10),
+            'price' => 100,
+            'stocks' => 100,
         ]);
     }
 }

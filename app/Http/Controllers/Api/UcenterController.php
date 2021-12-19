@@ -90,20 +90,20 @@ class UcenterController extends Controller
 
     public function followCharities(Request $request): JsonResponse|JsonResource
     {
-        $data = Auth::user()->subscriptions()->withType(Charity::class)
-            ->with('subscribable')->simplePaginate($request->input('per_page', 15));
+        $data = Auth::user()->favorites()->withType(Charity::class)
+            ->with('favoriteable')->simplePaginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
-            return $model->subscribable;
+            return $model->favoriteable;
         });
         return Response::success(new CharityCollection($data));
     }
 
     public function followActivities(Request $request): JsonResponse|JsonResource
     {
-        $data = Auth::user()->subscriptions()->withType(Activity::class)
-            ->with('subscribable')->simplePaginate($request->input('per_page', 15));
+        $data = Auth::user()->favorites()->withType(Activity::class)
+            ->with('favoriteable')->simplePaginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
-            return $model->subscribable;
+            return $model->favoriteable;
         });
         return Response::success(new ActivityCollection($data));
     }

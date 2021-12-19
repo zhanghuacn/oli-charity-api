@@ -7,6 +7,7 @@ use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\CharityCollection;
 use App\Http\Resources\Api\CharityResource;
 use App\Models\Charity;
+use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class CharityController extends Controller
         abort_if(empty($charity->stripe_account), 500, 'No stripe connect account opened');
         $order = $this->orderService->charity(Auth::user(), $charity, $request->amount);
         return Response::success([
-            'order_id' => $order->order_sn,
+            'order_sn' => $order->order_sn,
             'client_secret' => $order->extends['client_secret']
         ]);
     }
@@ -53,6 +54,26 @@ class CharityController extends Controller
     public function activities(Charity $charity): JsonResponse|JsonResource
     {
         return Response::success(new ActivityCollection($charity->activities));
+    }
+
+    public function chart(Charity $charity, Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'year' => 'sometimes|date_format:"Y"',
+        ]);
+        $request->merge([
+            'charity_id' => $charity->id,
+            'payment_status' => Order::STATUS_PAID,
+        ]);
+        $data['total_amount'] = Order::filter($request->all())->sum('amount');
+        $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
+            ->groupBy('date')->pluck('total_amount', 'date')->toArray();
+        $total = 0;
+        for ($i = 1; $i <= 12; $i++) {
+            $total += array_key_exists($i, $received) ? $received[strval($i)] : 0;
+            $data['received'][$i] = $total;
+        }
+        return Response::success($data);
     }
 
     public function favorite(Charity $charity): JsonResponse|JsonResource

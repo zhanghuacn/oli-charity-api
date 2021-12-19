@@ -22,6 +22,8 @@ class CreateActivitiesTable extends Migration
             $table->string('location')->comment('活动地点');
             $table->timestamp('begin_time')->comment('活动开始时间');
             $table->timestamp('end_time')->comment('活动结束时间');
+            $table->decimal('price')->comment('门票价格');
+            $table->unsignedInteger('stocks')->comment('门票库存');
             $table->boolean('is_visible')->default(true)->comment('是否可见');
             $table->boolean('is_private')->default(false)->comment('是否私有');
             $table->json('images')->nullable()->comment('活动图片');

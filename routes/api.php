@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\GoodsController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\LotteryController;
 use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\Api\SponsorController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TransferController;
@@ -48,6 +49,11 @@ Route::get('/news/{news}', [NewsController::class, 'show']);
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{charity}', [CharityController::class, 'show']);
 Route::get('/charities/{charity}/events', [CharityController::class, 'activities']);
+Route::get('/charities/{charity}/historical-donation', [CharityController::class, 'chart']);
+
+Route::get('/sponsors', [SponsorController::class, 'index']);
+Route::get('/sponsors/{sponsor}', [SponsorController::class, 'show']);
+Route::get('/sponsors/{sponsor}/goods', [SponsorController::class, 'goods']);
 
 
 Route::get('/events', [ActivityController::class, 'index']);

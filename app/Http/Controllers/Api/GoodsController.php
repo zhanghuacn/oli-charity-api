@@ -26,24 +26,26 @@ class GoodsController extends Controller
 
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
+       abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
         return Response::success(new GoodsCollection($activity->goods));
     }
 
     public function show(Activity $activity, Goods $goods): JsonResponse|JsonResource
     {
-        abort_if($activity->tickets()->where('user_id', Auth::id())->doesntExist(), 403, 'Permission denied');
+       abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
+        abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404);
         return Response::success(new GoodsResource($goods));
     }
 
     public function order(Activity $activity, Goods $goods, Request $request): JsonResponse|JsonResource
     {
+        abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404);
         $request->validate([
             'method' => 'required|in:STRIPE',
         ]);
         $order = $this->orderService->bazaar(Auth::user(), $activity->charity, $goods);
         return Response::success([
-            'order_id' => $order->order_sn,
+            'order_sn' => $order->order_sn,
             'client_secret' => $order->extends['client_secret']
         ]);
     }

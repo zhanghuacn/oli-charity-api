@@ -16,7 +16,7 @@ class CreateTicketsTable extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->uuid('code')->unique()->comment('门票编码');
-            $table->string('lottery_code')->comment('彩票编号');
+            $table->string('lottery_code')->nullable()->comment('彩票编号');
             $table->unsignedBigInteger('charity_id')->comment('慈善机构');
             $table->unsignedBigInteger('activity_id')->comment('活动');
             $table->unsignedBigInteger('user_id')->comment('用户');

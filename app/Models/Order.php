@@ -96,6 +96,7 @@ use Kra8\Snowflake\Snowflake;
  * @method static Builder|Order whereType($value)
  * @property string|null $payment_type
  * @method static Builder|Order wherePaymentType($value)
+ * @property-read \App\Models\Charity $charity
  */
 class Order extends Model
 {
@@ -107,6 +108,7 @@ class Order extends Model
     public const TYPE_CHARITY = 'CHARITY';
     public const TYPE_ACTIVITY = 'ACTIVITY';
     public const TYPE_BAZAAR = 'BAZAAR';
+    public const TYPE_TICKETS = 'TICKETS';
 
     public const ORDER_PAY_STRIPE = 'STRIPE';
     public const ORDER_PAY_BANK = 'BANK';

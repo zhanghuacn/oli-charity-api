@@ -130,6 +130,10 @@ use Overtrue\LaravelFollow\Followable;
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePmType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereStripeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereTrialEndsAt($value)
+ * @property-read Collection|\App\Models\Order[] $orders
+ * @property-read int|null $orders_count
+ * @property-read Collection|\App\Models\Ticket[] $tickets
+ * @property-read int|null $tickets_count
  */
 class User extends Authenticatable
 {

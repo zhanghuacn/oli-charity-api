@@ -107,4 +107,3 @@ class AuthController extends Controller
         return Response::success($user->createDeviceToken('api', ['role:api']));
     }
 }
-

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\ModelFilters\SponsorFilter;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -74,6 +76,12 @@ use Overtrue\LaravelFavorite\Traits\Favoriteable;
  * @property-read int|null $favoriters_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Overtrue\LaravelFavorite\Favorite[] $favorites
  * @property-read int|null $favorites_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Sponsor filter(array $input = [], $filter = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sponsor paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sponsor simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sponsor whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Sponsor whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Sponsor whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Sponsor extends Model
 {
@@ -82,6 +90,7 @@ class Sponsor extends Model
     use HasCacheProperty;
     use HasExtendsProperty;
     use Favoriteable;
+    use Filterable;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
@@ -140,5 +149,10 @@ class Sponsor extends Model
     public function visits(): Relation
     {
         return visits($this)->relation();
+    }
+
+    public function modelFilter(): ?string
+    {
+        return $this->provideFilter(SponsorFilter::class);
     }
 }

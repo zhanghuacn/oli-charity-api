@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
 use JsonSerializable;
 
-class ActivityCollection extends ResourceCollection
+class SponsorCollection extends ResourceCollection
 {
     public function toArray($request): array|Collection|JsonSerializable|Arrayable
     {
@@ -16,10 +16,7 @@ class ActivityCollection extends ResourceCollection
                 'id' => $item->id,
                 'name' => $item->name,
                 'description' => $item->description,
-                'image' => collect($item->images)->first(),
-                'location' => $item->location,
-                'begin_time' => $item->begin_time,
-                'end_time' => $item->end_time,
+                'logo' => $item->logo,
             ];
         });
     }

@@ -7,6 +7,7 @@ use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\ActivityApplyRecord;
 use App\Models\Ticket;
+use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,14 @@ use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class TicketController extends Controller
 {
+    private OrderService $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        parent::__construct();
+        $this->orderService = $orderService;
+    }
+
     public function apply(Activity $activity): JsonResponse|JsonResource
     {
         abort_if(!$activity->is_private, 403, 'Permission denied');
@@ -35,7 +44,12 @@ class TicketController extends Controller
             403,
             'Permission denied'
         );
-        return Response::success();
+//        abort_if($activity->currentTicket() != null, 500, 'Do not repeat purchase');
+        $order = $this->orderService->tickets(Auth::user(), $activity);
+        return Response::success([
+            'order_sn' => $order->order_sn,
+            'client_secret' => $order->extends['client_secret']
+        ]);
     }
 
     public function anonymous(Activity $activity, Request $request): JsonResponse|JsonResource
@@ -72,8 +86,12 @@ class TicketController extends Controller
 
     public function myTickets(Activity $activity): JsonResponse|JsonResource
     {
-        $ticket = $activity->tickets()->where(['user_id' => Auth::id()])->select('code, table_num, lottery_code')->firstOrFail();
-        return Response::success($ticket);
+        $ticket = $activity->currentTicket();
+        return Response::success([
+            'code' => $ticket->code,
+            'lottery_code' => $ticket->lottery_code,
+            'table_num' => $ticket->table_num,
+        ]);
     }
 
     public function guests(Activity $activity, Request $request): JsonResponse|JsonResource

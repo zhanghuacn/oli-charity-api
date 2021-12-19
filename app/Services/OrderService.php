@@ -38,7 +38,7 @@ class OrderService
                     'user_id' => $user->id,
                     'type' => Order::TYPE_BAZAAR,
                     'charity_id' => $charity->id,
-                    'currency' => 'aud',
+                    'currency' => Str::lower(Config::get('cashier.currency')),
                     'amount' => $goods->price,
                     'fee_amount' => 0,
                     'total_amount' => $goods->price,
@@ -70,10 +70,43 @@ class OrderService
                     'user_id' => $user->id,
                     'type' => Order::TYPE_ACTIVITY,
                     'charity_id' => $activity->charity->id,
-                    'currency' => 'aud',
+                    'currency' => Str::lower(Config::get('cashier.currency')),
                     'amount' => $amount,
                     'fee_amount' => 0,
                     'total_amount' => $amount,
+                    'payment_no' => $payment_intent->id,
+                    'extends' => [
+                        'client_secret' => $payment_intent->client_secret,
+                    ]
+                ]);
+                $order->orderable()->associate($activity);
+                $order->save();
+                return $order;
+            });
+        } catch (Throwable $e) {
+            abort(500, $e->getMessage());
+        }
+    }
+
+    public function tickets(User $user, Activity $activity): Order
+    {
+        try {
+            return DB::transaction(function () use ($activity, $user) {
+                $price = $activity->getSettings()['ticket']['price'];
+                $payment_intent = PaymentIntent::create([
+                    'payment_method_types' => ['card'],
+                    'amount' => $price * 100,
+                    'currency' => Str::lower(Config::get('cashier.currency')),
+                    'application_fee_amount' => 0,
+                ], ['stripe_account' => $activity->charity->stripe_account]);
+                $order = new Order([
+                    'user_id' => $user->id,
+                    'type' => Order::TYPE_TICKETS,
+                    'charity_id' => $activity->charity->id,
+                    'currency' => Str::lower(Config::get('cashier.currency')),
+                    'amount' => $price,
+                    'fee_amount' => 0,
+                    'total_amount' => $price,
                     'payment_no' => $payment_intent->id,
                     'extends' => [
                         'client_secret' => $payment_intent->client_secret,
@@ -102,7 +135,7 @@ class OrderService
                     'user_id' => $user->id,
                     'type' => Order::TYPE_CHARITY,
                     'charity_id' => $charity->id,
-                    'currency' => 'aud',
+                    'currency' => Str::lower(Config::get('cashier.currency')),
                     'amount' => $amount,
                     'fee_amount' => 0,
                     'total_amount' => $amount,
@@ -137,7 +170,7 @@ class OrderService
                     'user_id' => Auth::id(),
                     'type' => Order::TYPE_ACTIVITY,
                     'charity_id' => $activity->charity->id,
-                    'currency' => 'aud',
+                    'currency' => Str::lower(Config::get('cashier.currency')),
                     'amount' => $amount,
                     'fee_amount' => 0,
                     'total_amount' => $amount,
