@@ -94,16 +94,13 @@ class WebhookController extends CashierController
 
     private function handleBazaar(Order $order): void
     {
-
     }
 
     private function handleCharity(Order $order): void
     {
-
     }
 
     private function handleActivity(Order $order): void
     {
-
     }
 }
