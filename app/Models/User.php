@@ -27,6 +27,7 @@ use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
 
@@ -147,6 +148,7 @@ class User extends Authenticatable
     use Favoriter;
     use Followable;
     use Billable;
+    use Searchable;
 
     public const GENDER_UNKNOWN = 'UNKNOWN';
     public const GENDER_MALE = 'MALE';
@@ -339,5 +341,10 @@ class User extends Authenticatable
             return parent::attributesToArray();
         }
         return Arr::only(parent::attributesToArray(), self::SAFE_FIELDS);
+    }
+
+    public function searchableAs(): string
+    {
+        return 'users_index';
     }
 }

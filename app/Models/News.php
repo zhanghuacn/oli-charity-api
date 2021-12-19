@@ -3,11 +3,16 @@
 namespace App\Models;
 
 use App\ModelFilters\NewsFilter;
+use Eloquent;
 use EloquentFilter\Filterable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Laravel\Scout\Searchable;
 
 /**
  * App\Models\News
@@ -24,43 +29,44 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $newsable_id
  * @property string $published_at 发布时间
  * @property int $sort 排序
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @method static \Illuminate\Database\Eloquent\Builder|News newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|News newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|News query()
- * @method static \Illuminate\Database\Eloquent\Builder|News whereContent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereKeyword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereNewsableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereNewsableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News wherePublishedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereSort($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereSource($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereThumb($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereUpdatedAt($value)
- * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|News filter(?array $input = null)
+ * @method static Builder|News newModelQuery()
+ * @method static Builder|News newQuery()
+ * @method static Builder|News query()
+ * @method static Builder|News whereContent($value)
+ * @method static Builder|News whereCreatedAt($value)
+ * @method static Builder|News whereDeletedAt($value)
+ * @method static Builder|News whereDescription($value)
+ * @method static Builder|News whereId($value)
+ * @method static Builder|News whereKeyword($value)
+ * @method static Builder|News whereNewsableId($value)
+ * @method static Builder|News whereNewsableType($value)
+ * @method static Builder|News wherePublishedAt($value)
+ * @method static Builder|News whereSort($value)
+ * @method static Builder|News whereSource($value)
+ * @method static Builder|News whereStatus($value)
+ * @method static Builder|News whereThumb($value)
+ * @method static Builder|News whereTitle($value)
+ * @method static Builder|News whereUpdatedAt($value)
+ * @mixin Eloquent
+ * @method static Builder|News filter(?array $input = null)
  * @method static \Illuminate\Database\Query\Builder|News onlyTrashed()
  * @method static \Illuminate\Database\Query\Builder|News withTrashed()
  * @method static \Illuminate\Database\Query\Builder|News withoutTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|News paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
- * @method static \Illuminate\Database\Eloquent\Builder|News simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
- * @method static \Illuminate\Database\Eloquent\Builder|News whereBeginsWith(string $column, string $value, string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder|News whereEndsWith(string $column, string $value, string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder|News whereLike(string $column, string $value, string $boolean = 'and')
+ * @method static Builder|News paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static Builder|News simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static Builder|News whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static Builder|News whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static Builder|News whereLike(string $column, string $value, string $boolean = 'and')
  */
 class News extends Model
 {
     use HasFactory;
     use Filterable;
     use SoftDeletes;
+    use Searchable;
 
     protected $fillable = [
         'title',
@@ -74,6 +80,11 @@ class News extends Model
         'sort',
     ];
 
+    public function newsable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
     public function visits(): Relation
     {
         return visits($this)->relation();
@@ -82,5 +93,10 @@ class News extends Model
     public function modelFilter(): ?string
     {
         return $this->provideFilter(NewsFilter::class);
+    }
+
+    public function searchableAs(): string
+    {
+        return 'news_index';
     }
 }

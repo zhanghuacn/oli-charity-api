@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
 
 /**
@@ -91,6 +92,7 @@ class Sponsor extends Model
     use HasExtendsProperty;
     use Favoriteable;
     use Filterable;
+    use Searchable;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
@@ -154,5 +156,10 @@ class Sponsor extends Model
     public function modelFilter(): ?string
     {
         return $this->provideFilter(SponsorFilter::class);
+    }
+
+    public function searchableAs(): string
+    {
+        return 'sponsors_index';
     }
 }

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Fluent;
+use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Favorite;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
 use Overtrue\LaravelFavorite\Traits\Favoriter;
@@ -125,6 +126,7 @@ class Activity extends Model
     use HasCacheProperty;
     use HasExtendsProperty;
     use Favoriteable;
+    use Searchable;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
@@ -255,5 +257,10 @@ class Activity extends Model
     public function modelFilter(): ?string
     {
         return $this->provideFilter(ActivityFilter::class);
+    }
+
+    public function searchableAs(): string
+    {
+        return 'activities_index';
     }
 }

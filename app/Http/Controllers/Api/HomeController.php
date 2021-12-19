@@ -31,6 +31,18 @@ class HomeController extends Controller
 
     public function search(Request $request): JsonResponse|JsonResource
     {
-        return Response::success();
+        $request->validate([
+            'keyword' => 'required|string',
+        ]);
+        $charities = Charity::search($request->keyword)->get();
+        $events = Activity::search($request->keyword)->get();
+        $news = News::search($request->keyword)->get();
+        $peoples = User::search($request->keyword)->get();
+        return Response::success([
+            'charities' => new CharityCollection($charities),
+            'events' => new ActivityCollection($events),
+            'news' => new NewsCollection($news),
+            'peoples' => new UserCollection($peoples),
+        ]);
     }
 }

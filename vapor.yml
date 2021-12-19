@@ -19,5 +19,6 @@ environments:
       - 'php artisan event:cache'
       - 'npm install && npm run dev && rm -rf node_modules'
     deploy:
+#      - 'php artisan migrate:reset'
       - 'php artisan migrate --force'
-      - 'php artisan db:seed'
+#      - 'php artisan db:seed'

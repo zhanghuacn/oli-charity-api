@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+        "algolia/algoliasearch-client-php": "^3.1",
         "awssat/laravel-visits": "^3.0",
         "brainmaestro/composer-git-hooks": "^2.8",
         "friendsofphp/php-cs-fixer": "^3.3",
@@ -16,6 +17,7 @@
         "laravel/cashier": "^13.6",
         "laravel/framework": "^8.65",
         "laravel/sanctum": "^2.12",
+        "laravel/scout": "^9.3",
         "laravel/socialite": "^5.2",
         "laravel/telescope": "^4.6",
         "laravel/tinker": "^2.5",

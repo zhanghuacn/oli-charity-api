@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
 
 /**
@@ -99,6 +100,7 @@ class Charity extends Model
     use HasCacheProperty;
     use HasExtendsProperty;
     use Favoriteable;
+    use Searchable;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
@@ -170,7 +172,6 @@ class Charity extends Model
     {
         static::saving(
             function (Charity $charity) {
-//                $charity->cache = $charity->cache ?? self::DEFAULT_CACHE;
             }
         );
     }
@@ -183,5 +184,10 @@ class Charity extends Model
     public function visits(): Relation
     {
         return visits($this)->relation();
+    }
+
+    public function searchableAs(): string
+    {
+        return 'charities_index';
     }
 }
