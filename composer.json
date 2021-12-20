@@ -92,11 +92,9 @@
         },
         "hooks": {
             "pre-commit": [
-                "composer test",
                 "composer check-style"
             ],
             "pre-push": [
-                "composer test",
                 "composer check-style"
             ]
         }
