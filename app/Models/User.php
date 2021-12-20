@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Notifications\ResetPassword;
 use App\Notifications\VerifyEmail;
-use App\Traits\Filterable;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
@@ -25,8 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Cashier\Billable;
-use Laravel\Sanctum\HasApiTokens;
-use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Passport\HasApiTokens;
 use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
@@ -135,6 +133,8 @@ use Overtrue\LaravelFollow\Followable;
  * @property-read int|null $orders_count
  * @property-read Collection|\App\Models\Ticket[] $tickets
  * @property-read int|null $tickets_count
+ * @property-read Collection|\Laravel\Passport\Client[] $clients
+ * @property-read int|null $clients_count
  */
 class User extends Authenticatable
 {
@@ -289,11 +289,11 @@ class User extends Authenticatable
     }
 
     #[ArrayShape(['token_type' => "string", 'token' => "string", 'user' => "array"])]
-    public function createDeviceToken($name, $role): array
+    public function createPlaceToken(string $name, array $scopes): array
     {
         return [
             'token_type' => 'Bearer',
-            'token' => $this->createToken($name, $role)->plainTextToken,
+            'token' => $this->createToken($name, $scopes)->accessToken,
             'user' => [
                 'id' => $this->id,
                 'birthday' => $this->birthday,

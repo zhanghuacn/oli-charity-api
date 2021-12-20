@@ -16,7 +16,7 @@ public_html/storage
 public_html/hot
 
 storage/*.key
-.env
+.env.bak
 Homestead.yaml
 Homestead.json
 /.vagrant
@@ -103,3 +103,8 @@ fabric.properties
 .env.production
 .env.staging
 .env.my-environment
+cghooks.lock
+
+/.rnd
+/docker-compose.yml
+/.env

@@ -60,6 +60,7 @@ use Laravel\Scout\Searchable;
  * @method static Builder|News whereBeginsWith(string $column, string $value, string $boolean = 'and')
  * @method static Builder|News whereEndsWith(string $column, string $value, string $boolean = 'and')
  * @method static Builder|News whereLike(string $column, string $value, string $boolean = 'and')
+ * @property-read Model|\Eloquent $newsable
  */
 class News extends Model
 {

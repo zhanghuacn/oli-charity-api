@@ -26,11 +26,6 @@ class UcenterController extends Controller
         return Response::success(new NotificationCollection($data));
     }
 
-    public function show(Request $request): JsonResponse|JsonResource
-    {
-        return Response::success(Auth::user());
-    }
-
     public function update(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
@@ -42,9 +37,23 @@ class UcenterController extends Controller
             'name' => 'sometimes|string',
             'profile' => 'sometimes|string',
         ]);
-        Auth::user()->update($request->only(['avatar', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));
-        Auth::user()->refresh();
-        return Response::success();
+        $user = Auth::user();
+        $user->update($request->only(['avatar', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));
+        $user->refresh();
+        return Response::success([
+            'id' => $user->id,
+            'birthday' => $user->birthday,
+            'gender' => $user->gender,
+            'last_name' => $user->last_name,
+            'middle_name' => $user->middle_name,
+            'first_name' => $user->first_name,
+            'profile' => $user->profile,
+            'name' => $user->name,
+            'avatar' => $user->avatar,
+            'is_public_records' => $user->extends['records'],
+            'is_public_portfolio' => $user->extends['portfolio'],
+            'backdrop' => $user->backdrop,
+        ]);
     }
 
     public function privacy(Request $request): JsonResponse|JsonResource

@@ -30,7 +30,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/logout', [AuthController::class, 'logout']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/social-login', [AuthController::class, 'socialiteLogin']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
@@ -61,7 +60,8 @@ Route::get('/events/{activity}', [ActivityController::class, 'show']);
 
 Route::get('/users/{user}', [UserController::class, 'show']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::get('/ucenter/notifications', [UcenterController::class, 'notifications']);
     Route::get('/ucenter/events', [UcenterController::class, 'activities']);

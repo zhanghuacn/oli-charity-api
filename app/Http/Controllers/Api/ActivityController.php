@@ -50,7 +50,7 @@ class ActivityController extends Controller
             'name' => $activity->charity->name,
             'logo' => $activity->charity->logo,
         ];
-        $data['price'] = $activity->getSettings()['ticket']['price'];
+        $data['price'] = $activity->price;
         if (Auth::check()) {
             if ($activity->is_private) {
                 $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id(), 'status' => ActivityApplyRecord::STATUS_PASSED])->first();
@@ -71,7 +71,7 @@ class ActivityController extends Controller
             }
             $data['role'] = $activity->currentTicket()->type;
         }
-//        visits($activity)->increment();
+        visits($activity)->increment();
         return Response::success(array_merge($activity->toArray(), $data));
     }
 

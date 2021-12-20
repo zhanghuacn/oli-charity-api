@@ -44,15 +44,15 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/api.php'));
 
             Route::prefix('charity/v1')
-                ->middleware(['api', 'auth:sanctum'])
+                ->middleware('api')
                 ->group(\base_path('routes/charity.php'));
 
             Route::prefix('sponsor/v1')
-                ->middleware(['api', 'auth:sanctum'])
+                ->middleware('api')
                 ->group(\base_path('routes/sponsor.php'));
 
             Route::prefix('admin/v1')
-                ->middleware(['api', 'auth:sanctum'])
+                ->middleware('api')
                 ->group(\base_path('routes/admin.php'));
 
             Route::middleware('web')

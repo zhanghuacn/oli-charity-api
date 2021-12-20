@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Oauth;
 use App\Models\User;
-use App\Models\UserSocialite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
@@ -23,7 +23,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
         $user = User::create($request->all());
-        return Response::success($user->createDeviceToken('api', ['role:api']));
+        return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
     public function login(Request $request): JsonResponse|JsonResource
@@ -37,12 +37,12 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        return Response::success($user->createDeviceToken('api', ['role:api']));
+        return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
     {
-        $request->user()->tokens()->delete();
+        $request->user()->token()->revoke();
         return Response::success();
     }
 
@@ -58,7 +58,7 @@ class AuthController extends Controller
             ['provider', '=', $request['driver']],
             ['provider_id', '=', $social_user->id],
         ])->firstOrFail();
-        return Response::success($oauth->user()->createDeviceToken('api', ['role:api']));
+        return Response::success($oauth->user()->createPlaceToken('api', ['place-app']));
     }
 
     public function socialiteBind(Request $request): JsonResponse|JsonResource
@@ -79,7 +79,7 @@ class AuthController extends Controller
             'provider' => $request['driver'],
             'provider_id' => $social_user->id,
         ]));
-        return Response::success($user->createDeviceToken('api', ['role:api']));
+        return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
     public function socialiteRegister(Request $request): JsonResponse|JsonResource
@@ -104,6 +104,6 @@ class AuthController extends Controller
             'provider_id' => $social_user->id,
         ]);
         $user->refresh();
-        return Response::success($user->createDeviceToken('api', ['role:api']));
+        return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 }

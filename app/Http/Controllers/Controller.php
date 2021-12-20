@@ -15,8 +15,5 @@ class Controller extends BaseController
 
     public function __construct()
     {
-        if (request()->header('Authorization')) {
-            $this->middleware('auth:sanctum');
-        }
     }
 }
