@@ -20,7 +20,7 @@ class CreateTicketsTable extends Migration
             $table->unsignedBigInteger('charity_id')->comment('慈善机构');
             $table->unsignedBigInteger('activity_id')->comment('活动');
             $table->unsignedBigInteger('user_id')->comment('用户');
-            $table->unsignedBigInteger('current_team_id')->nullable()->comment('当前团队');
+            $table->unsignedBigInteger('group_id')->nullable()->comment('当前团队');
             $table->string('table_num')->nullable()->comment('桌号');
             $table->enum('type', ['DONOR', 'STAFF', 'SPONSOR'])->default('DONOR')->comment('门票类型: 普通 工作人员 赞助商');
             $table->unsignedDecimal('price')->comment('门票价格');

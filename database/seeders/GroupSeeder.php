@@ -2,18 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Models\Team;
+use App\Models\Group;
 use App\Models\Ticket;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class TeamSeeder extends Seeder
+class GroupSeeder extends Seeder
 {
     public function run()
     {
-        Team::truncate();
-        Team::create([
+        Group::truncate();
+        Group::create([
             'charity_id' => 1,
             'activity_id' => 1,
             'owner_id' => 1,

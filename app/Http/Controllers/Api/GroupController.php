@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
-use App\Models\Team;
-use App\Models\TeamInvite;
+use App\Models\Group;
+use App\Models\GroupInvite;
 use App\Models\Ticket;
 use App\Notifications\InviteToTeam;
 use App\Services\TeamService;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Throwable;
 
-class TeamController extends Controller
+class GroupController extends Controller
 {
     private TeamService $teamService;
 
@@ -29,20 +29,20 @@ class TeamController extends Controller
 
     public function show(Activity $activity): JsonResponse|JsonResource
     {
-        $ticket = $activity->currentTicket();
-        abort_if(empty($ticket->current_team_id), 422, 'Not joined any team');
+        $ticket = $activity->ticket();
+        abort_if(empty($ticket->group_id), 422, 'Not joined any team');
         $ranks = $activity->tickets()
-            ->selectRaw('current_team_id, sum(amount) as total_amount, (RANK() OVER(ORDER BY sum(amount) DESC)) as ranks')
-            ->whereNotNull('current_team_id')
-            ->groupBy('current_team_id')->get()
-            ->firstWhere('current_team_id', '=', $ticket->current_team_id);
+            ->selectRaw('group_id, sum(amount) as total_amount, (RANK() OVER(ORDER BY sum(amount) DESC)) as ranks')
+            ->whereNotNull('group_id')
+            ->groupBy('group_id')->get()
+            ->firstWhere('group_id', '=', $ticket->group_id);
         $data = [
-            'id' => $ticket->currentTeam->id,
-            'name' => $ticket->currentTeam->name,
+            'id' => $ticket->group->id,
+            'name' => $ticket->group->name,
             'rank' => $ranks->ranks,
             'seat_num' => $ticket->table_num,
             'total_amount' => $ranks->total_amount,
-            'members' => Ticket::whereCurrentTeamId($ticket->current_team_id)->with('user')->get()
+            'members' => Ticket::wheregroupId($ticket->group_id)->with('user')->get()
                 ->transform(function ($item) {
                     return [
                         'id' => $item->user->id,
@@ -52,7 +52,7 @@ class TeamController extends Controller
                         'total_amount' => $item->amount,
                     ];
                 }),
-            'invite' => TeamInvite::whereTeamId($ticket->current_team_id)->with('ticket.user')->get()
+            'invite' => GroupInvite::whereTeamId($ticket->group_id)->with('ticket.user')->get()
                 ->transform(function ($item) {
                     return [
                         'id' => $item->ticket->user->id,
@@ -71,7 +71,7 @@ class TeamController extends Controller
         $request->validate([
             'keyword' => 'required',
         ]);
-        $data = $activity->tickets()->whereNull('current_team_id')
+        $data = $activity->tickets()->whereNull('group_id')
             ->whereHas('user', function (Builder $query) use ($request) {
                 $query->where('username', 'like', $request->keyword . '%')
                     ->orWhere('email', 'like', $request->keyword . '%');
@@ -82,7 +82,7 @@ class TeamController extends Controller
                     'avatar' => optional($item->user)->avatar,
                     'profile' => optional($item->user)->profile,
                     'ticket' => $item->code,
-                    'is_invite' => TeamInvite::whereTicketId($item->id)->exists()
+                    'is_invite' => GroupInvite::whereTicketId($item->id)->exists()
                 ];
             });
         return Response::success($data);
@@ -95,13 +95,13 @@ class TeamController extends Controller
     {
         $team = DB::transaction(function () use ($activity, $request) {
             $ticket = $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail();
-            abort_if(!empty($ticket->current_team_id), 422, 'Joined the team');
+            abort_if(!empty($ticket->group_id), 422, 'Joined the team');
             $request->validate([
                 'name' => 'required|string',
                 'description' => 'sometimes|string',
                 'num' => 'sometimes|numeric|min:1|not_in:0'
             ]);
-            $team = Team::create(array_merge(
+            $team = Group::create(array_merge(
                 $request->only(['name', 'description', 'num']),
                 [
                     'charity_id' => $activity->charity_id,
@@ -109,7 +109,7 @@ class TeamController extends Controller
                     'owner_id' => Auth::id(),
                 ]
             ));
-            $ticket->current_team_id = $team->id;
+            $ticket->group_id = $team->id;
             $ticket->save();
             $team->tickets()->attach($ticket->id);
             return $team;
@@ -121,13 +121,13 @@ class TeamController extends Controller
     public function update(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         $ticket = $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail();
-        abort_if(empty($ticket->current_team_id), 422, 'Not joined any team');
+        abort_if(empty($ticket->group_id), 422, 'Not joined any team');
         $request->validate([
             'name' => 'required|string',
             'description' => 'sometimes|string',
             'num' => 'sometimes|numeric|min:1|not_in:0'
         ]);
-        $ticket->currentTeam()->update($request->only(['name', 'description', 'num']));
+        $ticket->group()->update($request->only(['name', 'description', 'num']));
         return Response::success();
     }
 
@@ -137,8 +137,8 @@ class TeamController extends Controller
             'ticket' => 'required|exists:tickets,code',
         ]);
         $ticket = Ticket::whereCode($request->ticket)->first();
-        if (!$this->teamService->hasPendingInvite($ticket, $activity->currentTicket()->currentTeam)) {
-            $this->teamService->inviteToTeam($ticket, $activity->currentTicket()->currentTeam, function (TeamInvite $invite) {
+        if (!$this->teamService->hasPendingInvite($ticket, $activity->ticket()->group)) {
+            $this->teamService->inviteToTeam($ticket, $activity->ticket()->group, function (GroupInvite $invite) {
                 $invite->ticket->user->notify(new InviteToTeam($invite));
             });
         }
@@ -150,7 +150,7 @@ class TeamController extends Controller
         $request->validate([
             'accept_token' => 'required',
         ]);
-        $invite = TeamInvite::whereAcceptToken($request->accept_token)->firstOrFail();
+        $invite = GroupInvite::whereAcceptToken($request->accept_token)->firstOrFail();
         $this->teamService->acceptInvite($invite);
         return Response::success();
     }
@@ -160,17 +160,17 @@ class TeamController extends Controller
         $request->validate([
             'deny_token' => 'required',
         ]);
-        $invite = TeamInvite::whereDenyToken($request->deny_token)->firstOrFail();
+        $invite = GroupInvite::whereDenyToken($request->deny_token)->firstOrFail();
         $this->teamService->denyInvite($invite);
         return Response::success();
     }
 
     public function quit(Activity $activity): JsonResponse|JsonResource
     {
-        $ticket = $activity->currentTicket();
-        $ticket->detachTeam($ticket->current_team_id);
+        $ticket = $activity->ticket();
+        $ticket->detachGroup($ticket->group_id);
         $ticket->update([
-            'current_team_id' => null,
+            'group_id' => null,
         ]);
         return Response::success();
     }

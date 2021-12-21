@@ -20,19 +20,18 @@ class GoodsController extends Controller
 
     public function __construct(OrderService $orderService)
     {
-        parent::__construct();
         $this->orderService = $orderService;
     }
 
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
+        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
         return Response::success(new GoodsCollection($activity->goods));
     }
 
     public function show(Activity $activity, Goods $goods): JsonResponse|JsonResource
     {
-        abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
+        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
         abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404);
         return Response::success(new GoodsResource($goods));
     }

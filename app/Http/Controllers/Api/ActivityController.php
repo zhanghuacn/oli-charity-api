@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
-use App\Models\ActivityApplyRecord;
+use App\Models\Apply;
 use App\Models\Order;
-use App\Models\TeamInvite;
+use App\Models\GroupInvite;
 use App\Models\Ticket;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +24,6 @@ class ActivityController extends Controller
 
     public function __construct(OrderService $orderService)
     {
-        parent::__construct();
         $this->orderService = $orderService;
     }
 
@@ -53,12 +52,12 @@ class ActivityController extends Controller
         $data['price'] = $activity->price;
         if (Auth::check()) {
             if ($activity->is_private) {
-                $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id(), 'status' => ActivityApplyRecord::STATUS_PASSED])->first();
+                $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id(), 'status' => Apply::STATUS_PASSED])->first();
                 if ($activityApplyRecord->exists()) {
                     $data['apply_status'] = $activityApplyRecord->status;
                 }
             }
-            $teamInvite = TeamInvite::whereTicketId($activity->currentTicket()->id)->first();
+            $teamInvite = GroupInvite::whereTicketId($activity->ticket()->id)->first();
             if ($teamInvite) {
                 $data['invite'] = [
                     'inviter_id' => $teamInvite->inviter->id,
@@ -69,7 +68,7 @@ class ActivityController extends Controller
                     'deny_token' => $teamInvite->deny_token,
                 ];
             }
-            $data['role'] = $activity->currentTicket()->type;
+            $data['role'] = $activity->ticket()->type;
         }
         visits($activity)->increment();
         return Response::success(array_merge($activity->toArray(), $data));
@@ -77,7 +76,7 @@ class ActivityController extends Controller
 
     public function personRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
+        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
         $ranks = $activity->tickets()->with('user')->orderByDesc('amount')->get()
             ->map(function ($item) {
                 return [
@@ -92,7 +91,7 @@ class ActivityController extends Controller
 
     public function tableRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
+        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
         $ranks = $activity->tickets()->select('table_num', DB::raw('SUM(amount) as total_amount'))
             ->groupBy('table_num')->orderByDesc('total_amount')->get();
         return Response::success($ranks);
@@ -100,13 +99,13 @@ class ActivityController extends Controller
 
     public function teamRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(!$activity->currentTicket()->exists, 403, 'Permission denied');
-        $ranks = $activity->tickets()->with('currentTeam')->whereNotNull('current_team_id')
-            ->select('current_team_id', DB::raw('SUM(amount) as total_amount'))
-            ->groupBy('current_team_id')->get()->map(function ($item) {
+        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
+        $ranks = $activity->tickets()->with('group')->whereNotNull('group_id')
+            ->select('group_id', DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('group_id')->get()->map(function ($item) {
                 return [
-                    'id' => $item->currentTeam->id,
-                    'name' => $item->currentTeam->name,
+                    'id' => $item->group->id,
+                    'name' => $item->group->name,
                     'total_amount' => $item->total_amount,
                 ];
             });
@@ -118,7 +117,15 @@ class ActivityController extends Controller
         $ranks = $activity->tickets()->selectRaw('user_id, amount, (RANK() OVER(ORDER BY amount DESC)) as ranks')->get()
             ->firstWhere('user_id', '=', Auth::id());
         $orders = $activity->orders()->where(['user_id' => Auth::id(), 'payment_status' => Order::STATUS_PAID])
-            ->orderByDesc('payment_time')->get(['payment_type', 'amount', 'payment_time']);
+            ->orderByDesc('payment_time')->get(['payment_type', 'amount', 'payment_time', 'payment_status'])
+            ->transform(function ($item) {
+                return [
+                    'type' => $item->payment_type,
+                    'amount' => $item->amount,
+                    'time' => $item->payment_time,
+                    'status' => $item->payment_status,
+                ];
+            });
         return Response::success([
             'rank' => $ranks->ranks,
             'total_amount' => $ranks->amount,

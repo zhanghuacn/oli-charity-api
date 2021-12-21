@@ -24,13 +24,12 @@ class TransferController extends Controller
 
     public function __construct(OrderService $orderService)
     {
-        parent::__construct();
         $this->orderService = $orderService;
     }
 
     public function index(Activity $activity, Request $request): JsonResponse|JsonResource
     {
-        $ticket = $activity->currentTicket();
+        $ticket = $activity->ticket();
         $request->merge([
             'ticket_id' => $ticket->id,
             'user_id' => $ticket->user_id,
@@ -45,7 +44,7 @@ class TransferController extends Controller
             'amount' => 'required|numeric|min:1|not_in:0',
             'voucher' => 'required|array',
         ]);
-        $ticket = $activity->currentTicket();
+        $ticket = $activity->ticket();
         $order = $this->orderService->transfer($activity, $ticket, $request->amount, $request->voucher);
         return Response::success([
             'order_sn' => $order->order_sn,

@@ -25,7 +25,6 @@ use Illuminate\Support\Fluent;
 use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Favorite;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
-use Overtrue\LaravelFavorite\Traits\Favoriter;
 
 /**
  * App\Models\Activity
@@ -92,7 +91,7 @@ use Overtrue\LaravelFavorite\Traits\Favoriter;
  * @method static \Illuminate\Database\Query\Builder|Activity onlyTrashed()
  * @method static \Illuminate\Database\Query\Builder|Activity withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Activity withoutTrashed()
- * @property-read Collection|ActivityApplyRecord[] $applies
+ * @property-read Collection|Apply[] $applies
  * @property-read int|null $applies_count
  * @property-read Collection|Lottery[] $lotteries
  * @property-read int|null $lotteries_count
@@ -213,7 +212,7 @@ class Activity extends Model
 
     public function applies(): HasMany
     {
-        return $this->hasMany(ActivityApplyRecord::class);
+        return $this->hasMany(Apply::class);
     }
 
     public function lotteries(): HasMany
@@ -231,7 +230,7 @@ class Activity extends Model
         return $this->morphMany(Order::class, 'orderable');
     }
 
-    public function currentTicket(): Model
+    public function ticket(): Model
     {
         return $this->tickets()->where(['user_id' => Auth::id()])->first();
     }

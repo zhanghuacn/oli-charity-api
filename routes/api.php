@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\LotteryController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\SponsorController;
-use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\UcenterController;
@@ -90,14 +90,14 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::get('/events/{activity}/ranks/donation-teams', [ActivityController::class, 'teamRanks']);
     Route::get('/events/{activity}/donation/my-history', [ActivityController::class, 'history']);
 
-    Route::get('/events/{activity}/teams/search', [TeamController::class, 'search']);
-    Route::get('/events/{activity}/teams/details', [TeamController::class, 'show']);
-    Route::post('/events/{activity}/teams', [TeamController::class, 'store']);
-    Route::put('/events/{activity}/teams', [TeamController::class, 'update']);
-    Route::post('/events/{activity}/teams/actions/invite', [TeamController::class, 'invite']);
-    Route::post('/events/{activity}/teams/actions/accept', [TeamController::class, 'acceptInvite']);
-    Route::post('/events/{activity}/teams/actions/deny', [TeamController::class, 'denyInvite']);
-    Route::post('/events/{activity}/teams/actions/quit', [TeamController::class, 'quit']);
+    Route::get('/events/{activity}/teams/search', [GroupController::class, 'search']);
+    Route::get('/events/{activity}/teams/details', [GroupController::class, 'show']);
+    Route::post('/events/{activity}/teams', [GroupController::class, 'store']);
+    Route::put('/events/{activity}/teams', [GroupController::class, 'update']);
+    Route::post('/events/{activity}/teams/actions/invite', [GroupController::class, 'invite']);
+    Route::post('/events/{activity}/teams/actions/accept', [GroupController::class, 'acceptInvite']);
+    Route::post('/events/{activity}/teams/actions/deny', [GroupController::class, 'denyInvite']);
+    Route::post('/events/{activity}/teams/actions/quit', [GroupController::class, 'quit']);
 
     Route::get('/events/{activity}/transfers', [TransferController::class, 'index']);
     Route::post('/events/{activity}/actions/donation', [ActivityController::class, 'order']);

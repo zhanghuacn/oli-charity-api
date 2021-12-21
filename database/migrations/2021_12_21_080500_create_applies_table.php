@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActivityApplyRecordsTable extends Migration
+class CreateAppliesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateActivityApplyRecordsTable extends Migration
      */
     public function up()
     {
-        Schema::create('activity_apply_records', function (Blueprint $table) {
+        Schema::create('applies', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('charity_id')->comment('慈善机构');
             $table->unsignedBigInteger('activity_id')->comment('活动');
@@ -35,6 +35,6 @@ class CreateActivityApplyRecordsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('activity_apply_records');
+        Schema::dropIfExists('applies');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Team;
+use App\Models\Group;
 use App\Models\Ticket;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,7 @@ class TicketSeeder extends Seeder
             'amount' => 200,
         ]);
 
-        Ticket::find(1)->attachTeam(Team::find(1));
-        Ticket::find(2)->attachTeam(Team::find(1));
+        Ticket::find(1)->attachGroup(Group::find(1));
+        Ticket::find(2)->attachGroup(Group::find(1));
     }
 }

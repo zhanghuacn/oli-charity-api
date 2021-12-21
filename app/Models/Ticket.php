@@ -57,24 +57,28 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereVerifiedAt($value)
  * @mixin Eloquent
- * @property int|null $team_id
+ * @property int|null $group_id
  * @property string|null $table_num
  * @method static Builder|Ticket onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTableNum($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereGroupId($value)
  * @method static Builder|Ticket withTrashed()
  * @method static Builder|Ticket withoutTrashed()
- * @property-read Team|null $team
- * @property int|null $current_team_id 当前团队
- * @property-read \App\Models\Team $currentTeam
- * @property-read \Illuminate\Database\Eloquent\Collection|Ticket[] $teams
- * @property-read int|null $teams_count
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCurrentTeamId($value)
+ * @property-read Group|null $group
+ * @property int|null $group_id 当前团队
+ * @property-read \App\Models\Group $group
+ * @property-read \Illuminate\Database\Eloquent\Collection|Ticket[] $groups
+ * @property-read int|null $groups_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket wheregroupId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereBeginsWith(string $column, string $value, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereEndsWith(string $column, string $value, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereLike(string $column, string $value, string $boolean = 'and')
+ * @property int|null $current_team_id 当前团队
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Group[] $groups
+ * @property-read int|null $groups_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCurrentGroupId($value)
  */
 class Ticket extends Model
 {
@@ -100,7 +104,7 @@ class Ticket extends Model
         'charity_id',
         'activity_id',
         'user_id',
-        'current_team_id',
+        'group_id',
         'type',
         'price',
         'amount',
@@ -133,68 +137,68 @@ class Ticket extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function currentTeam(): BelongsTo
+    public function group(): BelongsTo
     {
-        return $this->belongsTo(Team::class, 'current_team_id', 'id');
+        return $this->belongsTo(Group::class, 'group_id', 'id');
     }
 
-    public function teams(): BelongsToMany
+    public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, 'team_ticket');
+        return $this->belongsToMany(Group::class, 'group_ticket');
     }
 
-    public function attachTeam($team, $pivotData = []): static
+    public function attachGroup($group, $pivotData = []): static
     {
-        $team = $this->retrieveTeamId($team);
-        if (is_null($this->current_team_id)) {
-            $this->current_team_id = $team;
+        $group = $this->retrieveGroupId($group);
+        if (is_null($this->group_id)) {
+            $this->group_id = $group;
             $this->save();
 
-            if ($this->relationLoaded('currentTeam')) {
-                $this->load('currentTeam');
+            if ($this->relationLoaded('group')) {
+                $this->load('group');
             }
         }
-        $this->load('teams');
-        if (!$this->teams->contains($team)) {
-            $this->teams()->attach($team, $pivotData);
-            if ($this->relationLoaded('teams')) {
-                $this->load('teams');
+        $this->load('groups');
+        if (!$this->groups->contains($group)) {
+            $this->groups()->attach($group, $pivotData);
+            if ($this->relationLoaded('groups')) {
+                $this->load('groups');
             }
         }
         return $this;
     }
 
-    public function detachTeam($team): static
+    public function detachGroup($group): static
     {
-        $team = $this->retrieveTeamId($team);
-        $this->teams()->detach($team);
+        $group = $this->retrieveGroupId($group);
+        $this->groups()->detach($group);
 
-        if ($this->relationLoaded('teams')) {
-            $this->load('teams');
+        if ($this->relationLoaded('groups')) {
+            $this->load('groups');
         }
 
-        if ($this->teams()->count() === 0 || $this->current_team_id === $team) {
-            $this->current_team_id = null;
+        if ($this->groups()->count() === 0 || $this->group_id === $group) {
+            $this->group_id = null;
             $this->save();
 
-            if ($this->relationLoaded('currentTeam')) {
-                $this->load('currentTeam');
+            if ($this->relationLoaded('group')) {
+                $this->load('group');
             }
         }
         return $this;
     }
 
 
-    protected function retrieveTeamId($team)
+    protected function retrieveGroupId($group)
     {
-        if (is_object($team)) {
-            $team = $team->getKey();
+        if (is_object($group)) {
+            $group = $group->getKey();
         }
-        if (is_array($team) && isset($team['id'])) {
-            $team = $team['id'];
+        if (is_array($group) && isset($group['id'])) {
+            $group = $group['id'];
         }
 
-        return $team;
+        return $group;
     }
 
     protected static function booted()

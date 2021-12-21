@@ -38,6 +38,11 @@ class CreateCharitiesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('charity_user', function (Blueprint $table) {
+            $table->unsignedBigInteger('charity_id')->comment('机构');
+            $table->unsignedBigInteger('user_id')->unique()->comment('用户');
+        });
     }
 
     /**
@@ -48,5 +53,6 @@ class CreateCharitiesTable extends Migration
     public function down()
     {
         Schema::dropIfExists('charities');
+        Schema::dropIfExists('charity_user');
     }
 }

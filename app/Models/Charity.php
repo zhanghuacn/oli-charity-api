@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
+use Spatie\Permission\Models\Role;
 
 /**
  * App\Models\Charity
@@ -170,10 +171,9 @@ class Charity extends Model
 
     protected static function booted()
     {
-        static::saving(
-            function (Charity $charity) {
-            }
-        );
+        parent::boot();
+        self::created(function (Charity $charity) {
+        });
     }
 
     public function getDisplayStatusAttribute(): string

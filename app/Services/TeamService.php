@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
-use App\Models\Team;
-use App\Models\TeamInvite;
+use App\Models\Group;
+use App\Models\GroupInvite;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\Auth;
 
 class TeamService
 {
-    public function inviteToTeam(Ticket $ticket, Team $team, callable $success = null): TeamInvite
+    public function inviteToTeam(Ticket $ticket, Group $team, callable $success = null): GroupInvite
     {
-        $invite = new TeamInvite();
-        $invite->type = TeamInvite::TYPE_INVITE;
+        $invite = new GroupInvite();
+        $invite->type = GroupInvite::TYPE_INVITE;
         $invite->inviter_id = Auth::id();
         $invite->ticket()->associate($ticket);
         $invite->team()->associate($team);
@@ -24,9 +24,9 @@ class TeamService
         return $invite;
     }
 
-    public function hasPendingInvite(Ticket $ticket, Team $team): bool
+    public function hasPendingInvite(Ticket $ticket, Group $team): bool
     {
-        return TeamInvite::where(['ticket_id' => $ticket->id, 'team_id' => $team->id])->exists();
+        return GroupInvite::where(['ticket_id' => $ticket->id, 'team_id' => $team->id])->exists();
     }
 
     public function acceptInvite($invite)

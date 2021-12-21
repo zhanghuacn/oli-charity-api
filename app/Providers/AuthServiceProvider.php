@@ -27,12 +27,15 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::routes();
-
         Passport::tokensCan([
             'place-app' => 'Check place app',
             'place-admin' => 'Check place admin',
             'place-charity' => 'Check place charity',
             'place-sponsor' => 'Check place sponsor',
         ]);
+
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('super-admin') ? true : null;
+        });
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
-use App\Models\ActivityApplyRecord;
+use App\Models\Apply;
 use App\Models\Ticket;
 use App\Services\OrderService;
 use Carbon\Carbon;
@@ -21,7 +21,6 @@ class TicketController extends Controller
 
     public function __construct(OrderService $orderService)
     {
-        parent::__construct();
         $this->orderService = $orderService;
     }
 
@@ -32,7 +31,7 @@ class TicketController extends Controller
             'charity_id' => $activity->charity_id,
             'user_id' => Auth::id(),
         ]);
-        abort_if($apply->status == ActivityApplyRecord::STATUS_REFUSE, 403, 'Permission denied');
+        abort_if($apply->status == Apply::STATUS_REFUSE, 403, 'Permission denied');
         return Response::success();
     }
 
@@ -40,7 +39,7 @@ class TicketController extends Controller
     {
         abort_if(
             $activity->is_private &&
-            $activity->applies()->where(['user_id' => Auth::id(), 'status' => ActivityApplyRecord::STATUS_PASSED])->doesntExist(),
+            $activity->applies()->where(['user_id' => Auth::id(), 'status' => Apply::STATUS_PASSED])->doesntExist(),
             403,
             'Permission denied'
         );
@@ -86,7 +85,7 @@ class TicketController extends Controller
 
     public function myTickets(Activity $activity): JsonResponse|JsonResource
     {
-        $ticket = $activity->currentTicket();
+        $ticket = $activity->ticket();
         return Response::success([
             'code' => $ticket->code,
             'lottery_code' => $ticket->lottery_code,

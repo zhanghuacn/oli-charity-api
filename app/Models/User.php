@@ -11,6 +11,7 @@ use Database\Factories\UserFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
@@ -24,10 +25,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Cashier\Billable;
+use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
 use Laravel\Scout\Searchable;
+use Overtrue\LaravelFavorite\Favorite;
 use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
+use Overtrue\LaravelSubscribe\Subscription;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * App\Models\User
@@ -102,17 +107,17 @@ use Overtrue\LaravelFollow\Followable;
  * @method static Builder|User withTrashed()
  * @method static Builder|User withoutTrashed()
  * @mixin Eloquent
- * @property-read Collection|\App\Models\UserSocialite[] $socialites
+ * @property-read Collection|UserSocialite[] $socialites
  * @property-read int|null $socialites_count
- * @property-read Collection|\App\Models\UserSocialite[] $userSocialites
+ * @property-read Collection|UserSocialite[] $userSocialites
  * @property-read int|null $user_socialites_count
- * @property-read Collection|\Overtrue\LaravelSubscribe\Subscription[] $subscriptions
+ * @property-read Collection|Subscription[] $subscriptions
  * @property-read int|null $subscriptions_count
  * @property-read Collection|User[] $followers
  * @property-read int|null $followers_count
  * @property-read Collection|User[] $followings
  * @property-read int|null $followings_count
- * @property-read Collection|\App\Models\Oauth[] $oauths
+ * @property-read Collection|Oauth[] $oauths
  * @property-read int|null $oauths_count
  * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCount(string $direction = 'desc')
  * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCountAsc()
@@ -123,28 +128,37 @@ use Overtrue\LaravelFollow\Followable;
  * @property string|null $pm_type
  * @property string|null $pm_last_four
  * @property string|null $trial_ends_at
- * @property-read Collection|\Overtrue\LaravelFavorite\Favorite[] $favorites
+ * @property-read Collection|Favorite[] $favorites
  * @property-read int|null $favorites_count
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePmLastFour($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePmType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereStripeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereTrialEndsAt($value)
- * @property-read Collection|\App\Models\Order[] $orders
+ * @property-read Collection|Order[] $orders
  * @property-read int|null $orders_count
- * @property-read Collection|\App\Models\Ticket[] $tickets
+ * @property-read Collection|Ticket[] $tickets
  * @property-read int|null $tickets_count
- * @property-read Collection|\Laravel\Passport\Client[] $clients
+ * @property-read Collection|Client[] $clients
  * @property-read int|null $clients_count
+ * @property-read Collection|\App\Models\Charity[] $charities
+ * @property-read int|null $charities_count
+ * @property-read Collection|\Spatie\Permission\Models\Permission[] $permissions
+ * @property-read int|null $permissions_count
+ * @property-read Collection|\Spatie\Permission\Models\Role[] $roles
+ * @property-read int|null $roles_count
+ * @method static \Illuminate\Database\Eloquent\Builder|User permission($permissions)
+ * @method static \Illuminate\Database\Eloquent\Builder|User role($roles, $guard = null)
  */
 class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
-    use Notifiable;
-    use SoftDeletes;
+    use HasRoles;
     use HasSettingsProperty;
     use HasCacheProperty;
     use HasExtendsProperty;
+    use Notifiable;
+    use SoftDeletes;
     use Favoriter;
     use Followable;
     use Billable;
@@ -247,6 +261,26 @@ class User extends Authenticatable
     public function oauths(): HasMany
     {
         return $this->hasMany(Oauth::class);
+    }
+
+    public function charities(): BelongsToMany
+    {
+        return $this->belongsToMany(Charity::class);
+    }
+
+    public function sponsors(): BelongsToMany
+    {
+        return $this->belongsToMany(Sponsor::class);
+    }
+
+    public function getTeamIdFromCharity()
+    {
+        return $this->charities()->value('id');
+    }
+
+    public function getTeamIdFromSponsor()
+    {
+        return $this->sponsors()->value('id');
     }
 
     protected static function booted()

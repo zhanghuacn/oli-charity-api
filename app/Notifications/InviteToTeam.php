@@ -2,15 +2,15 @@
 
 namespace App\Notifications;
 
-use App\Models\TeamInvite;
+use App\Models\GroupInvite;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
 class InviteToTeam extends Notification
 {
-    private TeamInvite $invite;
+    private GroupInvite $invite;
 
-    public function __construct(TeamInvite $invite)
+    public function __construct(GroupInvite $invite)
     {
         $this->invite = $invite;
     }

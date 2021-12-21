@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTeamsTable extends Migration
+class CreateGroupsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTeamsTable extends Migration
      */
     public function up()
     {
-        Schema::create('teams', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('charity_id')->comment('机构');
             $table->unsignedBigInteger('activity_id')->comment('活动');
@@ -26,16 +26,16 @@ class CreateTeamsTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('team_ticket', function (Blueprint $table) {
-            $table->unsignedBigInteger('team_id')->comment('团队');
+        Schema::create('group_ticket', function (Blueprint $table) {
+            $table->unsignedBigInteger('group_id')->comment('团队');
             $table->unsignedBigInteger('ticket_id')->unique()->comment('门票');
         });
 
-        Schema::create('team_invites', function (Blueprint $table) {
+        Schema::create('group_invite', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('ticket_id')->unique()->comment('门票');
             $table->unsignedBigInteger('inviter_id')->comment('邀请人');
-            $table->unsignedBigInteger('team_id')->comment('团队');
+            $table->unsignedBigInteger('group_id')->comment('团队');
             $table->enum('type', ['INVITE', 'REQUEST'])->comment('类型');
             $table->string('accept_token')->comment('接受token');
             $table->string('deny_token')->comment('拒绝token');
@@ -51,8 +51,8 @@ class CreateTeamsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('teams');
-        Schema::dropIfExists('team_ticket');
-        Schema::dropIfExists('team_invites');
+        Schema::dropIfExists('groups');
+        Schema::dropIfExists('group_ticket');
+        Schema::dropIfExists('group_invite');
     }
 }
