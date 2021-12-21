@@ -35,6 +35,11 @@ class CreateSponsorsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('sponsor_user', function (Blueprint $table) {
+            $table->unsignedBigInteger('sponsor_id')->comment('赞助商');
+            $table->unsignedBigInteger('user_id')->unique()->comment('用户');
+        });
     }
 
     /**
@@ -44,6 +49,7 @@ class CreateSponsorsTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('sponsor_user');
         Schema::dropIfExists('sponsors');
     }
 }

@@ -109,7 +109,7 @@ class Admin extends Authenticatable
     ];
 
     #[ArrayShape(['token_type' => "string", 'token' => "string", 'admin' => "array"])]
-    public function createDeviceToken(string $name, array $scopes): array
+    public function createPlaceToken(string $name, array $scopes): array
     {
         return [
             'token_type' => 'Bearer',

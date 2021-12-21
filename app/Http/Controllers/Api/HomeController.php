@@ -56,16 +56,14 @@ class HomeController extends Controller
                 case Sponsor::class:
                     $data['sponsors'][] = $model;
                     break;
-                default:
-                    throw new \Exception('Unexpected value');
             }
         }
         return Response::success([
             'charities' => new CharityCollection(collect($data['charities'])),
-            'events' => new ActivityCollection(collect($data['charities'])),
-            'news' => new NewsCollection(collect($data['charities'])),
-            'peoples' => new UserCollection(collect($data['charities'])),
-            'sponsors' => new SponsorCollection(collect($data['charities'])),
+            'events' => new ActivityCollection(collect($data['activities'])),
+            'news' => new NewsCollection(collect($data['news'])),
+            'peoples' => new UserCollection(collect($data['users'])),
+            'sponsors' => new SponsorCollection(collect($data['sponsors'])),
         ]);
     }
 }

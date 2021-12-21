@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Charity;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -19,16 +19,22 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $admin = Admin::where('username', $request['username'])->orWhere('email', $request['username'])->first();
-        if (!$admin || !Hash::check($request->input('password'), $admin->password)) {
+        $user = User::has('charities')->where('username', $request['username'])
+            ->orWhere('email', $request['username'])->first();
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        return Response::success($admin->createPlaceToken('admin', ['place-admin']));
+        return Response::success($user->createPlaceToken('charity', ['place-charity']));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
     {
         $request->user()->tokens()->delete();
+        return Response::success();
+    }
+
+    public function register(Request $request): JsonResponse|JsonResource
+    {
         return Response::success();
     }
 }

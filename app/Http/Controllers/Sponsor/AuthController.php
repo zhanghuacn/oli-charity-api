@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Sponsor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,12 +18,12 @@ class AuthController extends Controller
             'username' => 'required',
             'password' => 'required',
         ]);
-
-        $admin = Admin::where('username', $request['username'])->orWhere('email', $request['username'])->first();
-        if (!$admin || !Hash::check($request->input('password'), $admin->password)) {
+        $user = User::has('sponsors')->where('username', $request['username'])
+            ->orWhere('email', $request['username'])->first();
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        return Response::success($admin->createPlaceToken('admin', ['place-admin']));
+        return Response::success($user->createPlaceToken('sponsor', ['place-sponsor']));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
