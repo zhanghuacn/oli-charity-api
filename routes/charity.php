@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Charity\ActivityController;
 use App\Http\Controllers\Charity\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(function () {
+Route::middleware(['auth:api', 'scopes:place-charity', 'check.charity'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    Route::apiResource('events', ActivityController::class);
 });

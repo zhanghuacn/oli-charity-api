@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7a1e64196d6f2e708549542244cd13e",
+    "content-hash": "89f2c6b5e9991f44fc519c7b4cea8626",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -269,16 +269,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.208.6",
+            "version": "3.208.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "6154edd0a34db103c69ec15e258ea73e4e45d471"
+                "reference": "41a800dd7cf5c4ac0ef9bf8db01e838ab6a3698c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6154edd0a34db103c69ec15e258ea73e4e45d471",
-                "reference": "6154edd0a34db103c69ec15e258ea73e4e45d471",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/41a800dd7cf5c4ac0ef9bf8db01e838ab6a3698c",
+                "reference": "41a800dd7cf5c4ac0ef9bf8db01e838ab6a3698c",
                 "shasum": ""
             },
             "require": {
@@ -354,9 +354,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.208.6"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.208.7"
             },
-            "time": "2021-12-20T19:17:52+00:00"
+            "time": "2021-12-21T19:16:39+00:00"
         },
         {
             "name": "awssat/laravel-visits",

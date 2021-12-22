@@ -29,6 +29,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
+Route::get('/email/verify/{id}', [AuthController::class, 'verifyEmail'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
+Route::post('/email/verify/resend', [AuthController::class, 'verifyEmail'])
+    ->middleware(['auth:api', 'throttle:6,1'])
+    ->name('verification.send');
+
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/social-login', [AuthController::class, 'socialiteLogin']);

@@ -3,19 +3,28 @@
 namespace App\Notifications;
 
 use Carbon\Carbon;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\URL;
 
 class VerifyEmail extends Notification
 {
-    protected function verificationUrl($notifiable): string
+    public function via($notifiable)
+    {
+        return ['mail'];
+    }
+
+    public function toMail($notifiable): MailMessage
     {
         $url = URL::temporarySignedRoute(
             'verification.verify',
-            Carbon::now()->addMinutes(60),
-            ['user' => $notifiable->id]
+            Carbon::now()->addDays(1),
+            ['id' => Crypt::encryptString($notifiable->id)]
         );
-
-        return str_replace('/api', '', $url);
+        return (new MailMessage())
+            ->subject('Verify Email Address')
+            ->line('Click the button below to verify your email address.')
+            ->action('Verify Email Address', $url);
     }
 }

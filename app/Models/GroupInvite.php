@@ -60,6 +60,8 @@ class GroupInvite extends Model
     use Filterable;
     use SoftDeletes;
 
+    protected $table = 'group_invite';
+
     public const TYPE_INVITE = 'INVITE';
     public const TYPE_REQUEST = 'REQUEST';
 

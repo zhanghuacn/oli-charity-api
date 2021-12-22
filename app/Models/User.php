@@ -9,6 +9,7 @@ use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
 use Database\Factories\UserFactory;
 use Eloquent;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -151,7 +152,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read Collection|\App\Models\Sponsor[] $sponsors
  * @property-read int|null $sponsors_count
  */
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;

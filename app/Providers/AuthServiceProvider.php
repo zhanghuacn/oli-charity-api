@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Activity;
+use App\Policies\ActivityPolicy;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 
@@ -14,7 +18,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        Activity::class => ActivityPolicy::class,
     ];
 
     /**
@@ -33,9 +37,5 @@ class AuthServiceProvider extends ServiceProvider
             'place-charity' => 'Check place charity',
             'place-sponsor' => 'Check place sponsor',
         ]);
-
-        Gate::before(function ($user, $ability) {
-            return $user->hasRole('super-admin') ? true : null;
-        });
     }
 }

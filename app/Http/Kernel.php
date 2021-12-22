@@ -94,7 +94,7 @@ class Kernel extends HttpKernel
         'verified' => EnsureEmailIsVerified::class,
         'scopes' => CheckScopes::class,
         'scope' => CheckForAnyScope::class,
-        'charity' => TeamCharityPermission::class,
-        'sponsor' => TeamSponsorPermission::class,
+        'check.charity' => TeamCharityPermission::class,
+        'check.sponsor' => TeamSponsorPermission::class,
     ];
 }

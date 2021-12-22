@@ -7,7 +7,7 @@ use App\Models\Activity;
 use App\Models\Group;
 use App\Models\GroupInvite;
 use App\Models\Ticket;
-use App\Notifications\InviteToTeam;
+use App\Notifications\InvitePaid;
 use App\Services\TeamService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -138,8 +138,8 @@ class GroupController extends Controller
         ]);
         $ticket = Ticket::whereCode($request->ticket)->first();
         if (!$this->teamService->hasPendingInvite($ticket, $activity->ticket()->group)) {
-            $this->teamService->inviteToTeam($ticket, $activity->ticket()->group, function (GroupInvite $invite) {
-                $invite->ticket->user->notify(new InviteToTeam($invite));
+            $this->teamService->inviteToGroup($ticket, $activity->ticket()->group, function (GroupInvite $invite) {
+                $invite->ticket->user->notify(new InvitePaid($invite));
             });
         }
         return Response::success();

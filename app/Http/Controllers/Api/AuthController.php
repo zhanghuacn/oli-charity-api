@@ -5,11 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Oauth;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -23,6 +29,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
         $user = User::create($request->all());
+        $user->sendEmailVerificationNotification();
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
@@ -37,6 +44,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
+        $user->sendEmailVerificationNotification();
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
@@ -105,5 +113,24 @@ class AuthController extends Controller
         ]);
         $user->refresh();
         return Response::success($user->createPlaceToken('api', ['place-app']));
+    }
+
+    public function verifyEmail(Request $request)
+    {
+        $user = User::find(Crypt::decryptString($request->route('id')));
+        if ($user->hasVerifiedEmail()) {
+            return 'Mailbox verified';
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+        return 'verified';
+    }
+
+    public function resend(Request $request): JsonResponse|JsonResource
+    {
+        $request->user()->sendEmailVerificationNotification();
+        return Response::success();
     }
 }

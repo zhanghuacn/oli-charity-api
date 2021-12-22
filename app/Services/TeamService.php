@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TeamService
 {
-    public function inviteToTeam(Ticket $ticket, Group $team, callable $success = null): GroupInvite
+    public function inviteToGroup(Ticket $ticket, Group $team, callable $success = null): GroupInvite
     {
         $invite = new GroupInvite();
         $invite->type = GroupInvite::TYPE_INVITE;
