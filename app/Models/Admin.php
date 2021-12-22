@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\ModelFilters\AdminFilter;
 use App\Traits\HasExtendsProperty;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * App\Models\Admin
@@ -55,14 +58,30 @@ use Laravel\Passport\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|Admin whereId($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Client[] $clients
  * @property-read int|null $clients_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Permission[] $permissions
+ * @property-read int|null $permissions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Role[] $roles
+ * @property-read int|null $roles_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Admin filter(array $input = [], $filter = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Admin paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Admin permission($permissions)
+ * @method static \Illuminate\Database\Eloquent\Builder|Admin role($roles, $guard = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Admin simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Admin whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Admin whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Admin whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Admin extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
-    use Notifiable;
-    use SoftDeletes;
     use HasExtendsProperty;
+    use HasRoles;
+    use Notifiable;
+    use Filterable;
+    use SoftDeletes;
+
+    protected $guard_name = 'admin';
 
     public const SAFE_FIELDS = [
         'id',
@@ -97,6 +116,8 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'extends',
+        'deleted_at',
     ];
 
     /**
@@ -106,6 +127,7 @@ class Admin extends Authenticatable
      */
     protected $casts = [
         'extends' => 'array',
+        'last_active_at' => 'datetime'
     ];
 
     #[ArrayShape(['token_type' => "string", 'token' => "string", 'admin' => "array"])]
@@ -120,6 +142,11 @@ class Admin extends Authenticatable
                 'avatar' => $this->avatar,
             ]
         ];
+    }
+
+    public function modelFilter(): ?string
+    {
+        return $this->provideFilter(AdminFilter::class);
     }
 
     protected static function booted()

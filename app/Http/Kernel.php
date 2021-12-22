@@ -7,8 +7,9 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
-use App\Http\Middleware\TeamCharityPermission;
-use App\Http\Middleware\TeamSponsorPermission;
+use App\Http\Middleware\UseAdminGuard;
+use App\Http\Middleware\UseCharityGuard;
+use App\Http\Middleware\UseSponsorGuard;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -94,7 +95,8 @@ class Kernel extends HttpKernel
         'verified' => EnsureEmailIsVerified::class,
         'scopes' => CheckScopes::class,
         'scope' => CheckForAnyScope::class,
-        'check.charity' => TeamCharityPermission::class,
-        'check.sponsor' => TeamSponsorPermission::class,
+        'charity' => UseCharityGuard::class,
+        'sponsor' => UseSponsorGuard::class,
+        'admin' => UseAdminGuard::class,
     ];
 }

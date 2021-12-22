@@ -53,6 +53,8 @@ use Illuminate\Support\Str;
  * @property int $inviter_id 邀请人
  * @property-read \App\Models\User $inviter
  * @method static \Illuminate\Database\Eloquent\Builder|GroupInvite whereInviterId($value)
+ * @property int $group_id 团队
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupInvite whereGroupId($value)
  */
 class GroupInvite extends Model
 {
