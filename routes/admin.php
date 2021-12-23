@@ -29,7 +29,7 @@ Route::middleware(['auth:admin', 'scopes:place-admin', 'admin'])->group(function
         'roles' => RoleController::class,
         'permissions' => PermissionController::class,
         'news' => NewsController::class,
-    ]);
+    ], ['as' => 'admin']);
 
     Route::get('/charities', [CharityController::class, 'index']);
     Route::get('/charities/{charity}', [CharityController::class, 'show']);

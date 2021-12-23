@@ -42,7 +42,6 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        $user->sendEmailVerificationNotification();
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 

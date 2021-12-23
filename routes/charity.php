@@ -28,5 +28,5 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
         'roles' => RoleController::class,
         'permissions' => PermissionController::class,
         'news' => NewsController::class,
-    ]);
+    ], ['as' => 'charity']);
 });
