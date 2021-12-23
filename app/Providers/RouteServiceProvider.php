@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use function base_path;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -44,15 +45,15 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::prefix('charity/v1')
                 ->middleware('api')
-                ->group(\base_path('routes/charity.php'));
+                ->group(base_path('routes/charity.php'));
 
             Route::prefix('sponsor/v1')
                 ->middleware('api')
-                ->group(\base_path('routes/sponsor.php'));
+                ->group(base_path('routes/sponsor.php'));
 
             Route::prefix('admin/v1')
                 ->middleware('api')
-                ->group(\base_path('routes/admin.php'));
+                ->group(base_path('routes/admin.php'));
 
             Route::middleware('web')
                 ->namespace($this->namespace)

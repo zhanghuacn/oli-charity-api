@@ -4,22 +4,18 @@ environments:
   staging:
     database: charity
     scheduler: false
-    memory: 512
-    timeout: 20
+    memory: 1024
     cli-memory: 512
     runtime: 'php-8.1:al2'
     build:
       - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
-      - 'php artisan event:cache'
-      - 'php artisan config:cache'
       - 'npm install && npm run dev && rm -rf node_modules'
-    firewall:
-      rate-limit: 1000
-      bot-control:
-        - CategorySearchEngine
-        - CategorySocialMedia
-        - CategoryScrapingFramework
+#    firewall:
+#      rate-limit: 1000
+#      bot-control:
+#        - CategorySearchEngine
+#        - CategorySocialMedia
+#        - CategoryScrapingFramework
     deploy:
-      - 'php artisan migrate:reset'
       - 'php artisan migrate --force'
       - 'php artisan db:seed'
