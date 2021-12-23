@@ -20,6 +20,11 @@ class UcenterController extends Controller
 {
     public function notifications(Request $request): JsonResponse|JsonResource
     {
+        $request->validate([
+            'sort' => 'sometimes|string|in:ASC,DESC',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
         $data = Auth::user()->notifications()->simplePaginate($request->input('per_page', 15));
         return Response::success(new NotificationCollection($data));
     }
@@ -70,6 +75,8 @@ class UcenterController extends Controller
     {
         $request->validate([
             'filter' => 'sometimes|in:CURRENT,UPCOMING,PAST',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
         $request->merge(['user_id' => Auth::id()]);
         $activities = Activity::filter($request->all())->simplePaginate($request->input('per_page', 15));
@@ -98,6 +105,10 @@ class UcenterController extends Controller
 
     public function followCharities(Request $request): JsonResponse|JsonResource
     {
+        $request->validate([
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
         $data = Auth::user()->favorites()->withType(Charity::class)
             ->with('favoriteable')->simplePaginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
@@ -108,6 +119,10 @@ class UcenterController extends Controller
 
     public function followActivities(Request $request): JsonResponse|JsonResource
     {
+        $request->validate([
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
         $data = Auth::user()->favorites()->withType(Activity::class)
             ->with('favoriteable')->simplePaginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
@@ -118,6 +133,10 @@ class UcenterController extends Controller
 
     public function followUsers(Request $request): JsonResponse|JsonResource
     {
+        $request->validate([
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
         $data = Auth::user()->followings()->simplePaginate($request->input('per_page', 15));
         return Response::success(new UserCollection($data));
     }

@@ -11,17 +11,26 @@ environments:
             - 'npm ci && npm run prod && rm -rf node_modules'
     staging:
         database: oli-charity
+        octane: true
+        octane-database-session-persist: true
+        octane-database-session-ttl: 10
         scheduler: false
         memory: 512
         cli-memory: 512
         runtime: 'php-8.1:al2'
         build:
-            - 'composer install --optimize-autoloader --no-dev'
+            - 'composer install --optimize-autoloader'
             - 'php artisan config:cache'
             - 'php artisan route:cache'
             - 'php artisan event:cache'
             - 'php artisan view:cache'
             - 'npm ci && npm run dev && rm -rf node_modules'
+        firewall:
+          rate-limit: 1000
+          bot-control:
+            - CategorySearchEngine
+            - CategorySocialMedia
+            - CategoryScrapingFramework
         deploy:
           - 'php artisan migrate --force'
 

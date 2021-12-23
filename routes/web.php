@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return \Jiannei\Response\Laravel\Support\Facades\Response::success();
-});
+Route::get('/', [HomeController::class, 'index']);

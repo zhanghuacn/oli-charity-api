@@ -125,7 +125,9 @@ class Charity extends Model
     ];
 
     // 默认缓存信息
-    public const DEFAULT_CACHE = [];
+    public const DEFAULT_CACHE = [
+        'amount' => 0,
+    ];
 
     protected $fillable = [
         'name',

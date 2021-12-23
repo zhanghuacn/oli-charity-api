@@ -17,6 +17,7 @@
         "kra8/laravel-snowflake": "^2.0",
         "laravel/cashier": "^13.6",
         "laravel/framework": "^8.65",
+        "laravel/octane": "^1.1",
         "laravel/passport": "^10.2",
         "laravel/scout": "^9.3",
         "laravel/socialite": "^5.2",
@@ -29,6 +30,7 @@
         "overtrue/laravel-passport-cache-token": "^2.2",
         "predis/predis": "^1.1",
         "spatie/laravel-permission": "^5.4",
+        "spiral/roadrunner": "^2.6",
         "stripe/stripe-php": "^7.107",
         "tucker-eric/eloquentfilter": "^3.0"
     },

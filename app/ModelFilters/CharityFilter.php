@@ -13,4 +13,23 @@ class CharityFilter extends ModelFilter
      * @var array
      */
     public $relations = [];
+
+    public function sort($value)
+    {
+        switch ($value) {
+            case 'AMOUNT':
+                $this->orderBy('cache->amount', 'desc');
+                break;
+            default:
+                $this->orderBy('created_at', 'desc')->orderBy('id', 'desc');
+                break;
+        }
+    }
+
+    public function setup()
+    {
+        if (!$this->input('sort')) {
+            $this->push('sort', 'default');
+        }
+    }
 }

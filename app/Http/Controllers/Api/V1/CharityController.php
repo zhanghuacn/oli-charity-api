@@ -29,7 +29,12 @@ class CharityController extends Controller
 
     public function index(Request $request): JsonResponse|JsonResource
     {
-        $paginate = Charity::orderByDesc('id')->simplePaginate($request->input('per_page', 15));
+        $request->validate([
+            'sort' => 'sometimes|string|in:AMOUNT,TIME',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
+        $paginate = Charity::filter($request->all())->simplePaginate($request->input('per_page', 15));
         return Response::success(new CharityCollection($paginate));
     }
 
