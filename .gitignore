@@ -108,3 +108,5 @@ cghooks.lock
 /.rnd
 /docker-compose.yml
 /.env
+rr
+.rr.yaml
