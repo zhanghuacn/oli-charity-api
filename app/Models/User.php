@@ -7,8 +7,10 @@ use App\Notifications\VerifyEmail;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
+use App\Traits\ModelTrait;
 use Database\Factories\UserFactory;
 use Eloquent;
+use EloquentFilter\Filterable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -151,6 +153,11 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder|User role($roles, $guard = null)
  * @property-read Collection|\App\Models\Sponsor[] $sponsors
  * @property-read int|null $sponsors_count
+ * @method static \Illuminate\Database\Eloquent\Builder|User paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|User simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereLike(string $column, string $value, string $boolean = 'and')
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -161,11 +168,13 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasCacheProperty;
     use HasExtendsProperty;
     use Notifiable;
-    use SoftDeletes;
     use Favoriter;
     use Followable;
     use Billable;
     use Searchable;
+    use Filterable;
+    use ModelTrait;
+    use SoftDeletes;
 
     public const GENDER_UNKNOWN = 'UNKNOWN';
     public const GENDER_MALE = 'MALE';

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\ModelFilters\OrderFilter;
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
@@ -103,6 +104,7 @@ class Order extends Model
     use HasFactory;
     use Filterable;
     use HasExtendsProperty;
+    use ModelTrait;
     use SoftDeletes;
 
     public const TYPE_CHARITY = 'CHARITY';
@@ -169,10 +171,5 @@ class Order extends Model
                 $order->order_sn = $order->order_sn ?? app('Kra8\Snowflake\Snowflake')->next();
             }
         );
-    }
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(OrderFilter::class);
     }
 }

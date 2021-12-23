@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
+use App\Traits\ModelTrait;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,13 +55,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @mixin \Eloquent
  * @property \Illuminate\Support\Fluent $images 图片
  * @method static \Illuminate\Database\Eloquent\Builder|Lottery whereImages($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Lottery paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Lottery simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Lottery whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Lottery whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Lottery whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Lottery extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use HasImagesProperty;
     use HasExtendsProperty;
+    use Filterable;
+    use ModelTrait;
+    use SoftDeletes;
 
     protected $fillable = [
         'charity_id',

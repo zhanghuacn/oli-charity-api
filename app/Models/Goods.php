@@ -6,6 +6,7 @@ use App\ModelFilters\GoodsFilter;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
+use App\Traits\ModelTrait;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Collection;
@@ -84,6 +85,7 @@ class Goods extends Model
     use HasImagesProperty;
     use HasCacheProperty;
     use HasExtendsProperty;
+    use ModelTrait;
     use SoftDeletes;
 
     public const TYPE_LOTTERY = 'LOTTERY';
@@ -122,10 +124,5 @@ class Goods extends Model
     public function orders(): MorphMany
     {
         return $this->morphMany(Order::class, 'orderable');
-    }
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(GoodsFilter::class);
     }
 }

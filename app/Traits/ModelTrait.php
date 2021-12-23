@@ -4,9 +4,9 @@ namespace App\Traits;
 
 trait ModelTrait
 {
-    protected function modelFilter()
+    protected function modelFilter(): string
     {
         return config('eloquentfilter.namespace', 'App\\ModelFilters\\')
-            . str_replace(__NAMESPACE__ . '\\', '', get_class($this)) . 'Filter';
+            . str_replace('App\Models' . '\\', '', get_class($this)) . 'Filter';
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
@@ -9,14 +9,15 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Hash;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use function abort;
 
 class AuthController extends Controller
 {
     public function login(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'username' => 'required',
-            'password' => 'required',
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
         $admin = Admin::where('username', $request['username'])->orWhere('email', $request['username'])->first();

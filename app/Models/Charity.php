@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\ModelFilters\ActivityFilter;
+use App\ModelFilters\CharityFilter;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
 use Eloquent;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -93,6 +97,11 @@ use Spatie\Permission\Models\Role;
  * @property-read int|null $favoriters_count
  * @property-read Collection|\Overtrue\LaravelFavorite\Favorite[] $favorites
  * @property-read int|null $favorites_count
+ * @method static Builder|Charity paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static Builder|Charity simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static Builder|Charity whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static Builder|Charity whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static Builder|Charity whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Charity extends Model
 {
@@ -101,6 +110,8 @@ class Charity extends Model
     use HasCacheProperty;
     use HasExtendsProperty;
     use Favoriteable;
+    use Filterable;
+    use ModelTrait;
     use Searchable;
 
     public const STATUS_WAIT = 'WAIT';

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\ModelFilters\AdminFilter;
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -79,9 +80,10 @@ class Admin extends Authenticatable
     use HasRoles;
     use Notifiable;
     use Filterable;
+    use ModelTrait;
     use SoftDeletes;
 
-    protected $guard_name = 'admin';
+    protected string $guard_name = 'admin';
 
     public const SAFE_FIELDS = [
         'id',
@@ -144,9 +146,9 @@ class Admin extends Authenticatable
         ];
     }
 
-    public function modelFilter(): ?string
+    public function news()
     {
-        return $this->provideFilter(AdminFilter::class);
+        return $this->morphOne(News::class, 'newsable');
     }
 
     protected static function booted()

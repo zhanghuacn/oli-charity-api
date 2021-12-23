@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\ModelFilters\NewsFilter;
+use App\Traits\ModelTrait;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
@@ -68,6 +69,7 @@ class News extends Model
     use Filterable;
     use SoftDeletes;
     use Searchable;
+    use ModelTrait;
 
     protected $fillable = [
         'title',
@@ -81,6 +83,12 @@ class News extends Model
         'sort',
     ];
 
+    protected $hidden = [
+        'newsable_type',
+        'newsable_id',
+        'deleted_at',
+    ];
+
     public function newsable(): MorphTo
     {
         return $this->morphTo();
@@ -89,11 +97,6 @@ class News extends Model
     public function visits(): Relation
     {
         return visits($this)->relation();
-    }
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(NewsFilter::class);
     }
 
     public function searchableAs(): string

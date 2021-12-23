@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Collection;
@@ -67,6 +68,7 @@ class Group extends Model
     use HasFactory;
     use SoftDeletes;
     use Filterable;
+    use ModelTrait;
     use HasExtendsProperty;
 
     protected $fillable = [

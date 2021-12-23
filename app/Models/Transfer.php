@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\ModelFilters\TransferFilter;
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -69,9 +70,10 @@ class Transfer extends Model
 {
     use HasFactory;
     use HasFactory;
+    use HasExtendsProperty;
     use SoftDeletes;
     use Filterable;
-    use HasExtendsProperty;
+    use ModelTrait;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
@@ -120,11 +122,6 @@ class Transfer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(TransferFilter::class);
     }
 
     protected static function booted()

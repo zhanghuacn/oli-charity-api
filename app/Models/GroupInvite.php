@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\ModelTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -60,6 +61,7 @@ class GroupInvite extends Model
 {
     use HasFactory;
     use Filterable;
+    use ModelTrait;
     use SoftDeletes;
 
     protected $table = 'group_invite';

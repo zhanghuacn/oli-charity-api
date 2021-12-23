@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
@@ -10,6 +10,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use function auth;
+use function getPermissionsTeamId;
 
 class RoleController extends Controller
 {

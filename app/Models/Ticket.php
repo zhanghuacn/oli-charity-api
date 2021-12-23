@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\ModelFilters\TicketFilter;
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -78,6 +79,7 @@ class Ticket extends Model
     use HasFactory;
     use SoftDeletes;
     use Filterable;
+    use ModelTrait;
     use HasExtendsProperty;
 
     public const TYPE_DONOR = 'DONOR';
@@ -201,10 +203,5 @@ class Ticket extends Model
                 $ticket->code = $ticket->code ?? Str::uuid();
             }
         );
-    }
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(TicketFilter::class);
     }
 }

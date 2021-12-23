@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
+use App\Traits\ModelTrait;
 use Eloquent;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -59,13 +61,20 @@ use function json_decode;
  * @property-read \App\Models\Goods $goods
  * @method static \Illuminate\Database\Eloquent\Builder|Prize whereGoodsId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Prize whereLotteryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Prize extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use HasImagesProperty;
     use HasExtendsProperty;
+    use Filterable;
+    use ModelTrait;
+    use SoftDeletes;
 
     protected $fillable = [
         'charity_id',

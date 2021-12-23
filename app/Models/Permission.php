@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\ModelFilters\PermissionFilter;
+use App\Traits\ModelTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -41,10 +42,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Permission extends \Spatie\Permission\Models\Permission
 {
     use HasFactory;
+    use ModelTrait;
     use Filterable;
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(PermissionFilter::class);
-    }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\ModelFilters\RoleFilter;
+use App\Traits\ModelTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -41,15 +42,11 @@ class Role extends \Spatie\Permission\Models\Role
 {
     use HasFactory;
     use Filterable;
+    use ModelTrait;
 
     protected $hidden = [
         'guard_name',
         'team_id',
         'pivot',
     ];
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(RoleFilter::class);
-    }
 }

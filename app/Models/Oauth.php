@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,12 +38,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Query\Builder|Oauth onlyTrashed()
  * @method static \Illuminate\Database\Query\Builder|Oauth withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Oauth withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Oauth paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Oauth simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Oauth whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Oauth extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use HasExtendsProperty;
+    use Filterable;
+    use ModelTrait;
+    use SoftDeletes;
 
     protected $fillable = [
         'user_id',

@@ -7,6 +7,7 @@ use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
 use App\Traits\HasSettingsProperty;
+use App\Traits\ModelTrait;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
@@ -125,6 +126,7 @@ class Activity extends Model
     use HasCacheProperty;
     use HasExtendsProperty;
     use Favoriteable;
+    use ModelTrait;
     use Searchable;
 
     public const STATUS_WAIT = 'WAIT';
@@ -251,11 +253,6 @@ class Activity extends Model
     public function visits(): Relation
     {
         return visits($this)->relation();
-    }
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(ActivityFilter::class);
     }
 
     public function searchableAs(): string

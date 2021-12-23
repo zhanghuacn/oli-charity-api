@@ -1,9 +1,12 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\PermissionController;
-use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\V1\ActivityController;
+use App\Http\Controllers\Admin\V1\AdminController;
+use App\Http\Controllers\Admin\V1\AuthController;
+use App\Http\Controllers\Admin\V1\CharityController;
+use App\Http\Controllers\Admin\V1\NewsController;
+use App\Http\Controllers\Admin\V1\PermissionController;
+use App\Http\Controllers\Admin\V1\RoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,5 +28,14 @@ Route::middleware(['auth:admin', 'scopes:place-admin', 'admin'])->group(function
         'admins' => AdminController::class,
         'roles' => RoleController::class,
         'permissions' => PermissionController::class,
+        'news' => NewsController::class,
     ]);
+
+    Route::get('/charities', [CharityController::class, 'index']);
+    Route::get('/charities/{charity}', [CharityController::class, 'show']);
+    Route::put('/charities/{charity}/audit', [CharityController::class, 'audit']);
+
+    Route::get('/activities', [ActivityController::class, 'index']);
+    Route::get('/activities/{activity}', [ActivityController::class, 'show']);
+    Route::put('/activities/{activity}/audit', [ActivityController::class, 'audit']);
 });

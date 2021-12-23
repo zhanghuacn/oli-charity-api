@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -42,11 +44,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|Apply whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Apply whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Apply whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Apply paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Apply simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Apply whereBeginsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Apply whereEndsWith(string $column, string $value, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Apply whereLike(string $column, string $value, string $boolean = 'and')
  */
 class Apply extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use Filterable;
+    use ModelTrait;
     use HasExtendsProperty;
 
     public const STATUS_WAIT = 'WAIT';

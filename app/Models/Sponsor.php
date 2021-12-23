@@ -5,6 +5,7 @@ namespace App\Models;
 use App\ModelFilters\SponsorFilter;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
+use App\Traits\ModelTrait;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -92,6 +93,7 @@ class Sponsor extends Model
     use HasExtendsProperty;
     use Favoriteable;
     use Filterable;
+    use ModelTrait;
     use Searchable;
 
     public const STATUS_WAIT = 'WAIT';
@@ -151,11 +153,6 @@ class Sponsor extends Model
     public function visits(): Relation
     {
         return visits($this)->relation();
-    }
-
-    public function modelFilter(): ?string
-    {
-        return $this->provideFilter(SponsorFilter::class);
     }
 
     public function searchableAs(): string
