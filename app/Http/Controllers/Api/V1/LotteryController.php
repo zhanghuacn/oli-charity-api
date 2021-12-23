@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\LotteryCollection;
@@ -8,11 +8,10 @@ use App\Http\Resources\Api\LotteryResource;
 use App\Models\Activity;
 use App\Models\Lottery;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Jiannei\Response\Laravel\Support\Facades\Response;
-use function React\Promise\map;
+use function collect;
 
 class LotteryController extends Controller
 {

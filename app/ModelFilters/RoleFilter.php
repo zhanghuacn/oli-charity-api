@@ -20,10 +20,16 @@ class RoleFilter extends ModelFilter
         return $this->where('guard_name', '=', $guard);
     }
 
+    public function team($team): RoleFilter
+    {
+        return $this->where('team_id', '=', $team);
+    }
+
     public function setup()
     {
         if (Auth::check()) {
             $this->push('guard', Auth::getDefaultDriver());
+            $this->push('team', getPermissionsTeamId());
         }
     }
 }

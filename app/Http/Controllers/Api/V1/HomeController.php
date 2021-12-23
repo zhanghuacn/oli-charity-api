@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
@@ -10,16 +10,15 @@ use App\Http\Resources\Api\SponsorCollection;
 use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\Charity;
-use App\Models\GroupInvite;
 use App\Models\News;
 use App\Models\Sponsor;
 use App\Models\User;
-use App\Notifications\InvitePaid;
 use App\Search\Search;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use function collect;
 
 class HomeController extends Controller
 {

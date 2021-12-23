@@ -40,6 +40,14 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+        'charity' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
+        'sponsor' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
         'admin' => [
             'driver' => 'passport',
             'provider' => 'admins',
@@ -65,6 +73,16 @@ return [
 
     'providers' => [
         'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+
+        'charities' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+
+        'sponsors' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],

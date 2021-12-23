@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\Apply;
-use App\Models\Order;
 use App\Models\GroupInvite;
+use App\Models\Order;
 use App\Models\Ticket;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +17,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use function abort;
+use function abort_if;
+use function visits;
 
 class ActivityController extends Controller
 {

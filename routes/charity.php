@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\Charity\ActivityController;
-use App\Http\Controllers\Charity\AuthController;
+use App\Http\Controllers\Charity\V1\ActivityController;
+use App\Http\Controllers\Charity\V1\AuthController;
+use App\Http\Controllers\Charity\V1\NewsController;
+use App\Http\Controllers\Charity\V1\PermissionController;
+use App\Http\Controllers\Charity\V1\RoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,8 +20,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-Route::middleware(['auth:api', 'scopes:place-charity', 'charity'])->group(function () {
+Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
-    Route::apiResource('events', ActivityController::class);
+    Route::apiResources([
+        'events' => ActivityController::class,
+        'roles' => RoleController::class,
+        'permissions' => PermissionController::class,
+        'news' => NewsController::class,
+    ]);
 });

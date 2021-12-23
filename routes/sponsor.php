@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Sponsor\AuthController;
+use App\Http\Controllers\Sponsor\V1\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-Route::middleware(['auth:charity', 'scopes:place-sponsor', 'sponsor'])->group(function () {
+Route::middleware(['auth:sponsor', 'scopes:place-sponsor', 'sponsor'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 });

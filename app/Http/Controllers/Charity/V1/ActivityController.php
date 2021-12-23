@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Charity;
+namespace App\Http\Controllers\Charity\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;

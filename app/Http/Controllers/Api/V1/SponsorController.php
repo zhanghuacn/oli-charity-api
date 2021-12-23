@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
-use App\Http\Resources\Api\GoodsCollection;
 use App\Http\Resources\Api\SponsorCollection;
 use App\Http\Resources\Api\SponsorResource;
 use App\Models\Goods;
@@ -13,6 +12,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use function collect;
+use function visits;
 
 class SponsorController extends Controller
 {

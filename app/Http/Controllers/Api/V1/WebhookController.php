@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Order;
 use App\Models\Ticket;
@@ -9,9 +9,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
+use function abort;
 
 class WebhookController extends CashierController
 {

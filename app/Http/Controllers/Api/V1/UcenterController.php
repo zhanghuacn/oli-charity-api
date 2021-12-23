@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\CharityCollection;
 use App\Http\Resources\Api\NotificationCollection;
 use App\Http\Resources\Api\UserCollection;
-use App\Http\Resources\Api\UserResource;
 use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\Order;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -36,6 +34,7 @@ class UcenterController extends Controller
             'birthday' => 'sometimes|date',
             'name' => 'sometimes|string',
             'profile' => 'sometimes|string',
+            'backdrop' => 'sometimes|url',
         ]);
         $user = Auth::user();
         $user->update($request->only(['avatar', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));

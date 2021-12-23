@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\V1;
+namespace App\Http\Controllers\Charity\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;

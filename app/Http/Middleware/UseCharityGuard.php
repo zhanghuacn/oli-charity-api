@@ -12,7 +12,7 @@ class UseCharityGuard
     public function handle(Request $request, Closure $next)
     {
         if (!empty(auth()->user())) {
-            Auth::shouldUse('api');
+            Auth::shouldUse('charity');
             app(PermissionRegistrar::class)->setPermissionsTeamId(auth()->user()->getTeamIdFromCharity());
         }
         return $next($request);

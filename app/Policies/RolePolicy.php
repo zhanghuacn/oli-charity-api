@@ -11,27 +11,27 @@ class RolePolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(Admin $admin): bool
+    public function viewAny($model): bool
     {
         return true;
     }
 
-    public function create(Admin $admin): bool
+    public function create($model): bool
     {
         return true;
     }
 
-    public function view(Admin $admin, Role $role): bool
+    public function view($model, Role $role): bool
     {
         return Auth::getDefaultDriver() == $role->guard_name;
     }
 
-    public function update(Admin $admin, Role $role): bool
+    public function update($model, Role $role): bool
     {
         return Auth::getDefaultDriver() == $role->guard_name;
     }
 
-    public function delete(Admin $admin, Role $role): bool
+    public function delete($model, Role $role): bool
     {
         return Auth::getDefaultDriver() == $role->guard_name;
     }

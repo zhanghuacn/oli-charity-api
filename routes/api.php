@@ -1,19 +1,19 @@
 <?php
 
-use App\Http\Controllers\Api\ActivityController;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CharityController;
-use App\Http\Controllers\Api\GoodsController;
-use App\Http\Controllers\Api\HomeController;
-use App\Http\Controllers\Api\LotteryController;
-use App\Http\Controllers\Api\NewsController;
-use App\Http\Controllers\Api\SponsorController;
-use App\Http\Controllers\Api\GroupController;
-use App\Http\Controllers\Api\TicketController;
-use App\Http\Controllers\Api\TransferController;
-use App\Http\Controllers\Api\UcenterController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\WebhookController;
+use App\Http\Controllers\Api\V1\ActivityController;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CharityController;
+use App\Http\Controllers\Api\V1\GoodsController;
+use App\Http\Controllers\Api\V1\GroupController;
+use App\Http\Controllers\Api\V1\HomeController;
+use App\Http\Controllers\Api\V1\LotteryController;
+use App\Http\Controllers\Api\V1\NewsController;
+use App\Http\Controllers\Api\V1\SponsorController;
+use App\Http\Controllers\Api\V1\TicketController;
+use App\Http\Controllers\Api\V1\TransferController;
+use App\Http\Controllers\Api\V1\UcenterController;
+use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*

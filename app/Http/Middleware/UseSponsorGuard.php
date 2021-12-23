@@ -12,7 +12,7 @@ class UseSponsorGuard
     public function handle(Request $request, Closure $next)
     {
         if (!empty(auth()->user())) {
-            Auth::shouldUse('api');
+            Auth::shouldUse('sponsor');
             app(PermissionRegistrar::class)->setPermissionsTeamId(auth()->user()->getTeamIdFromSponsor());
         }
         return $next($request);
