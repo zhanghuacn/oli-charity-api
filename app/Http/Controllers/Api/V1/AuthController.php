@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
 use function abort;
@@ -24,7 +25,7 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
-            'password' => 'required',
+            'password' => ['required', Password::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
         $user = User::create($request->all());
         $user->sendEmailVerificationNotification();
@@ -34,8 +35,8 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'username' => 'required',
-            'password' => 'required',
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
         $user = User::where('username', $request['username'])->orWhere('email', $request['username'])->first();
@@ -55,7 +56,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'driver' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
-            'token' => 'required',
+            'token' => 'required|string',
         ]);
         $social_user = Socialite::driver($request['driver'])->userFromToken($request['token']);
         abort_if($social_user == null, 400, 'Invalid credentials');

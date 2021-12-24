@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Throwable;
 use function abort_if;
@@ -31,6 +32,7 @@ class GroupController extends Controller
 
     public function show(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $ticket = $activity->ticket();
         abort_if(empty($ticket->group_id), 422, 'Not joined any team');
         $ranks = $activity->tickets()
@@ -70,6 +72,7 @@ class GroupController extends Controller
 
     public function search(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $request->validate([
             'keyword' => 'required',
         ]);
@@ -95,6 +98,7 @@ class GroupController extends Controller
      */
     public function store(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $team = DB::transaction(function () use ($activity, $request) {
             $ticket = $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail();
             abort_if(!empty($ticket->group_id), 422, 'Joined the team');
@@ -122,6 +126,7 @@ class GroupController extends Controller
 
     public function update(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $ticket = $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail();
         abort_if(empty($ticket->group_id), 422, 'Not joined any team');
         $request->validate([
@@ -135,6 +140,7 @@ class GroupController extends Controller
 
     public function invite(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $request->validate([
             'ticket' => 'required|exists:tickets,code',
         ]);
@@ -149,6 +155,7 @@ class GroupController extends Controller
 
     public function acceptInvite(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $request->validate([
             'accept_token' => 'required',
         ]);
@@ -159,6 +166,7 @@ class GroupController extends Controller
 
     public function denyInvite(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $request->validate([
             'deny_token' => 'required',
         ]);
@@ -169,6 +177,7 @@ class GroupController extends Controller
 
     public function quit(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $ticket = $activity->ticket();
         $ticket->detachGroup($ticket->group_id);
         $ticket->update([

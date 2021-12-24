@@ -3,6 +3,9 @@
 namespace App\Policies;
 
 use App\Models\Activity;
+use App\Models\Apply;
+use App\Models\Group;
+use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -10,85 +13,30 @@ class ActivityPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Determine whether the user can view any models.
-     *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function viewAny(User $user)
+    public function apply(User $user, Activity $activity): bool
     {
-        return in_array(getPermissionsTeamId(), $user->charities->pluck('id')->toArray());
+        if ($activity->is_private == true) {
+            if ($activity->applies()->where(['user_id' => $user->id, 'status' => Apply::STATUS_PASSED])->exists()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
-    /**
-     * Determine whether the user can view the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Activity $activity
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function view(User $user, Activity $activity)
+    public function purchase(User $user, Activity $activity): bool
     {
-        //
+        return in_array($activity->id, $user->tickets->pluck('activity_id')->toArray());
     }
 
-    /**
-     * Determine whether the user can create models.
-     *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function create(User $user)
+    public function staff(User $user, Activity $activity): bool
     {
-        //
+        return $activity->tickets()->where(['user_id' => $user->id, 'type' => Ticket::TYPE_STAFF])->doesntExist();
     }
 
-    /**
-     * Determine whether the user can update the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Activity $activity
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function update(User $user, Activity $activity)
+    public function join(User $user, Group $group)
     {
-        //
-    }
 
-    /**
-     * Determine whether the user can delete the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Activity $activity
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function delete(User $user, Activity $activity)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Activity $activity
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore(User $user, Activity $activity)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Activity $activity
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, Activity $activity)
-    {
-        //
     }
 }

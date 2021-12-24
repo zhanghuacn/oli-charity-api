@@ -9,6 +9,7 @@ use App\Policies\ActivityPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\RolePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider
@@ -32,7 +33,9 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
+        Gate::define('check-ticket', [ActivityPolicy::class, 'purchase']);
+        Gate::define('check-apply', [ActivityPolicy::class, 'apply']);
+        Gate::define('check-staffs', [ActivityPolicy::class, 'apply']);
         Passport::routes();
         Passport::tokensCan([
             'place-app' => 'Check place app',

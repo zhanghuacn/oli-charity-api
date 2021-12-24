@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use function abort_if;
 
@@ -26,13 +27,13 @@ class GoodsController extends Controller
 
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
+        Gate::authorize('check-ticket', $activity);
         return Response::success(new GoodsCollection($activity->goods));
     }
 
     public function show(Activity $activity, Goods $goods): JsonResponse|JsonResource
     {
-        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
+        Gate::authorize('check-ticket', $activity);
         abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404);
         return Response::success(new GoodsResource($goods));
     }

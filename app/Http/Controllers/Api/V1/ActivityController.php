@@ -11,11 +11,13 @@ use App\Models\GroupInvite;
 use App\Models\Order;
 use App\Models\Ticket;
 use App\Services\OrderService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use function abort;
 use function abort_if;
@@ -83,9 +85,20 @@ class ActivityController extends Controller
         return Response::success(array_merge($activity->toArray(), $data));
     }
 
+    public function apply(Activity $activity): JsonResponse|JsonResource
+    {
+        abort_if(!$activity->is_private, 403, 'Permission denied');
+        $apply = $activity->applies()->firstOrCreate([
+            'charity_id' => $activity->charity_id,
+            'user_id' => Auth::id(),
+        ]);
+        abort_if($apply->status == Apply::STATUS_REFUSE, 403, 'Permission denied');
+        return Response::success();
+    }
+
     public function personRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
+        Gate::authorize('check-ticket', $activity);
         $ranks = $activity->tickets()->with('user')->orderByDesc('amount')->get()
             ->map(function ($item) {
                 return [
@@ -100,7 +113,7 @@ class ActivityController extends Controller
 
     public function tableRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
+        Gate::authorize('check-ticket', $activity);
         $ranks = $activity->tickets()->select('table_num', DB::raw('SUM(amount) as total_amount'))
             ->groupBy('table_num')->orderByDesc('total_amount')->get();
         return Response::success($ranks);
@@ -108,7 +121,7 @@ class ActivityController extends Controller
 
     public function teamRanks(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(!$activity->ticket()->exists, 403, 'Permission denied');
+        Gate::authorize('check-ticket', $activity);
         $ranks = $activity->tickets()->with('group')->whereNotNull('group_id')
             ->select('group_id', DB::raw('SUM(amount) as total_amount'))
             ->groupBy('group_id')->get()->map(function ($item) {
@@ -166,7 +179,7 @@ class ActivityController extends Controller
     {
         try {
             Auth::user()->unfavorite($activity);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
         return Response::success();

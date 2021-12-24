@@ -78,7 +78,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::put('/ucenter/privacy', [UcenterController::class, 'privacy']);
     Route::get('/ucenter/chart-history', [UcenterController::class, 'chart']);
 
-    Route::post('/events/{activity}/actions/apply', [TicketController::class, 'apply']);
+    Route::post('/events/{activity}/actions/apply', [ActivityController::class, 'apply']);
     Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);
     Route::post('/events/{activity}/actions/scan', [TicketController::class, 'scan']);
     Route::get('/events/{activity}/my-tickets', [TicketController::class, 'myTickets']);

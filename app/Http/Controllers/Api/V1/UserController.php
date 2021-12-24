@@ -84,12 +84,22 @@ class UserController extends Controller
         return Response::success($orders);
     }
 
+    /**
+     * 关注
+     * @param User $user
+     * @return JsonResponse|JsonResource
+     */
     public function follow(User $user): JsonResponse|JsonResource
     {
         Auth::user()->follow($user);
         return Response::success();
     }
 
+    /**
+     * 取消关注
+     * @param User $user
+     * @return JsonResponse|JsonResource
+     */
     public function unfollow(User $user): JsonResponse|JsonResource
     {
         Auth::user()->unfollow($user);

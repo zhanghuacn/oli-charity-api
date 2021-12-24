@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use function abort_if;
 
@@ -24,26 +25,9 @@ class TicketController extends Controller
         $this->orderService = $orderService;
     }
 
-    public function apply(Activity $activity): JsonResponse|JsonResource
-    {
-        abort_if(!$activity->is_private, 403, 'Permission denied');
-        $apply = $activity->applies()->firstOrCreate([
-            'charity_id' => $activity->charity_id,
-            'user_id' => Auth::id(),
-        ]);
-        abort_if($apply->status == Apply::STATUS_REFUSE, 403, 'Permission denied');
-        return Response::success();
-    }
-
     public function buyTicket(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if(
-            $activity->is_private &&
-            $activity->applies()->where(['user_id' => Auth::id(), 'status' => Apply::STATUS_PASSED])->doesntExist(),
-            403,
-            'Permission denied'
-        );
-//        abort_if($activity->currentTicket() != null, 500, 'Do not repeat purchase');
+        Gate::authorize('check-apply', $activity);
         $order = $this->orderService->tickets(Auth::user(), $activity);
         return Response::success([
             'order_sn' => $order->order_sn,
@@ -53,6 +37,7 @@ class TicketController extends Controller
 
     public function anonymous(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $request->validate([
             'enable' => 'required|boolean',
         ]);
@@ -62,7 +47,7 @@ class TicketController extends Controller
 
     public function scan(Activity $activity, Request $request): JsonResponse|JsonResource
     {
-        abort_if($activity->tickets()->where(['user_id' => Auth::id(), 'type' => Ticket::TYPE_STAFF])->doesntExist(), 403, 'Permission denied');
+        Gate::authorize('check-staff', $activity);
         $request->validate([
             'code' => 'required|exists:tickets,code',
         ]);
@@ -85,6 +70,7 @@ class TicketController extends Controller
 
     public function myTickets(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $ticket = $activity->ticket();
         return Response::success([
             'code' => $ticket->code,
@@ -95,6 +81,7 @@ class TicketController extends Controller
 
     public function guests(Activity $activity, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-staff', $activity);
         $request->validate([
             'filter' => 'sometimes|in:COMPLETED,INCOMPLETE',
             'name' => 'sometimes|string',
