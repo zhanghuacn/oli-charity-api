@@ -7,7 +7,7 @@ use App\Notifications\VerifyEmail;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use Database\Factories\UserFactory;
 use Eloquent;
 use EloquentFilter\Filterable;
@@ -173,7 +173,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use Billable;
     use Searchable;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
     use SoftDeletes;
 
     public const GENDER_UNKNOWN = 'UNKNOWN';

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -73,7 +73,7 @@ class Prize extends Model
     use HasImagesProperty;
     use HasExtendsProperty;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
     use SoftDeletes;
 
     protected $fillable = [

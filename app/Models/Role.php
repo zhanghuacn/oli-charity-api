@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\ModelFilters\RoleFilter;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -42,7 +42,7 @@ class Role extends \Spatie\Permission\Models\Role
 {
     use HasFactory;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
 
     protected $hidden = [
         'guard_name',

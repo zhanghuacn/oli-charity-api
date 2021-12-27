@@ -7,7 +7,7 @@ use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
 use App\Traits\HasSettingsProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
@@ -126,7 +126,7 @@ class Activity extends Model
     use HasCacheProperty;
     use HasExtendsProperty;
     use Favoriteable;
-    use ModelTrait;
+    use ModelFilter;
     use Searchable;
 
     public const STATUS_WAIT = 'WAIT';

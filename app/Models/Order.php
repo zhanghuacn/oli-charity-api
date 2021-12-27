@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\ModelFilters\OrderFilter;
 use App\Traits\HasExtendsProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
@@ -104,7 +104,7 @@ class Order extends Model
     use HasFactory;
     use Filterable;
     use HasExtendsProperty;
-    use ModelTrait;
+    use ModelFilter;
     use SoftDeletes;
 
     public const TYPE_CHARITY = 'CHARITY';

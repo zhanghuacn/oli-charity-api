@@ -6,7 +6,7 @@ use App\ModelFilters\GoodsFilter;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Collection;
@@ -85,7 +85,7 @@ class Goods extends Model
     use HasImagesProperty;
     use HasCacheProperty;
     use HasExtendsProperty;
-    use ModelTrait;
+    use ModelFilter;
     use SoftDeletes;
 
     public const TYPE_LOTTERY = 'LOTTERY';

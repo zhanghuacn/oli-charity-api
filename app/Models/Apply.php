@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,7 +55,7 @@ class Apply extends Model
     use HasFactory;
     use SoftDeletes;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
     use HasExtendsProperty;
 
     public const STATUS_WAIT = 'WAIT';

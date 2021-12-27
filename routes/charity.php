@@ -5,6 +5,7 @@ use App\Http\Controllers\Charity\V1\AuthController;
 use App\Http\Controllers\Charity\V1\NewsController;
 use App\Http\Controllers\Charity\V1\PermissionController;
 use App\Http\Controllers\Charity\V1\RoleController;
+use App\Http\Controllers\Charity\V1\StripeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,4 +30,8 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
         'permissions' => PermissionController::class,
         'news' => NewsController::class,
     ], ['as' => 'charity']);
+
+    Route::get('/stripe/board', [StripeController::class, 'board']);
+    Route::get('/stripe/returning', [StripeController::class, 'returning']);
+    Route::get('/stripe/refresh', [StripeController::class, 'refresh']);
 });

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\ModelFilters\NewsFilter;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
@@ -69,7 +69,7 @@ class News extends Model
     use Filterable;
     use SoftDeletes;
     use Searchable;
-    use ModelTrait;
+    use ModelFilter;
 
     protected $fillable = [
         'title',

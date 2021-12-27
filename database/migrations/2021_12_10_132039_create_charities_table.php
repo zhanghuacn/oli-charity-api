@@ -29,7 +29,7 @@ class CreateCharitiesTable extends Migration
             $table->string('mobile')->nullable()->comment('联系人座机');
             $table->string('email')->nullable()->comment('邮箱');
             $table->string('address')->nullable()->comment('地址');
-            $table->string('stripe_account')->nullable()->comment('stripe管理账号');
+            $table->string('stripe_account_id')->nullable()->comment('stripe管理账号');
             $table->boolean('is_visible')->default(true)->comment('是否可见');
             $table->json('extends')->nullable()->comment('扩展信息');
             $table->json('cache')->nullable()->comment('数据缓存');

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -67,7 +67,7 @@ class Lottery extends Model
     use HasImagesProperty;
     use HasExtendsProperty;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
     use SoftDeletes;
 
     protected $fillable = [

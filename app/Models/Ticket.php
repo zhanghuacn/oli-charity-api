@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\ModelFilters\TicketFilter;
 use App\Traits\HasExtendsProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -79,7 +79,7 @@ class Ticket extends Model
     use HasFactory;
     use SoftDeletes;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
     use HasExtendsProperty;
 
     public const TYPE_DONOR = 'DONOR';

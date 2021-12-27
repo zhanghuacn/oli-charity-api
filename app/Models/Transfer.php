@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\ModelFilters\TransferFilter;
 use App\Traits\HasExtendsProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -73,7 +73,7 @@ class Transfer extends Model
     use HasExtendsProperty;
     use SoftDeletes;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';

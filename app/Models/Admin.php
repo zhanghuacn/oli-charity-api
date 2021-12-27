@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\ModelFilters\AdminFilter;
 use App\Traits\HasExtendsProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -71,6 +71,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder|Admin whereBeginsWith(string $column, string $value, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder|Admin whereEndsWith(string $column, string $value, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder|Admin whereLike(string $column, string $value, string $boolean = 'and')
+ * @property-read \App\Models\News|null $news
  */
 class Admin extends Authenticatable
 {
@@ -80,7 +81,7 @@ class Admin extends Authenticatable
     use HasRoles;
     use Notifiable;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
     use SoftDeletes;
 
     protected string $guard_name = 'admin';

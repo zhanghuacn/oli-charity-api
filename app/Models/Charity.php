@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\ModelFilters\ActivityFilter;
-use App\ModelFilters\CharityFilter;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
-use App\Traits\ModelTrait;
+use App\Traits\ModelFilter;
+use App\Traits\StripeConnectAccount;
 use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,7 +19,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
-use Spatie\Permission\Models\Role;
 
 /**
  * App\Models\Charity
@@ -111,8 +109,9 @@ class Charity extends Model
     use HasExtendsProperty;
     use Favoriteable;
     use Filterable;
-    use ModelTrait;
+    use ModelFilter;
     use Searchable;
+    use StripeConnectAccount;
 
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
