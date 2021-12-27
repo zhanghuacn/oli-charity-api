@@ -100,8 +100,9 @@ class GroupController extends Controller
     {
         Gate::authorize('check-ticket', $activity);
         $team = DB::transaction(function () use ($activity, $request) {
-            $ticket = $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail();
-            abort_if(!empty($ticket->group_id), 422, 'Joined the team');
+            $ticket = $activity->ticket();
+            abort_if(!empty($ticket->group_id), 422, 'Joined The Group');
+            abort_if(GroupInvite::whereTicketId($ticket->id)->exists(), 422, 'Invitation In Progress');
             $request->validate([
                 'name' => 'required|string',
                 'description' => 'sometimes|string',
@@ -127,8 +128,8 @@ class GroupController extends Controller
     public function update(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
+        Gate::authorize('check-group', $activity);
         $ticket = $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail();
-        abort_if(empty($ticket->group_id), 422, 'Not joined any team');
         $request->validate([
             'name' => 'required|string',
             'description' => 'sometimes|string',
@@ -144,7 +145,7 @@ class GroupController extends Controller
         $request->validate([
             'ticket' => 'required|exists:tickets,code',
         ]);
-        $ticket = Ticket::whereCode($request->ticket)->first();
+        $ticket = Ticket::whereCode($request->get('ticket'))->first();
         if (!$this->teamService->hasPendingInvite($ticket, $activity->ticket()->group)) {
             $this->teamService->inviteToGroup($ticket, $activity->ticket()->group, function (GroupInvite $invite) {
                 $invite->ticket->user->notify(new InvitePaid($invite));
@@ -159,7 +160,7 @@ class GroupController extends Controller
         $request->validate([
             'accept_token' => 'required',
         ]);
-        $invite = GroupInvite::whereAcceptToken($request->accept_token)->firstOrFail();
+        $invite = GroupInvite::whereAcceptToken($request->get('accept_token'))->firstOrFail();
         $this->teamService->acceptInvite($invite);
         return Response::success();
     }
@@ -170,7 +171,7 @@ class GroupController extends Controller
         $request->validate([
             'deny_token' => 'required',
         ]);
-        $invite = GroupInvite::whereDenyToken($request->deny_token)->firstOrFail();
+        $invite = GroupInvite::whereDenyToken($request->get('deny_token'))->firstOrFail();
         $this->teamService->denyInvite($invite);
         return Response::success();
     }
@@ -178,11 +179,18 @@ class GroupController extends Controller
     public function quit(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $ticket = $activity->ticket();
-        $ticket->detachGroup($ticket->group_id);
-        $ticket->update([
-            'group_id' => null,
-        ]);
+        DB::transaction(function () use ($activity) {
+            $ticket = $activity->ticket();
+            if ($ticket->group->owner_id == $ticket->group_id) {
+                $owner = Group::whereId($ticket->group_id)->tickets()->where('id', '<>', $ticket->id)->first();
+                $ticket->group->owner_id = $owner->id;
+                $ticket->group->save();
+            }
+            $ticket->detachGroup($ticket->group_id);
+            $ticket->update([
+                'group_id' => null,
+            ]);
+        });
         return Response::success();
     }
 }

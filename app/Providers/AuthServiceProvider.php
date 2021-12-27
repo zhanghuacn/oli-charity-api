@@ -36,6 +36,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('check-ticket', [ActivityPolicy::class, 'purchase']);
         Gate::define('check-apply', [ActivityPolicy::class, 'apply']);
         Gate::define('check-staffs', [ActivityPolicy::class, 'apply']);
+        Gate::define('check-group', [ActivityPolicy::class, 'owner']);
         Passport::routes();
         Passport::tokensCan([
             'place-app' => 'Check place app',

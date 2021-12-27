@@ -22,7 +22,16 @@ class RoleController extends Controller
 
     public function index(Request $request): JsonResponse|JsonResource
     {
-        $roles = Role::filter($request->all())->simplePaginate($request->input('per_page', 15));
+        $roles = Role::with('permissions')->filter($request->all())
+            ->simplePaginate($request->input('per_page', 15));
+        $roles->getCollection()->transform(function (Role $role) {
+            return [
+                'id' => $role->id,
+                'name' => $role->name,
+                'permissions' => $role->permissions->pluck('name'),
+                'created_at' => $role->created_at,
+            ];
+        });
         return Response::success($roles);
     }
 

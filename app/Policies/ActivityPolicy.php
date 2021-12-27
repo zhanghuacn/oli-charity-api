@@ -35,8 +35,8 @@ class ActivityPolicy
         return $activity->tickets()->where(['user_id' => $user->id, 'type' => Ticket::TYPE_STAFF])->doesntExist();
     }
 
-    public function join(User $user, Group $group)
+    public function owner(User $user, Group $group): bool
     {
-
+        return $user->id == $group->owner_id;
     }
 }
