@@ -2,8 +2,10 @@
 
 namespace App\ModelFilters;
 
+use App\Models\Role;
 use EloquentFilter\ModelFilter;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Passport\Passport;
 
 class RoleFilter extends ModelFilter
 {
@@ -25,11 +27,25 @@ class RoleFilter extends ModelFilter
         return $this->where('team_id', '=', $team);
     }
 
+    public function name($name): RoleFilter
+    {
+        return $this->where('name', '=', $name);
+    }
+
     public function setup()
     {
         if (Auth::check()) {
             $this->push('guard', Auth::getDefaultDriver());
             $this->push('team', getPermissionsTeamId());
+            if (Passport::hasScope('place-charity')) {
+                $this->where('name', '<>', Role::ROLE_CHARITY_SUPER_ADMIN);
+            }
+            if (Passport::hasScope('place-sponsor')) {
+                $this->where('name', '<>', Role::ROLE_SPONSOR_SUPER_ADMIN);
+            }
+            if (Passport::hasScope('place-admin')) {
+                $this->where('name', '<>', Role::ROLE_ADMIN_SUPER_ADMIN);
+            }
         }
     }
 }

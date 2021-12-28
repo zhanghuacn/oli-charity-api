@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers\Charity\V1;
+
+use App\Http\Controllers\Controller;
+use App\Models\Activity;
+use App\Models\Charity;
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Jiannei\Response\Laravel\Support\Facades\Response;
+
+class HomeController extends Controller
+{
+    public function dashboard(): JsonResponse|JsonResource
+    {
+        $charity = Charity::findOrFail(getPermissionsTeamId());
+        $data = [
+            'events' => $this->events($charity),
+            'staffs' => $this->staffs($charity),
+            'followers' => $this->followers($charity),
+            'received' => $this->received(),
+            'sources' => $this->sources(),
+        ];
+        return Response::success($data);
+    }
+
+    private function received(): array
+    {
+        $received = Order::filter([
+            'charity_id' => getPermissionsTeamId(),
+            'payment_status' => Order::STATUS_PAID,
+        ])->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
+            ->groupBy('date')->pluck('total_amount', 'date')->toArray();
+        $total = 0;
+        for ($i = 1; $i <= 12; $i++) {
+            $total += array_key_exists($i, $received) ? $received[strval($i)] : 0;
+            $data['received'][$i] = $total;
+        }
+        return $data;
+    }
+
+    private function sources(): array
+    {
+        return Order::filter([
+            'charity_id' => getPermissionsTeamId(),
+            'payment_status' => Order::STATUS_PAID,
+        ])->selectRaw('type, sum(amount) as total_amount')
+            ->groupBy('type')->get()->toArray();
+    }
+
+
+    private function followers(Charity $charity): array|Collection
+    {
+        return $charity->favoriters->transform(function (User $user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'avatar' => $user->avatar,
+                'profile' => $user->profile,
+            ];
+        });
+    }
+
+    private function events(Charity $charity): array|Collection
+    {
+        return $charity->activities->transform(function (Activity $activity) {
+            return [
+                'id' => $activity->id,
+                'name' => $activity->name,
+                'description' => $activity->description,
+                'image' => collect($activity->images)->first(),
+                'location' => $activity->location,
+                'begin_time' => $activity->begin_time,
+                'end_time' => $activity->end_time,
+            ];
+        });
+    }
+
+    private function staffs(Charity $charity): Collection|array
+    {
+        return $charity->staffs->transform(function (User $user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'avatar' => $user->avatar,
+                'profile' => $user->profile,
+            ];
+        });
+    }
+}

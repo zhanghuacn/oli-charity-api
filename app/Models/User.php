@@ -252,7 +252,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'settings' => 'array',
         'is_visible' => 'bool',
         'birthday' => 'date',
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     protected $attributes = [

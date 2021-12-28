@@ -113,7 +113,7 @@ class AuthController extends Controller
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
-    public function verifyEmail(Request $request)
+    public function verifyEmail(Request $request): string
     {
         $user = User::find(Crypt::decryptString($request->route('id')));
         if ($user->hasVerifiedEmail()) {

@@ -96,6 +96,7 @@ class Sponsor extends Model
     use ModelFilter;
     use Searchable;
 
+    public const GUARD_NAME = 'sponsor';
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
     public const STATUS_REFUSE = 'REFUSE';

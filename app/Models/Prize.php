@@ -103,7 +103,7 @@ class Prize extends Model
         'images' => 'array',
         'winners' => 'array',
         'extends' => 'array',
-        'draw_time' => 'datetime',
+        'draw_time' => 'datetime:Y-m-d H:i:s',
     ];
 
     public function charity(): BelongsTo

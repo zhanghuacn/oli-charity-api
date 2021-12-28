@@ -86,6 +86,8 @@ class Admin extends Authenticatable
 
     protected string $guard_name = 'admin';
 
+    public const GUARD_NAME = 'admin';
+
     public const SAFE_FIELDS = [
         'id',
         'name',
@@ -130,7 +132,7 @@ class Admin extends Authenticatable
      */
     protected $casts = [
         'extends' => 'array',
-        'last_active_at' => 'datetime'
+        'last_active_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     #[ArrayShape(['token_type' => "string", 'token' => "string", 'admin' => "array"])]

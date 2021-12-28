@@ -3,11 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Charity;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 
 class CharitySeeder extends Seeder
 {
@@ -32,10 +31,12 @@ class CharitySeeder extends Seeder
             'phone' => '1311111111',
             'mobile' => '28766622',
             'email' => Str::random(10) . '@gmail.com',
-            'stripe_account' => 'acct_1Jyt5XHfJ1sl7zIL'
+            'stripe_account_id' => 'acct_1Jyt5XHfJ1sl7zIL'
         ]);
-        Role::updateOrCreate(['guard_name' => 'api', 'name' => 'super-admin', 'team_id' => 1]);
         setPermissionsTeamId($charity->id);
-        User::find(1)->assignRole('super-admin');
+        Role::updateOrCreate(['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_ADMIN]);
+        Role::updateOrCreate(['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_STAFF]);
+        $role = Role::updateOrCreate(['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_SUPER_ADMIN]);
+        User::find(1)->assignRole($role);
     }
 }

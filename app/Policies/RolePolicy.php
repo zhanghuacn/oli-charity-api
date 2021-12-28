@@ -33,6 +33,7 @@ class RolePolicy
 
     public function delete($model, Role $role): bool
     {
-        return Auth::getDefaultDriver() == $role->guard_name;
+        return Auth::getDefaultDriver() == $role->guard_name &&
+            $role->name != Role::ROLE_SUPER_ADMIN;
     }
 }

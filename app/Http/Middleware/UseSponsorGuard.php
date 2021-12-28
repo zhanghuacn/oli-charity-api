@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Sponsor;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,9 +12,9 @@ class UseSponsorGuard
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!empty(auth()->user())) {
-            Auth::shouldUse('sponsor');
-            app(PermissionRegistrar::class)->setPermissionsTeamId(auth()->user()->getTeamIdFromSponsor());
+        if (!empty(Auth::user())) {
+            Auth::shouldUse(Sponsor::GUARD_NAME);
+            app(PermissionRegistrar::class)->setPermissionsTeamId(Auth::user()->getTeamIdFromSponsor());
         }
         return $next($request);
     }

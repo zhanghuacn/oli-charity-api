@@ -96,7 +96,7 @@ class Transfer extends Model
     protected $casts = [
         'voucher' => 'array',
         'extends' => 'array',
-        'created_at' => 'datetime',
+        'created_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     protected $hidden = [

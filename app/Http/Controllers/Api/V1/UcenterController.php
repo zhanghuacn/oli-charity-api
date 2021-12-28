@@ -10,10 +10,14 @@ use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\URL;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class UcenterController extends Controller
@@ -139,5 +143,17 @@ class UcenterController extends Controller
         ]);
         $data = Auth::user()->followings()->simplePaginate($request->input('per_page', 15));
         return Response::success(new UserCollection($data));
+    }
+
+    public function charityToken(): JsonResponse|JsonResource
+    {
+        abort_if(!Auth::user()->has('charities')->exists(), 422, 'Joined Charity');
+        $data = [
+            'expires' => now()->addDays(),
+            'user_id' => Auth::id(),
+        ];
+        return Response::success([
+            'token' => Crypt::encryptString(json_encode($data)),
+        ]);
     }
 }

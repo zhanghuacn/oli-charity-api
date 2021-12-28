@@ -21,13 +21,13 @@ class StripeController extends Controller
         return $this->handleBoardingRedirect($request->all());
     }
 
-    public function returning(Request $request): JsonResponse|JsonResource
+    public function return(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
             'return_url' => 'required|url',
             'refresh_url' => 'required|url',
         ]);
-        return $this->handleBoardingRedirect($request->get('url'));
+        return $this->handleBoardingRedirect($request->all());
     }
 
     public function refresh(Request $request): JsonResponse|JsonResource
@@ -36,7 +36,7 @@ class StripeController extends Controller
             'return_url' => 'required|url',
             'refresh_url' => 'required|url',
         ]);
-        return $this->handleBoardingRedirect($request->get('url'));
+        return $this->handleBoardingRedirect($request->all());
     }
 
     private function handleBoardingRedirect(array $params): JsonResponse|JsonResource

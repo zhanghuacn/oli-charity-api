@@ -12,12 +12,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
+use Overtrue\LaravelFavorite\Favorite;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
 
 /**
@@ -86,20 +88,24 @@ use Overtrue\LaravelFavorite\Traits\Favoriteable;
  * @method static \Illuminate\Database\Query\Builder|Charity withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Charity withoutTrashed()
  * @property string $backdrop 背景图
- * @property-read Collection|\App\Models\Goods[] $goods
+ * @property-read Collection|Goods[] $goods
  * @property-read int|null $goods_count
- * @property-read Collection|\App\Models\Order[] $orders
+ * @property-read Collection|Order[] $orders
  * @property-read int|null $orders_count
  * @method static Builder|Charity whereBackdrop($value)
- * @property-read Collection|\App\Models\User[] $favoriters
+ * @property-read Collection|User[] $favoriters
  * @property-read int|null $favoriters_count
- * @property-read Collection|\Overtrue\LaravelFavorite\Favorite[] $favorites
+ * @property-read Collection|Favorite[] $favorites
  * @property-read int|null $favorites_count
  * @method static Builder|Charity paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
  * @method static Builder|Charity simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
  * @method static Builder|Charity whereBeginsWith(string $column, string $value, string $boolean = 'and')
  * @method static Builder|Charity whereEndsWith(string $column, string $value, string $boolean = 'and')
  * @method static Builder|Charity whereLike(string $column, string $value, string $boolean = 'and')
+ * @property string|null $stripe_account_id stripe管理账号
+ * @property-read Collection|\App\Models\User[] $staffs
+ * @property-read int|null $staffs_count
+ * @method static Builder|Charity whereStripeAccountId($value)
  */
 class Charity extends Model
 {
@@ -113,6 +119,7 @@ class Charity extends Model
     use Searchable;
     use StripeConnectAccount;
 
+    public const GUARD_NAME = 'charity';
     public const STATUS_WAIT = 'WAIT';
     public const STATUS_PASSED = 'PASSED';
     public const STATUS_REFUSE = 'REFUSE';
@@ -132,6 +139,7 @@ class Charity extends Model
         'name',
         'logo',
         'website',
+        'backdrop',
         'description',
         'introduce',
         'staff_num',
@@ -179,6 +187,11 @@ class Charity extends Model
     public function orders(): MorphMany
     {
         return $this->morphMany(Order::class, 'orderable');
+    }
+
+    public function staffs(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
     }
 
     protected static function booted()

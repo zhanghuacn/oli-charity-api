@@ -110,7 +110,7 @@ class Ticket extends Model
 
     protected $casts = [
         'extends' => 'array',
-        'verified_at' => 'datetime',
+        'verified_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     protected $attributes = [
