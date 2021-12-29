@@ -5,15 +5,60 @@ namespace App\Http\Controllers\Charity\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Charity;
+use App\Models\News;
 use App\Models\Order;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class HomeController extends Controller
 {
+    public function search(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'keyword' => 'required|string',
+        ]);
+        $data = [
+            'events' => Activity::filter($request->all())->limit(5)->get()
+                ->transform(function (Activity $activity) {
+                    return [
+                        'id' => $activity->id,
+                        'name' => $activity->name,
+                        'description' => $activity->description,
+                        'image' => collect($activity->images)->first(),
+                        'location' => $activity->location,
+                        'begin_time' => $activity->begin_time,
+                        'end_time' => $activity->end_time,
+                    ];
+                }),
+            'news' => News::filter($request->all())->limit(5)->get()
+                ->transform(function (News $news) {
+                    return [
+                        'id' => $news->id,
+                        'title' => $news->title,
+                        'image' => $news->thumb,
+                        'description' => $news->description,
+                    ];
+                }),
+            'staffs' => Charity::find(getPermissionsTeamId())->staffs()
+                ->where('name', 'like', $request->get('keyword') . '%')
+                ->orWhere('username', 'like', $request->get('keyword') . '%')
+                ->orWhere('email', 'like', $request->get('keyword') . '%')->limit(5)->get()->transform(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'avatar' => $user->avatar,
+                        'profile' => $user->profile,
+                    ];
+                }),
+        ];
+        return Response::success($data);
+    }
+
     public function dashboard(): JsonResponse|JsonResource
     {
         $charity = Charity::findOrFail(getPermissionsTeamId());

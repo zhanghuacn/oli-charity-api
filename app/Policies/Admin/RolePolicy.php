@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Policies;
+namespace App\Policies\Admin;
 
-use App\Models\Admin;
 use App\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +33,6 @@ class RolePolicy
     public function delete($model, Role $role): bool
     {
         return Auth::getDefaultDriver() == $role->guard_name &&
-            $role->name != Role::ROLE_SUPER_ADMIN;
+            $role->name != Role::ROLE_ADMIN_SUPER_ADMIN;
     }
 }

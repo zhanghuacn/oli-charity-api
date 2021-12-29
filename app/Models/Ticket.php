@@ -84,14 +84,10 @@ class Ticket extends Model
 
     public const TYPE_DONOR = 'DONOR';
     public const TYPE_STAFF = 'STAFF';
+    public const TYPE_HOST = 'HOST';
     public const TYPE_SPONSOR = 'SPONSOR';
 
-    public const ROLE_HOST = 'HOST';
-    public const ROLE_WORKER = 'WORKER';
-
-    public const DEFAULT_EXTENDS = [
-        'role' => '',
-    ];
+    public const DEFAULT_EXTENDS = [];
 
     protected $fillable = [
         'code',

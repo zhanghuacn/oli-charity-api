@@ -142,6 +142,8 @@ class Activity extends Model
     // 默认缓存信息
     public const DEFAULT_SETTINGS = [];
 
+    public const DEFAULT_IMAGES = [];
+
     public const DEFAULT_EXTENDS = [
         'specialty' => [],
         'timeline' => []
@@ -154,24 +156,19 @@ class Activity extends Model
     protected $fillable = [
         'charity_id',
         'name',
-        'logo',
-        'website',
         'description',
-        'introduce',
-        'staff_num',
-        'credentials',
-        'documents',
-        'contact',
-        'phone',
-        'mobile',
-        'email',
-        'address',
-        'stripe_account',
+        'content',
+        'location',
+        'begin_time',
+        'end_time',
+        'price',
+        'stocks',
         'is_visible',
         'is_private',
         'images',
         'settings',
         'extends',
+        'cache',
         'status',
         'remark',
     ];
@@ -181,11 +178,7 @@ class Activity extends Model
         'cache',
         'settings',
         'extends',
-        'status',
         'is_visible',
-        'remark',
-        'created_at',
-        'updated_at',
         'deleted_at',
     ];
 
@@ -222,9 +215,9 @@ class Activity extends Model
         return $this->hasMany(Lottery::class);
     }
 
-    public function goods(): BelongsToMany
+    public function goods(): HasMany
     {
-        return $this->belongsToMany(Goods::class);
+        return $this->hasMany(Goods::class);
     }
 
     public function orders(): MorphMany

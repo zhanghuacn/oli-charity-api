@@ -18,18 +18,17 @@ class GoodsSeeder extends Seeder
      */
     public function run()
     {
-        Goods::truncate();
-        Goods::create([
-            'type' => Goods::TYPE_BAZAARS,
-            'name' => Str::random(10),
-            'description' => Str::random(30),
-            'content' => Str::random(40),
-            'stock' => 50,
-            'price' => 500,
-            'status' => Goods::STATUS_ENABLE,
-            'images' => [],
-            'goodsable_type' => Sponsor::class,
-            'goodsable_id' => 1,
-        ]);
+//        Goods::truncate();
+//        Goods::create([
+//            'name' => Str::random(10),
+//            'description' => Str::random(30),
+//            'content' => Str::random(40),
+//            'stock' => 50,
+//            'price' => 500,
+//            'status' => Goods::STATUS_ENABLE,
+//            'images' => [],
+//            'goodsable_type' => Sponsor::class,
+//            'goodsable_id' => 1,
+//        ]);
     }
 }

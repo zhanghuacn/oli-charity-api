@@ -71,10 +71,12 @@ class AuthController extends Controller
                 $charity = Charity::create($request->except('token'));
                 $charity->staffs()->attach($user->id);
                 setPermissionsTeamId($charity->id);
-                $role = Role::create(['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_SUPER_ADMIN]);
-                Role::create(['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_ADMIN]);
-                Role::create(['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_STAFF]);
-                $user->assignRole($role);
+                Role::createMany([
+                    ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_SUPER_ADMIN],
+                    ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_ADMIN],
+                    ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_STAFF],
+                ]);
+                $user->assignRole(Role::ROLE_CHARITY_SUPER_ADMIN);
                 return $user;
             });
         } catch (Throwable $e) {

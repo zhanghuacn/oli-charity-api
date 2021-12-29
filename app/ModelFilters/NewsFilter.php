@@ -2,7 +2,10 @@
 
 namespace App\ModelFilters;
 
+use App\Models\News;
 use EloquentFilter\ModelFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Laravel\Passport\Passport;
 
 class NewsFilter extends ModelFilter
 {
@@ -12,7 +15,13 @@ class NewsFilter extends ModelFilter
      *
      * @var array
      */
-    public $relations = [];
+    public $relations = ['newsable'];
+
+    public function keyword($value): NewsFilter
+    {
+        return $this->where('title', 'like', $value . '%')
+            ->orWhere('description', 'like', $value . '%');
+    }
 
     public function sort($value)
     {
@@ -30,6 +39,11 @@ class NewsFilter extends ModelFilter
     {
         if (!$this->input('sort')) {
             $this->push('sort', 'default');
+        }
+        if (Passport::hasScope('place-charity')) {
+            $this->whereHasMorph('newsable', News::class, function (Builder $query) {
+                $query->where('id', '=', getPermissionsTeamId());
+            });
         }
     }
 }

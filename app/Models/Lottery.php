@@ -79,6 +79,8 @@ class Lottery extends Model
         'end_time',
         'standard_amount',
         'draw_time',
+        'images',
+        'extends',
     ];
 
     protected $hidden = [

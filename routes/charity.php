@@ -26,14 +26,20 @@ Route::post('/auth/register', [AuthController::class, 'register'])->name('charit
 Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
+    Route::get('/home/search', [HomeController::class, 'search']);
     Route::get('/home/dashboard', [HomeController::class, 'dashboard']);
 
     Route::apiResources([
-        'events' => ActivityController::class,
         'roles' => RoleController::class,
         'permissions' => PermissionController::class,
         'news' => NewsController::class,
     ], ['as' => 'charity']);
+
+    Route::get('/events', [ActivityController::class, 'index']);
+    Route::get('/events/{activity}', [ActivityController::class, 'show']);
+    Route::post('/events', [ActivityController::class, 'store']);
+    Route::put('/events/{activity}', [ActivityController::class, 'update']);
+    Route::delete('/events/{activity}', [ActivityController::class, 'destroy']);
 
     Route::get('/stripe/board', [StripeController::class, 'board']);
     Route::get('/stripe/return', [StripeController::class, 'return']);

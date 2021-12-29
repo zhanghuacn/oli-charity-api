@@ -17,7 +17,7 @@ class SponsorSeeder extends Seeder
     public function run()
     {
         Sponsor::truncate();
-        Sponsor::create([
+        $sponsor = Sponsor::create([
             'name' => Str::random(10),
             'logo' => Str::random(10),
             'backdrop' => Str::random(10),
@@ -29,5 +29,6 @@ class SponsorSeeder extends Seeder
             'mobile' => '28766622',
             'email' => Str::random(10) . '@gmail.com',
         ]);
+        $sponsor->staffs()->attach(2);
     }
 }

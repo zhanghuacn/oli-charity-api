@@ -47,8 +47,7 @@ class ActivityController extends Controller
     public function show(Activity $activity): JsonResponse|JsonResource
     {
         $data['hosts'] = new UserCollection($activity->tickets()->with('user')
-            ->where('type', '=', Ticket::TYPE_STAFF)
-            ->whereJsonContains('extends->host', Ticket::ROLE_HOST)->get()
+            ->whereIn('type', [Ticket::TYPE_STAFF, Ticket::TYPE_HOST])->get()
             ->map(function ($staff) {
                 return $staff->user;
             }));

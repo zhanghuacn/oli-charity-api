@@ -10,6 +10,7 @@ use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
@@ -66,6 +67,14 @@ use function json_decode;
  * @method static \Illuminate\Database\Eloquent\Builder|Prize whereBeginsWith(string $column, string $value, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder|Prize whereEndsWith(string $column, string $value, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder|Prize whereLike(string $column, string $value, string $boolean = 'and')
+ * @property mixed|null $cache 数据缓存
+ * @property string $prizeable_type
+ * @property int $prizeable_id
+ * @property-read Model|\Eloquent $prizeable
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize whereCache($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize whereImages($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize wherePrizeableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Prize wherePrizeableType($value)
  */
 class Prize extends Model
 {
@@ -75,6 +84,12 @@ class Prize extends Model
     use Filterable;
     use ModelFilter;
     use SoftDeletes;
+
+    public const STATUS_ENABLE = 'ENABLE';
+    public const STATUS_DISABLE = 'DISABLE';
+
+    public const DEFAULT_IMAGES = [];
+    public const DEFAULT_EXTENDS = [];
 
     protected $fillable = [
         'charity_id',
@@ -86,7 +101,11 @@ class Prize extends Model
         'num',
         'winners',
         'draw_time',
+        'status',
         'extends',
+        'cache',
+        'prizeable_type',
+        'prizeable_id',
     ];
 
     protected $hidden = [
@@ -94,8 +113,9 @@ class Prize extends Model
         'activity_id',
         'lottery_id',
         'extends',
-        'created_at',
-        'updated_at',
+        'cache',
+        'prizeable_type',
+        'prizeable_id',
         'deleted_at',
     ];
 
@@ -105,6 +125,11 @@ class Prize extends Model
         'extends' => 'array',
         'draw_time' => 'datetime:Y-m-d H:i:s',
     ];
+
+    public function prizeable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 
     public function charity(): BelongsTo
     {

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\ModelFilters\GoodsFilter;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
@@ -12,9 +11,8 @@ use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
@@ -73,10 +71,15 @@ use Illuminate\Support\Fluent;
  * @method static Builder|Goods withoutTrashed()
  * @mixin Eloquent
  * @property string|null $price
- * @property-read Model|\Eloquent $goodsable
- * @property-read Collection|\App\Models\Order[] $orders
+ * @property-read Model|Eloquent $goodsable
+ * @property-read Collection|Order[] $orders
  * @property-read int|null $orders_count
  * @method static \Illuminate\Database\Eloquent\Builder|Goods wherePrice($value)
+ * @property int $charity_id 机构
+ * @property int $activity_id 活动
+ * @property-read \App\Models\Activity $activity
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereActivityId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereCharityId($value)
  */
 class Goods extends Model
 {
@@ -88,27 +91,42 @@ class Goods extends Model
     use ModelFilter;
     use SoftDeletes;
 
-    public const TYPE_LOTTERY = 'LOTTERY';
-    public const TYPE_BAZAARS = 'BAZAARS';
-
     public const STATUS_ENABLE = 'ENABLE';
     public const STATUS_DISABLE = 'DISABLE';
 
+    public const DEFAULT_IMAGES = [];
+    public const DEFAULT_EXTENDS = [];
+
     protected $fillable = [
-        'type',
+        'charity_id',
+        'activity_id',
+        'name',
         'description',
         'content',
-        'images',
-        'tag',
+        'price',
         'stock',
         'status',
+        'images',
+        'extends',
+        'cache',
         'goodsable_type',
         'goodsable_id',
     ];
 
+    protected $hidden = [
+        'charity_id',
+        'activity_id',
+        'extends',
+        'cache',
+        'prizeable_type',
+        'prizeable_id',
+        'deleted_at',
+    ];
+
     protected $casts = [
         'images' => 'array',
-        'tag' => 'array',
+        'extends' => 'array',
+        'cache' => 'array',
     ];
 
     public function goodsable(): MorphTo
@@ -116,9 +134,9 @@ class Goods extends Model
         return $this->morphTo();
     }
 
-    public function activities(): BelongsToMany
+    public function activity(): BelongsTo
     {
-        return $this->belongsToMany(Activity::class);
+        return $this->belongsTo(Activity::class);
     }
 
     public function orders(): MorphMany

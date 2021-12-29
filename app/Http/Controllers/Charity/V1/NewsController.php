@@ -18,7 +18,6 @@ class NewsController extends Controller
         return Response::success($data);
     }
 
-
     public function store(Request $request): JsonResponse|JsonResource
     {
         $request->validate([

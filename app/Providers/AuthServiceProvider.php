@@ -5,9 +5,6 @@ namespace App\Providers;
 use App\Models\Activity;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Policies\ActivityPolicy;
-use App\Policies\PermissionPolicy;
-use App\Policies\RolePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
@@ -20,9 +17,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        Activity::class => ActivityPolicy::class,
-        Role::class => RolePolicy::class,
-        Permission::class => PermissionPolicy::class,
+        Activity::class => \App\Policies\Charity\ActivityPolicy::class,
+        Role::class => \App\Policies\Admin\RolePolicy::class,
+        Permission::class => \App\Policies\Admin\PermissionPolicy::class,
     ];
 
     /**
@@ -33,10 +30,10 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-        Gate::define('check-ticket', [ActivityPolicy::class, 'purchase']);
-        Gate::define('check-apply', [ActivityPolicy::class, 'apply']);
-        Gate::define('check-staffs', [ActivityPolicy::class, 'apply']);
-        Gate::define('check-group', [ActivityPolicy::class, 'owner']);
+        Gate::define('check-ticket', [\App\Policies\Api\ActivityPolicy::class, 'purchase']);
+        Gate::define('check-apply', [\App\Policies\Api\ActivityPolicy::class, 'apply']);
+        Gate::define('check-staffs', [\App\Policies\Api\ActivityPolicy::class, 'apply']);
+        Gate::define('check-group', [\App\Policies\Api\ActivityPolicy::class, 'owner']);
         Passport::routes();
         Passport::tokensCan([
             'place-app' => 'Check place app',

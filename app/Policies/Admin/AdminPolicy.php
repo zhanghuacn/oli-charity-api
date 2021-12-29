@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Policies;
+namespace App\Policies\Admin;
 
 use App\Models\Admin;
-use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AdminPolicy
