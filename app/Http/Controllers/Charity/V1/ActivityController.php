@@ -6,11 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Charity\ActivityCollection;
 use App\Http\Resources\Charity\ActivityResource;
 use App\Models\Activity;
+use App\Models\Goods;
+use App\Models\Lottery;
+use App\Models\Order;
+use App\Models\Ticket;
 use App\Services\ActivityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use Throwable;
 
 class ActivityController extends Controller
 {
@@ -25,6 +31,7 @@ class ActivityController extends Controller
     public function index(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
+            'keyword' => 'sometimes|string',
             'filter' => 'sometimes|in:ACTIVE,PAST',
             'sort' => 'sometimes|string|in:ASC,DESC',
             'page' => 'sometimes|numeric|min:1|not_in:0',
@@ -32,6 +39,52 @@ class ActivityController extends Controller
         ]);
         $activities = Activity::withCount(['applies', 'tickets'])->filter($request->all())->simplePaginate($request->input('per_page', 15));
         return Response::success(new ActivityCollection($activities));
+    }
+
+    public function details(Activity $activity): JsonResponse|JsonResource
+    {
+        return Response::success($this->getDetails($activity));
+    }
+
+    public function tickets(Activity $activity): JsonResponse|JsonResource
+    {
+        $tickets = $activity->tickets()->with(['user:id,name,avatar,profile', 'group:id,name'])->get()
+            ->transform(function (Ticket $ticket) {
+                return [
+                    'id' => $ticket->id,
+                    'uid' => $ticket->user->id,
+                    'avatar' => $ticket->user->avatar,
+                    'name' => $ticket->user->name,
+                    'group' => $ticket->group
+                ];
+            });
+        return Response::success($tickets);
+    }
+
+    public function seatAllocation(Request $request, Activity $activity): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'config' => 'required|string|json',
+            'seats' => 'sometimes|array',
+            'seats.*.id' => 'required|integer|exists:tickets,id,activity_id,' . $activity->id,
+            'seats.*.seat_num' => 'required|string|distinct',
+        ]);
+        try {
+            DB::transaction(function () use ($request, $activity) {
+                $activity->update(['settings->seat_config' => $request->get('config')]);
+                collect($request->get('seat'))->each(function ($item) {
+                    Ticket::where(['id' => $item['id']])->update(['seat_num' => $item['seat_num']]);
+                });
+            });
+        } catch (Throwable $e) {
+            abort(500, $e->getMessage());
+        }
+        return Response::success();
+    }
+
+    public function seatConfig(Activity $activity): JsonResponse|JsonResource
+    {
+        return Response::success(['seat_config' => $activity->settings['seat_config']]);
     }
 
     public function store(Request $request): JsonResponse|JsonResource
@@ -55,13 +108,18 @@ class ActivityController extends Controller
 
     public function destroy(Activity $activity): JsonResponse|JsonResource
     {
+        $this->activityService->delete($activity);
         return Response::success();
     }
 
-    /**
-     * @param Request $request
-     * @return void
-     */
+    public function submit(Activity $activity): JsonResponse|JsonResource
+    {
+        abort_if(!in_array($activity->status, [Activity::STATUS_WAIT, Activity::STATUS_REFUSE]), 422, 'Under Review');
+        $activity->status = Activity::STATUS_REVIEW;
+        $activity->save();
+        return Response::success();
+    }
+
     private function checkStore(Request $request): void
     {
         $request->validate([
@@ -180,5 +238,37 @@ class ActivityController extends Controller
             'staffs.*.type' => 'required|in:HOST,STAFF',
             'staffs.*.user_id' => 'required|distinct|integer|exists:charity_user,user_id',
         ]);
+    }
+
+    private function getDetails(Activity $activity): array
+    {
+        $orders = $activity->orders()->filter(['payment_status' => Order::STATUS_PAID,])
+            ->selectRaw('type, sum(amount) as total_amount')
+            ->groupBy('type')->get();
+        return [
+            'lotteries' => $activity->lotteries->transform(function (Lottery $lottery) {
+                return [
+                    'id' => $lottery->id,
+                    'type' => $lottery->draw_time ? Lottery::TYPE_AUTOMATIC : Lottery::TYPE_MANUAL,
+                    'image' => collect($lottery->images)->first(),
+                    'name' => $lottery->name,
+                    'draw_time' => $lottery->draw_time
+                ];
+            }),
+            'sales' => $activity->goods->transform(function (Goods $goods) {
+                return [
+                    'id' => $goods->id,
+                    'name' => $goods->name,
+                    'stock' => $goods->stock,
+                    'image' => collect($goods->images)->first(),
+                    'sale_num' => $goods->extends['sale_num'],
+                    'income' => $goods->extends['sale_income'],
+                ];
+            }),
+            'statistics' => [
+                'income' => $orders->sum('total_amount'),
+                'constitute' => $orders
+            ],
+        ];
     }
 }

@@ -171,4 +171,17 @@ class ActivityService
             );
         });
     }
+
+    public function delete(Activity $activity): void
+    {
+        DB::transaction(function () use ($activity) {
+            $activity->lotteries->each(function (Lottery $lottery) {
+                $lottery->prizes()->delete();
+                $lottery->delete();
+            });
+            $activity->goods()->delete();
+            $activity->tickets()->delete();
+            $activity->delete();
+        });
+    }
 }

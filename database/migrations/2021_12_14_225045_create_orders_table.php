@@ -15,10 +15,11 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_sn')->unique()->comment('订单编号');
-            $table->enum('type', ['CHARITY', 'ACTIVITY', 'BAZAAR','TICKETS'])->comment('订单:机构捐赠，活动捐赠，义卖商品, 门票');
-            $table->unsignedBigInteger('user_id')->comment('用户');
             $table->unsignedBigInteger('charity_id')->comment('机构');
+            $table->unsignedBigInteger('activity_id')->nullable()->comment('活动');
+            $table->unsignedBigInteger('user_id')->comment('用户');
+            $table->string('order_sn')->unique()->comment('订单编号');
+            $table->enum('type', ['CHARITY', 'ACTIVITY', 'BAZAAR', 'TICKETS'])->comment('订单:机构捐赠，活动捐赠，义卖商品, 门票');
             $table->string('currency')->comment('货币类型');
             $table->decimal('amount')->comment('付款金额');
             $table->decimal('fee_amount')->comment('手续费');

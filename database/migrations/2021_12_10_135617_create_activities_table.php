@@ -30,7 +30,7 @@ class CreateActivitiesTable extends Migration
             $table->json('settings')->nullable()->comment('活动设置');
             $table->json('extends')->nullable()->comment('扩展信息');
             $table->json('cache')->nullable()->comment('数据缓存');
-            $table->enum('status', ['WAIT', 'PASSED', 'REFUSE'])->comment('审核状态:等待，通过，拒绝');
+            $table->enum('status', ['WAIT', 'REVIEW', 'PASSED', 'REFUSE'])->comment('审核状态:等待，通过，拒绝');
             $table->string('remark')->nullable()->comment('审核备注');
             $table->timestamps();
             $table->softDeletes();

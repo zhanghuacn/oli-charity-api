@@ -63,7 +63,7 @@ class TicketController extends Controller
         } while (true);
         $ticket->save();
         return Response::success([
-            'table_num' => $ticket->table_num,
+            'seat_num' => $ticket->seat_num,
             'code' => $ticket->code,
         ]);
     }
@@ -75,7 +75,7 @@ class TicketController extends Controller
         return Response::success([
             'code' => $ticket->code,
             'lottery_code' => $ticket->lottery_code,
-            'table_num' => $ticket->table_num,
+            'seat_num' => $ticket->seat_num,
         ]);
     }
 

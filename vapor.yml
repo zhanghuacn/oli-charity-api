@@ -1,14 +1,6 @@
 id: 27181
 name: oli-charity
 environments:
-    production:
-        memory: 1024
-        cli-memory: 512
-        runtime: 'php-8.1:al2'
-        build:
-            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
-            - 'php artisan event:cache'
-            - 'npm ci && npm run prod && rm -rf node_modules'
     staging:
         database: oli-charity
         octane: true
@@ -27,11 +19,10 @@ environments:
             - 'php artisan view:cache'
             - 'npm ci && npm run dev && rm -rf node_modules'
         firewall:
-          rate-limit: 1000
-          bot-control:
-            - CategorySearchEngine
-            - CategorySocialMedia
-            - CategoryScrapingFramework
+            rate-limit: 1000
+            bot-control:
+                - CategorySearchEngine
+                - CategorySocialMedia
+                - CategoryScrapingFramework
         deploy:
-          - 'php artisan migrate --force'
-
+            - 'php artisan migrate --force'

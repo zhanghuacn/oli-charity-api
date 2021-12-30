@@ -44,7 +44,7 @@ class GroupController extends Controller
             'id' => $ticket->group->id,
             'name' => $ticket->group->name,
             'rank' => $ranks->ranks,
-            'seat_num' => $ticket->table_num,
+            'seat_num' => $ticket->seat_num,
             'total_amount' => $ranks->total_amount,
             'members' => Ticket::wheregroupId($ticket->group_id)->with('user')->get()
                 ->transform(function ($item) {

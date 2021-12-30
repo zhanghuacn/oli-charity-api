@@ -95,6 +95,7 @@ class Kernel extends HttpKernel
         'verified' => EnsureEmailIsVerified::class,
         'scopes' => CheckScopes::class,
         'scope' => CheckForAnyScope::class,
+        'cors' => HandleCors::class,
         'charity' => UseCharityGuard::class,
         'sponsor' => UseSponsorGuard::class,
         'admin' => UseAdminGuard::class,

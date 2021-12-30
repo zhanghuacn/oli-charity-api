@@ -98,6 +98,8 @@ use Kra8\Snowflake\Snowflake;
  * @property string|null $payment_type
  * @method static Builder|Order wherePaymentType($value)
  * @property-read \App\Models\Charity $charity
+ * @property int|null $activity_id
+ * @method static Builder|Order whereActivityId($value)
  */
 class Order extends Model
 {

@@ -319,15 +319,15 @@ class User extends Authenticatable implements MustVerifyEmail
         );
     }
 
-    public function sendPasswordResetNotification($token): void
-    {
-        $this->notify(new ResetPassword($token));
-    }
-
-    public function sendEmailVerificationNotification(): void
-    {
-        $this->notify(new VerifyEmail());
-    }
+//    public function sendPasswordResetNotification($token): void
+//    {
+//        $this->notify(new ResetPassword($token));
+//    }
+//
+//    public function sendEmailVerificationNotification(): void
+//    {
+//        $this->notify(new VerifyEmail());
+//    }
 
     public function getAvatarAttribute(): string
     {

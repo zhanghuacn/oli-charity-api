@@ -14,6 +14,12 @@ class NewsController extends Controller
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
+        $request->validate([
+            'keyword' => 'sometimes|string',
+            'sort' => 'sometimes|string|in:ASC,DESC',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
         $data = News::filter($request->all())->simplePaginate($request->input('per_page', 15));
         return Response::success($data);
     }

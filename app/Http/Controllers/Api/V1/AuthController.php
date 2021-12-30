@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Oauth;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -28,7 +32,7 @@ class AuthController extends Controller
             'password' => ['required', Password::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
         $user = User::create($request->all());
-        $user->sendEmailVerificationNotification();
+        event(new Registered($user));
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
@@ -113,9 +117,9 @@ class AuthController extends Controller
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
-    public function verifyEmail(Request $request): string
+    public function verifyEmail(Request $request): Redirector|string|RedirectResponse|Application
     {
-        $user = User::find(Crypt::decryptString($request->route('id')));
+        $user = User::find($request->route('id'));
         if ($user->hasVerifiedEmail()) {
             return 'Mailbox verified';
         }
@@ -123,7 +127,7 @@ class AuthController extends Controller
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
-        return 'verified';
+        return redirect('https://www.qq.com');
     }
 
     public function resend(Request $request): JsonResponse|JsonResource

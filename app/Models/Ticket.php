@@ -27,7 +27,7 @@ use Illuminate\Support\Str;
  * @property int $activity_id 活动
  * @property int $user_id 用户
  * @property int|null $group_id 当前团队
- * @property string|null $table_num 桌号
+ * @property string|null $seat_num 桌号
  * @property string $type 门票类型: 普通 工作人员 赞助商
  * @property string $price 门票价格
  * @property string $amount 捐款总额

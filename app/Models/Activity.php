@@ -130,17 +130,14 @@ class Activity extends Model
     use Searchable;
 
     public const STATUS_WAIT = 'WAIT';
+    public const STATUS_REVIEW = 'REVIEW';
     public const STATUS_PASSED = 'PASSED';
     public const STATUS_REFUSE = 'REFUSE';
 
-    public const STATUSES = [
-        self::STATUS_WAIT => 'WAITING FOR REVIEW',
-        self::STATUS_PASSED => 'APPROVED',
-        self::STATUS_REFUSE => 'AUDIT REJECT',
-    ];
-
     // 默认缓存信息
-    public const DEFAULT_SETTINGS = [];
+    public const DEFAULT_SETTINGS = [
+        'seat_config' => [],
+    ];
 
     public const DEFAULT_IMAGES = [];
 
@@ -167,7 +164,10 @@ class Activity extends Model
         'is_private',
         'images',
         'settings',
+        'settings->seat_config',
         'extends',
+        'extends->specialty',
+        'extends->timeline',
         'cache',
         'status',
         'remark',
@@ -220,9 +220,9 @@ class Activity extends Model
         return $this->hasMany(Goods::class);
     }
 
-    public function orders(): MorphMany
+    public function orders(): HasMany
     {
-        return $this->morphMany(Order::class, 'orderable');
+        return $this->hasMany(Order::class);
     }
 
     public function ticket(): Model
@@ -236,11 +236,6 @@ class Activity extends Model
             function (Activity $activity) {
             }
         );
-    }
-
-    public function getDisplayStatusAttribute(): string
-    {
-        return self::STATUSES[$this->status ?? self::STATUS_WAIT];
     }
 
     public function visits(): Relation

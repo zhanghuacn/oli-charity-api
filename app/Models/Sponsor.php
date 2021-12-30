@@ -91,6 +91,8 @@ use Overtrue\LaravelFavorite\Traits\Favoriteable;
  * @method static Builder|Sponsor whereBeginsWith(string $column, string $value, string $boolean = 'and')
  * @method static Builder|Sponsor whereEndsWith(string $column, string $value, string $boolean = 'and')
  * @method static Builder|Sponsor whereLike(string $column, string $value, string $boolean = 'and')
+ * @property-read Collection|\App\Models\User[] $staffs
+ * @property-read int|null $staffs_count
  */
 class Sponsor extends Model
 {

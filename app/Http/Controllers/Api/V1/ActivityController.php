@@ -113,8 +113,8 @@ class ActivityController extends Controller
     public function tableRanks(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $ranks = $activity->tickets()->select('table_num', DB::raw('SUM(amount) as total_amount'))
-            ->groupBy('table_num')->orderByDesc('total_amount')->get();
+        $ranks = $activity->tickets()->select('seat_num', DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('seat_num')->orderByDesc('total_amount')->get();
         return Response::success($ranks);
     }
 

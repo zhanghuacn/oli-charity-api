@@ -95,7 +95,10 @@ class Goods extends Model
     public const STATUS_DISABLE = 'DISABLE';
 
     public const DEFAULT_IMAGES = [];
-    public const DEFAULT_EXTENDS = [];
+    public const DEFAULT_EXTENDS = [
+        'sale_num' => 0,
+        'sale_income' => 0,
+    ];
 
     protected $fillable = [
         'charity_id',

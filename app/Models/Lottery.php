@@ -70,6 +70,9 @@ class Lottery extends Model
     use ModelFilter;
     use SoftDeletes;
 
+    public const TYPE_AUTOMATIC = 'AUTOMATIC';
+    public const TYPE_MANUAL = 'MANUAL';
+
     protected $fillable = [
         'charity_id',
         'activity_id',

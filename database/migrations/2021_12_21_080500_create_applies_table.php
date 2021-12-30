@@ -20,8 +20,8 @@ class CreateAppliesTable extends Migration
             $table->unsignedBigInteger('user_id')->comment('用户');
             $table->enum('status', ['WAIT', 'PASSED', 'REFUSE'])->default('WAIT')->comment('审核状态:等待，通过，拒绝');
             $table->unsignedBigInteger('reviewer')->nullable()->comment('审核人');
-            $table->unsignedBigInteger('remark')->nullable()->comment('备注');
-            $table->timestamp('reviewed')->nullable()->comment('审核时间');
+            $table->text('remark')->nullable()->comment('备注');
+            $table->timestamp('reviewed_at')->nullable()->comment('审核时间');
             $table->json('extends')->nullable()->comment('扩展信息');
             $table->timestamps();
             $table->softDeletes();
