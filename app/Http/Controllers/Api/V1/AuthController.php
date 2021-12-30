@@ -13,14 +13,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
 use function abort;
 use function abort_if;
-use function event;
 
 class AuthController extends Controller
 {
@@ -32,7 +32,7 @@ class AuthController extends Controller
             'password' => ['required', Password::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
         $user = User::create($request->all());
-        event(new Registered($user));
+        Event::dispatch(new Registered($user));
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 
@@ -42,7 +42,6 @@ class AuthController extends Controller
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
-
         $user = User::where('username', $request['username'])->orWhere('email', $request['username'])->first();
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
@@ -56,64 +55,24 @@ class AuthController extends Controller
         return Response::success();
     }
 
-    public function socialiteLogin(Request $request): JsonResponse|JsonResource
+    public function socialite(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'driver' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
-            'token' => 'required|string',
+            'provider' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
+            'access_token' => 'required|string',
         ]);
-        $social_user = Socialite::driver($request['driver'])->userFromToken($request['token']);
-        abort_if($social_user == null, 400, 'Invalid credentials');
-        $oauth = Oauth::with('user')->where([
-            ['provider', '=', $request['driver']],
-            ['provider_id', '=', $social_user->id],
-        ])->firstOrFail();
-        return Response::success($oauth->user()->createPlaceToken('api', ['place-app']));
-    }
-
-    public function socialiteBind(Request $request): JsonResponse|JsonResource
-    {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-            'driver' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
-            'token' => 'required',
-        ]);
-        $social_user = Socialite::driver($request['driver'])->userFromToken($request['token']);
-        abort_if($social_user == null, 400, 'Invalid credentials');
-        $user = User::where('username', $request['username'])->orWhere('email', $request['username'])->first();
-        if (!$user || !Hash::check($request->input('password'), $user->password)) {
-            abort(422, 'The provided credentials are incorrect.');
-        }
-        $user->oauths()->save(new Oauth([
-            'provider' => $request['driver'],
-            'provider_id' => $social_user->id,
-        ]));
-        return Response::success($user->createPlaceToken('api', ['place-app']));
-    }
-
-    public function socialiteRegister(Request $request): JsonResponse|JsonResource
-    {
-        $request->validate([
-            'username' => 'required|unique:users',
-            'email' => 'required|email|unique:users',
-            'password' => 'required',
-            'driver' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
-            'token' => 'required',
-        ]);
-
-        $social_user = Socialite::driver($request['driver'])->userFromToken($request['token']);
-        abort_if($social_user == null, 400, 'Invalid credentials');
-        $user = User::create([
-            'username' => $request['username'],
-            'email' => $request['email'],
-            'password' => $request['password'],
-        ]);
-        $user->oauths()->create([
-            'provider' => $request['driver'],
-            'provider_id' => $social_user->id,
-        ]);
-        $user->refresh();
+        $socialite = Socialite::driver($request->get('provider'))->userFromToken($request->get('access_token'));
+        abort_if($socialite == null, 422, 'The provided credentials are incorrect.');
+        $user = User::firstOrCreate(
+            ['email' => $socialite->email],
+            [
+                'username' => $socialite->email,
+                'password' => Str::random(10),
+                'name' => $socialite->name,
+                'avatar' => $socialite->avatar,
+                'email_verified_at' => now(),
+            ]
+        );
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 

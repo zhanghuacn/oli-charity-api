@@ -39,7 +39,7 @@ Route::post('/email/verify/resend', [AuthController::class, 'verifyEmail'])
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/social-login', [AuthController::class, 'socialiteLogin']);
+Route::post('/auth/social-login', [AuthController::class, 'socialite']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
 

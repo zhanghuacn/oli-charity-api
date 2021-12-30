@@ -194,10 +194,21 @@ class Charity extends Model
         return $this->belongsToMany(User::class);
     }
 
+    public function roles(): HasMany
+    {
+        return $this->hasMany(Role::class, 'team_id', 'id')
+            ->where('guard_name', '=', Charity::GUARD_NAME);
+    }
+
     protected static function booted()
     {
         parent::boot();
         self::created(function (Charity $charity) {
+            $charity->roles()->createMany([
+                ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_SUPER_ADMIN, 'team_id' => $charity->id],
+                ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_ADMIN, 'team_id' => $charity->id],
+                ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_STAFF, 'team_id' => $charity->id],
+            ]);
         });
     }
 

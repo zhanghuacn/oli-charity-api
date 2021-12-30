@@ -270,11 +270,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Order::class);
     }
 
-    public function oauths(): HasMany
-    {
-        return $this->hasMany(Oauth::class);
-    }
-
     public function charities(): BelongsToMany
     {
         return $this->belongsToMany(Charity::class);
@@ -319,41 +314,19 @@ class User extends Authenticatable implements MustVerifyEmail
         );
     }
 
-//    public function sendPasswordResetNotification($token): void
-//    {
-//        $this->notify(new ResetPassword($token));
-//    }
-//
-//    public function sendEmailVerificationNotification(): void
-//    {
-//        $this->notify(new VerifyEmail());
-//    }
-
     public function getAvatarAttribute(): string
     {
         return $this->attributes['avatar'] ?? self::DEFAULT_AVATAR;
     }
 
-    #[ArrayShape(['token_type' => "string", 'token' => "string", 'user' => "array"])]
+    #[ArrayShape(['token_type' => "string", 'token' => "string", 'user' => "[]|array"])]
     public function createPlaceToken(string $name, array $scopes): array
     {
         return [
             'token_type' => 'Bearer',
             'token' => $this->createToken($name, $scopes)->accessToken,
-            'user' => [
-                'id' => $this->id,
-                'birthday' => $this->birthday,
-                'gender' => $this->gender,
-                'last_name' => $this->last_name,
-                'middle_name' => $this->middle_name,
-                'first_name' => $this->first_name,
-                'profile' => $this->profile,
-                'name' => $this->name,
-                'avatar' => $this->avatar,
-                'is_public_records' => $this->extends['records'],
-                'is_public_portfolio' => $this->extends['portfolio'],
-                'backdrop' => $this->backdrop,
-            ]
+            'user' => $name == 'api' ? array_merge($this->toArray(), ['is_public_records' => $this->settings['records'],
+                'is_public_portfolio' => $this->settings['portfolio']]) : $this->toArray(),
         ];
     }
 
