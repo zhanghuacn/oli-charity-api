@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Oauth;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Contracts\Foundation\Application;
@@ -58,21 +59,31 @@ class AuthController extends Controller
     public function socialite(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'provider' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
-            'access_token' => 'required|string',
+            'provider' => 'required|in:GOOGLE,FACEBOOK,TWITTER',
+            'token' => 'required|string',
         ]);
-        $socialite = Socialite::driver($request->get('provider'))->userFromToken($request->get('access_token'));
+        $provider = Str::lower($request->get('provider'));
+        try {
+            $socialite = Socialite::driver($provider)->userFromToken($request->get('token'));
+        } catch (Exception $e) {
+            abort($e->getCode(), $e->getMessage());
+        }
         abort_if($socialite == null, 422, 'The provided credentials are incorrect.');
-        $user = User::firstOrCreate(
-            ['email' => $socialite->email],
-            [
+        $user = User::where('email', $socialite->email)
+            ->orWhere('extends->' . $provider, $socialite->id)->first();
+        if ($user == null) {
+            $user = User::create([
+                'email' => $socialite->email,
                 'username' => $socialite->email,
-                'password' => Str::random(10),
                 'name' => $socialite->name,
                 'avatar' => $socialite->avatar,
                 'email_verified_at' => now(),
-            ]
-        );
+                'extends->' . $provider => $socialite->id,
+            ]);
+        }
+        if ($user->extends[$provider] == null) {
+            $user->update(['extends->' . $provider => $socialite->id]);
+        }
         return Response::success($user->createPlaceToken('api', ['place-app']));
     }
 

@@ -14,6 +14,12 @@ class SponsorFilter extends ModelFilter
      */
     public $relations = [];
 
+    public function keyword($value): ?SponsorFilter
+    {
+        return $this->where('name', 'like', $value . '%')
+            ->orWhere('description', 'like', $value . '%');
+    }
+
     public function sort($value)
     {
         switch ($value) {

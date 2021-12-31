@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Charity\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Charity;
 use App\Models\News;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,8 +37,7 @@ class NewsController extends Controller
             'status' => 'sometimes|in:ENABLE,DISABLE',
             'sort' => 'sometimes|numeric|min:0',
         ]);
-        $news = new News($request->all());
-        Auth::user()->news()->save($news);
+        $news = Charity::find(getPermissionsTeamId())->news()->save(new News($request->all()));
         return Response::success($news);
     }
 

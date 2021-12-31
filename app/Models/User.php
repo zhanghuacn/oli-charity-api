@@ -179,6 +179,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public const GENDER_UNKNOWN = 'UNKNOWN';
     public const GENDER_MALE = 'MALE';
     public const GENDER_FEMALE = 'FEMALE';
+
+    public const SOCIALITE_GOOGLE = 'google';
+    public const SOCIALITE_FACEBOOK = 'facebook';
+    public const SOCIALITE_TWITTER = 'twitter';
+
     public const SAFE_FIELDS = [
         'id',
         'name',
@@ -191,8 +196,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public const STATUS_INACTIVATED = 'INACTIVATED';
     public const STATUS_FROZEN = 'FROZEN';
 
+    public const SETTING_PORTFOLIO = 'portfolio';
+    public const SETTING_RECORDS = 'records';
+
     // 默认缓存信息
     public const DEFAULT_CACHE = [];
+    public const DEFAULT_EXTENDS = [
+        self::SOCIALITE_GOOGLE => '',
+        self::SOCIALITE_FACEBOOK => '',
+        self::SOCIALITE_TWITTER => '',
+    ];
     // 默认设置信息
     public const DEFAULT_SETTINGS = [
         'portfolio' => true,
@@ -221,8 +234,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'cache',
         'extends',
-        'settings->portfolio',
-        'settings->records',
+        'settings->' . self::SETTING_PORTFOLIO,
+        'settings->' . self::SETTING_RECORDS,
+        'extends->' . self::SOCIALITE_GOOGLE,
+        'extends->' . self::SOCIALITE_FACEBOOK,
+        'extends->' . self::SOCIALITE_TWITTER,
         'is_admin',
         'is_visible',
         'first_active_at',

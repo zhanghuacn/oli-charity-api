@@ -2,6 +2,7 @@
 
 namespace App\ModelFilters;
 
+use App\Models\Charity;
 use App\Models\News;
 use EloquentFilter\ModelFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -41,7 +42,7 @@ class NewsFilter extends ModelFilter
             $this->push('sort', 'default');
         }
         if (Passport::hasScope('place-charity')) {
-            $this->whereHasMorph('newsable', News::class, function (Builder $query) {
+            $this->whereHasMorph('newsable', Charity::class, function (Builder $query) {
                 $query->where('id', '=', getPermissionsTeamId());
             });
         }

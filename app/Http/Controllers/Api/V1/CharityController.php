@@ -78,7 +78,7 @@ class CharityController extends Controller
         $total = 0;
         for ($i = 1; $i <= 12; $i++) {
             $total += array_key_exists($i, $received) ? $received[strval($i)] : 0;
-            $data['received'][$i] = $total;
+            $data['received'][] = $total;
         }
         return Response::success($data);
     }

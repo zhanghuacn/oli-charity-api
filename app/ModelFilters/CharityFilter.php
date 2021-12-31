@@ -14,6 +14,12 @@ class CharityFilter extends ModelFilter
      */
     public $relations = [];
 
+    public function keyword($value): ?CharityFilter
+    {
+        return $this->where('name', 'like', $value . '%')
+            ->orWhere('description', 'like', $value . '%');
+    }
+
     public function sort($value)
     {
         switch ($value) {

@@ -7,6 +7,7 @@ use App\Http\Controllers\Charity\V1\HomeController;
 use App\Http\Controllers\Charity\V1\NewsController;
 use App\Http\Controllers\Charity\V1\PermissionController;
 use App\Http\Controllers\Charity\V1\RoleController;
+use App\Http\Controllers\Charity\V1\SponsorController;
 use App\Http\Controllers\Charity\V1\StripeController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,9 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('/auth/login/{provider}', [AuthController::class, 'redirectToProvider']);
+Route::get('/auth/login/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/social-login', [AuthController::class, 'socialite']);
@@ -52,6 +56,8 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
 
     Route::get('/events/{activity}/seat-config', [ActivityController::class, 'seatConfig']);
     Route::post('/events/{activity}/seat-allocation', [ActivityController::class, 'seatAllocation']);
+
+    Route::get('/sponsors', [SponsorController::class, 'index']);
 
     Route::get('/stripe/board', [StripeController::class, 'board']);
     Route::get('/stripe/return', [StripeController::class, 'return']);

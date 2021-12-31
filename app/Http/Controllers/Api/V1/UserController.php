@@ -56,7 +56,7 @@ class UserController extends Controller
         $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
         for ($i = 1; $i <= 12; $i++) {
-            $data['received'][$i] = array_key_exists($i, $received) ? $received[strval($i)] : 0;
+            $data['received'][] = array_key_exists($i, $received) ? $received[strval($i)] : 0;
         }
         return Response::success($data);
     }

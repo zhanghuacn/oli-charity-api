@@ -74,15 +74,15 @@ class HomeController extends Controller
 
     private function received(): array
     {
-        $received = Order::filter([
+        $order = Order::filter([
             'charity_id' => getPermissionsTeamId(),
             'payment_status' => Order::STATUS_PAID,
         ])->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
         $total = 0;
         for ($i = 1; $i <= 12; $i++) {
-            $total += array_key_exists($i, $received) ? $received[strval($i)] : 0;
-            $data['received'][$i] = $total;
+            $total += array_key_exists($i, $order) ? $order[strval($i)] : 0;
+            $data[] = $total;
         }
         return $data;
     }
