@@ -225,6 +225,11 @@ class Activity extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function prizes(): HasMany
+    {
+        return $this->hasMany(Prize::class);
+    }
+
     public function ticket(): Model
     {
         return $this->tickets()->where(['user_id' => Auth::id()])->first();

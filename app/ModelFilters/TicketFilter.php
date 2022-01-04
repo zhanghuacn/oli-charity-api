@@ -39,7 +39,7 @@ class TicketFilter extends ModelFilter
         return match ($filter) {
             'COMPLETED' => $this->whereNotNull('verified_at'),
             'INCOMPLETE' => $this->whereNull('verified_at'),
-            default => $this->where('1', '=', '1'),
+            default => abort(400, 'Incorrect query criteria parameters.'),
         };
     }
 

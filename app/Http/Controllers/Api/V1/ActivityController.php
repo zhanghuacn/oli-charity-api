@@ -62,7 +62,7 @@ class ActivityController extends Controller
         $data['price'] = $activity->price;
         if (Auth::check()) {
             if ($activity->is_private) {
-                $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id(), 'status' => Apply::STATUS_PASSED])->first();
+                $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id()])->first();
                 if ($activityApplyRecord->exists()) {
                     $data['apply_status'] = $activityApplyRecord->status;
                 }
@@ -79,6 +79,7 @@ class ActivityController extends Controller
                 ];
             }
             $data['role'] = $activity->ticket()->type;
+            $data['is_anonymous'] = $activity->ticket()->anonymous;
         }
         visits($activity)->increment();
         return Response::success(array_merge($activity->toArray(), $data));

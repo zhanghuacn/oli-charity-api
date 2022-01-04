@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Charity;
+namespace App\Http\Resources\Sponsor;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -20,9 +20,6 @@ class ActivityCollection extends ResourceCollection
                 'location' => $item->location,
                 'begin_time' => $item->begin_time,
                 'ent_time' => $item->end_time,
-                'status' => $item->status,
-                'applies_count' => $item->applies_count ?? 0,
-                'tickets_count' => $item->tickets_count ?? 0,
                 'is_private' => $item->is_private,
             ];
         });

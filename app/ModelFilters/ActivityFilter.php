@@ -26,8 +26,9 @@ class ActivityFilter extends ModelFilter
         return match ($filter) {
             'CURRENT' => $this->where('begin_time', '<=', Carbon::now())->where('end_time', '>=', Carbon::now()),
             'UPCOMING' => $this->where('begin_time', '>', Carbon::now()),
+            'ACTIVE' => $this->where('end_time', '>=', Carbon::now()),
             'PAST' => $this->where('end_time', '<', Carbon::now()),
-            default => $this->where('1', '=', 1),
+            default => abort(400, 'Incorrect query criteria parameters.'),
         };
     }
 

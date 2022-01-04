@@ -10,7 +10,12 @@ use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\Order;
+use App\Models\Sponsor;
 use App\Models\User;
+use App\Notifications\ApplyPaid;
+use App\Notifications\InvitePaid;
+use App\Notifications\LotteryPaid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,11 +30,24 @@ class UcenterController extends Controller
     public function notifications(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'sort' => 'sometimes|string|in:ASC,DESC',
+            'type' => 'sometimes|in:LOTTERY,INVITE,APPLY',
+            'event_id' => 'sometimes|integer|exists:activities,id',
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = Auth::user()->notifications()->simplePaginate($request->input('per_page', 15));
+        $data = Auth::user()->notifications()->when($request->has('type'), function (Builder $query) use ($request) {
+            $query->where(
+                'type',
+                '=',
+                match ($request->get('type')) {
+                    'LOTTERY' => LotteryPaid::class,
+                    'INVITE' => InvitePaid::class,
+                    'APPLY' => ApplyPaid::class,
+                }
+            );
+        })->when($request->has('event_id'), function (Builder $query) use ($request) {
+            $query->where('data->activity_id', '=', $request->get('event_id'));
+        })->simplePaginate($request->input('per_page', 15));
         return Response::success(new NotificationCollection($data));
     }
 
@@ -149,6 +167,20 @@ class UcenterController extends Controller
     {
         abort_if(!Auth::user()->has('charities')->exists(), 422, 'Joined Charity');
         $data = [
+            'type' => Charity::class,
+            'expires' => now()->addDays(),
+            'user_id' => Auth::id(),
+        ];
+        return Response::success([
+            'token' => Crypt::encryptString(json_encode($data)),
+        ]);
+    }
+
+    public function sponsorToken(): JsonResponse|JsonResource
+    {
+        abort_if(!Auth::user()->has('sponsor')->exists(), 422, 'Joined Sponsor');
+        $data = [
+            'type' => Sponsor::class,
             'expires' => now()->addDays(),
             'user_id' => Auth::id(),
         ];

@@ -90,8 +90,11 @@ class ActivityController extends Controller
     public function store(Request $request): JsonResponse|JsonResource
     {
         $this->checkStore($request);
-        $this->activityService->create($request);
-        return Response::success();
+        $activity = $this->activityService->create($request);
+        return Response::success([
+            'id' => $activity->id,
+            'status' => $activity->status,
+        ]);
     }
 
     public function show(Activity $activity): JsonResponse|JsonResource
@@ -103,7 +106,10 @@ class ActivityController extends Controller
     {
         $this->checkUpdate($request);
         $this->activityService->update($activity, $request);
-        return Response::success();
+        return Response::success([
+            'id' => $activity->id,
+            'status' => $activity->status,
+        ]);
     }
 
     public function destroy(Activity $activity): JsonResponse|JsonResource
@@ -202,7 +208,7 @@ class ActivityController extends Controller
             'basic.timeline.*.title' => 'required|string',
             'basic.timeline.*.description' => 'required|string',
             'lotteries' => 'sometimes|array',
-            'lotteries.*.id' => 'required|integer|exists:lotteries,id',
+            'lotteries.*.id' => 'sometimes|integer|exists:lotteries,id',
             'lotteries.*.name' => 'required|string',
             'lotteries.*.description' => 'required|string',
             'lotteries.*.begin_time' => 'required|date_format:Y-m-d H:i:s',
@@ -213,7 +219,7 @@ class ActivityController extends Controller
             'lotteries.*.images' => 'required|array',
             'lotteries.*.images.*' => 'required|url',
             'lotteries.*.prizes' => 'sometimes|array',
-            'lotteries.*.prizes.*.id' => 'required|integer|exists:prizes,id',
+            'lotteries.*.prizes.*.id' => 'sometimes|integer|exists:prizes,id',
             'lotteries.*.prizes.*.name' => 'required|string',
             'lotteries.*.prizes.*.description' => 'required|string',
             'lotteries.*.prizes.*.stock' => 'required|integer|min:1|not_in:0',
@@ -224,7 +230,7 @@ class ActivityController extends Controller
             'lotteries.*.prizes.*.sponsor' => 'sometimes',
             'lotteries.*.prizes.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales' => 'sometimes|array',
-            'sales.*.id' => 'required|integer|exists:goods,id',
+            'sales.*.id' => 'sometimes|integer|exists:goods,id',
             'sales.*.name' => 'required|string',
             'sales.*.description' => 'required|string',
             'sales.*.stock' => 'required|integer|min:1|not_in:0',

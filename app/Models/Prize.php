@@ -90,6 +90,7 @@ class Prize extends Model
     public const STATUS_ENABLE = 'ENABLE';
     public const STATUS_DISABLE = 'DISABLE';
 
+    public const DEFAULT_WINNERS = [];
     public const DEFAULT_IMAGES = [];
     public const DEFAULT_EXTENDS = [];
 
@@ -148,10 +149,10 @@ class Prize extends Model
         return $this->belongsTo(Lottery::class);
     }
 
-    public function goods(): BelongsTo
-    {
-        return $this->belongsTo(Goods::class);
-    }
+//    public function goods(): BelongsTo
+//    {
+//        return $this->belongsTo(Goods::class);
+//    }
 
     public function setWinnersAttribute(array $winners)
     {

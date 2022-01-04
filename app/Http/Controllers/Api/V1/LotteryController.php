@@ -36,7 +36,14 @@ class LotteryController extends Controller
     public function show(Activity $activity, Lottery $lottery): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $data = array_merge($lottery->toArray(), ['prizes' => $lottery->prizes, 'lottery_code' => $activity->ticket()->lottery_code]);
+        $data = array_merge(
+            $lottery->toArray(),
+            [
+                'prizes' => $lottery->prizes,
+                'lottery_code' => $activity->ticket()->lottery_code,
+                'winner' => $lottery->prizes()->where('winners->uid', Auth::id())->first(['id', 'name']),
+            ]
+        );
         return Response::success($data);
     }
 }

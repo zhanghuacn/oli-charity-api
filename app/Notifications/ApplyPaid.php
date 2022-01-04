@@ -23,7 +23,7 @@ class ApplyPaid extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -34,6 +34,7 @@ class ApplyPaid extends Notification implements ShouldQueue
     public function toDatabase($notifiable): array
     {
         return [
+            'activity_id' => 1,
             'title' => '123',
             'content' => '321',
         ];
