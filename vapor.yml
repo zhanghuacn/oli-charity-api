@@ -10,6 +10,7 @@ environments:
             - 'php artisan event:cache'
             - 'npm ci && npm run prod && rm -rf node_modules'
     staging:
+        domain: test-api.olicharity.org
         database: oli-charity
         octane: true
         octane-database-session-persist: true
