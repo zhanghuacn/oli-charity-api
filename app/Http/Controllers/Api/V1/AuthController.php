@@ -3,12 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\GroupInvite;
 use App\Models\Oauth;
 use App\Models\User;
-use App\Notifications\ApplyPaid;
-use App\Notifications\InvitePaid;
-use App\Notifications\LotteryPaid;
 use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;

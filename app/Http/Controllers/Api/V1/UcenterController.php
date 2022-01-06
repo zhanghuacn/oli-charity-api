@@ -165,7 +165,7 @@ class UcenterController extends Controller
 
     public function charityToken(): JsonResponse|JsonResource
     {
-        abort_if(!Auth::user()->has('charities')->exists(), 422, 'Joined Charity');
+        abort_if(Auth::user()->has('charities')->exists(), 422, 'Joined Charity');
         $data = [
             'type' => Charity::class,
             'expires' => now()->addDays(),
@@ -178,7 +178,7 @@ class UcenterController extends Controller
 
     public function sponsorToken(): JsonResponse|JsonResource
     {
-        abort_if(!Auth::user()->has('sponsor')->exists(), 422, 'Joined Sponsor');
+        abort_if(Auth::user()->has('sponsor')->exists(), 422, 'Joined Sponsor');
         $data = [
             'type' => Sponsor::class,
             'expires' => now()->addDays(),
