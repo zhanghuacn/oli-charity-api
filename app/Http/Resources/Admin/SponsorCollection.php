@@ -17,6 +17,7 @@ class SponsorCollection extends ResourceCollection
                 'name' => $item->name,
                 'description' => $item->description,
                 'logo' => $item->logo,
+                'status' => $item->status,
             ];
         });
     }
