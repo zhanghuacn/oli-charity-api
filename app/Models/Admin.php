@@ -141,11 +141,6 @@ class Admin extends Authenticatable
         return [
             'token_type' => 'Bearer',
             'token' => $this->createToken($name, $scopes)->accessToken,
-            'admin' => [
-                'id' => $this->id,
-                'name' => $this->name,
-                'avatar' => $this->avatar,
-            ]
         ];
     }
 

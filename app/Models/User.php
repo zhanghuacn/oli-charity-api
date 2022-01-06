@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\Api\UserResource;
 use App\Notifications\ResetPassword;
 use App\Notifications\VerifyEmail;
 use App\Traits\HasCacheProperty;
@@ -341,8 +342,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'token_type' => 'Bearer',
             'token' => $this->createToken($name, $scopes)->accessToken,
-            'user' => $name == 'api' ? array_merge($this->toArray(), ['is_public_records' => $this->settings['records'],
-                'is_public_portfolio' => $this->settings['portfolio']]) : $this->toArray(),
         ];
     }
 

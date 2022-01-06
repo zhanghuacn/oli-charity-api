@@ -164,6 +164,12 @@ class Sponsor extends Model
 
     protected static function booted()
     {
+        self::created(function (Charity $charity) {
+            $charity->roles()->createMany([
+                ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_SPONSOR_SUPER_ADMIN, 'team_id' => $charity->id],
+                ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_SPONSOR_STAFF, 'team_id' => $charity->id],
+            ]);
+        });
         static::saving(
             function (Sponsor $sponsor) {
             }

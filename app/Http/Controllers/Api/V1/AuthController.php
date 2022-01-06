@@ -34,7 +34,7 @@ class AuthController extends Controller
         ]);
         $user = User::create($request->all());
         Event::dispatch(new Registered($user));
-        return Response::success($user->createPlaceToken('api', ['place-app']));
+        return Response::success($this->getLoginInfo($user));
     }
 
     public function login(Request $request): JsonResponse|JsonResource
@@ -47,7 +47,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        return Response::success($user->createPlaceToken('api', ['place-app']));
+        return Response::success($this->getLoginInfo($user));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
@@ -84,7 +84,7 @@ class AuthController extends Controller
         if ($user->extends[$provider] == null) {
             $user->update(['extends->' . $provider => $socialite->id]);
         }
-        return Response::success($user->createPlaceToken('api', ['place-app']));
+        return Response::success($this->getLoginInfo($user));
     }
 
     public function verifyEmail(Request $request): Redirector|string|RedirectResponse|Application
@@ -104,5 +104,25 @@ class AuthController extends Controller
     {
         $request->user()->sendEmailVerificationNotification();
         return Response::success();
+    }
+
+    private function getLoginInfo($user): array
+    {
+        $data = $user->createPlaceToken('api', ['place-app']);
+        $data['user'] = [
+            'id' => $user->id,
+            'avatar' => $user->avatar,
+            'name' => $user->name,
+            'backdrop' => $user->backdrop,
+            'profile' => $user->profile,
+            'first_name' => $user->first_name,
+            'middle_name' => $user->middle_name,
+            'last_name' => $user->last_name,
+            'gender' => $user->gender,
+            'birthday' => $user->birthday,
+            'is_public_records' => $user->extends['records'],
+            'is_public_portfolio' => $user->extends['portfolio'],
+        ];
+        return $data;
     }
 }

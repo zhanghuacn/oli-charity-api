@@ -9,6 +9,7 @@ use App\Http\Controllers\Charity\V1\NewsController;
 use App\Http\Controllers\Charity\V1\PermissionController;
 use App\Http\Controllers\Charity\V1\RoleController;
 use App\Http\Controllers\Charity\V1\SponsorController;
+use App\Http\Controllers\Charity\V1\StaffController;
 use App\Http\Controllers\Charity\V1\StripeController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +60,13 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
     Route::post('/events/{activity}/seat-allocation', [ActivityController::class, 'seatAllocation']);
 
     Route::get('/sponsors', [SponsorController::class, 'index']);
+
+    Route::get('/charity', [CharityController::class, 'show']);
+    Route::put('/charity', [CharityController::class, 'update']);
+
+    Route::get('/staffs', [StaffController::class, 'index']);
+    Route::post('/staffs', [StaffController::class, 'store']);
+    Route::delete('/staffs/{user}', [StaffController::class, 'destroy']);
 
     Route::get('/charity', [CharityController::class, 'show']);
     Route::put('/charity', [CharityController::class, 'update']);

@@ -47,11 +47,9 @@ class Role extends \Spatie\Permission\Models\Role
     public const ROLE_ADMIN_SUPER_ADMIN = 'SUPER-ADMIN';
 
     public const ROLE_CHARITY_SUPER_ADMIN = 'SUPER-ADMIN';
-    public const ROLE_CHARITY_ADMIN = 'ADMIN';
     public const ROLE_CHARITY_STAFF = 'STAFF';
 
     public const ROLE_SPONSOR_SUPER_ADMIN = 'SUPER-ADMIN';
-    public const ROLE_SPONSOR_ADMIN = 'ADMIN';
     public const ROLE_SPONSOR_STAFF = 'STAFF';
 
     protected $casts = [

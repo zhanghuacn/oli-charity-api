@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Admin\AdminCollection;
 use App\Models\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(Admin::class, 'admin');
+//        $this->authorizeResource(Admin::class, 'admin');
     }
 
     public function index(Request $request): JsonResponse|JsonResource
@@ -24,8 +25,8 @@ class AdminController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $admins = Admin::filter($request->all())->simplePaginate($request->input('per_page', 15));
-        return Response::success($admins);
+        $admins = Admin::filter($request->all())->with('roles')->simplePaginate($request->input('per_page', 15));
+        return Response::success(new AdminCollection($admins));
     }
 
     public function show(Admin $admin): JsonResponse|JsonResource

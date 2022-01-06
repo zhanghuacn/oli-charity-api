@@ -33,7 +33,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        return Response::success($user->createPlaceToken('charity', ['place-charity']));
+        return Response::success($this->getLoginInfo($user));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
@@ -59,7 +59,7 @@ class AuthController extends Controller
         } catch (Throwable $e) {
             abort(500, $e->getMessage());
         }
-        return Response::success($user->createPlaceToken('charity', ['place-charity']));
+        return Response::success($this->getLoginInfo($user));
     }
 
     public function socialite(Request $request): JsonResponse|JsonResource
@@ -81,7 +81,23 @@ class AuthController extends Controller
         if ($user->extends[$provider] == null) {
             $user->update(['extends->' . $provider => $socialite->id]);
         }
-        return Response::success($user->createPlaceToken('charity', ['place-charity']));
+        return Response::success($this->getLoginInfo($user));
+    }
+
+    private function getLoginInfo(User $user): array
+    {
+        setPermissionsTeamId($user->getTeamIdFromCharity());
+        $data = $user->createPlaceToken('charity', ['place-charity']);
+        $data['user'] = [
+            'id' => $user->id,
+            'avatar' => $user->avatar,
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions(),
+        ];
+        return $data;
     }
 
     private function checkRegister(Request $request): void
@@ -105,16 +121,5 @@ class AuthController extends Controller
             'email' => 'required|email',
             'address' => 'required|string',
         ]);
-    }
-
-    public function redirectToProvider($provider)
-    {
-        return Socialite::driver($provider)->stateless()->redirect();
-    }
-
-    public function handleProviderCallback($provider)
-    {
-        $user = Socialite::driver($provider)->stateless()->user();
-        return Response::success($user);
     }
 }

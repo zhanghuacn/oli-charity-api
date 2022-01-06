@@ -24,12 +24,28 @@ class AuthController extends Controller
         if (!$admin || !Hash::check($request->input('password'), $admin->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        return Response::success($admin->createPlaceToken('admin', ['place-admin']));
+        return Response::success($this->getLoginInfo($admin));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
     {
         $request->user()->tokens()->delete();
         return Response::success();
+    }
+
+    private function getLoginInfo(Admin $admin): array
+    {
+        setPermissionsTeamId(0);
+        $data = $admin->createPlaceToken('admin', ['place-admin']);
+        $data['admin'] = [
+            'id' => $admin->id,
+            'avatar' => $admin->avatar,
+            'name' => $admin->name,
+            'username' => $admin->username,
+            'email' => $admin->email,
+            'roles' => $admin->getRoleNames(),
+            'permissions' => $admin->getAllPermissions(),
+        ];
+        return $data;
     }
 }

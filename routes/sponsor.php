@@ -6,6 +6,7 @@ use App\Http\Controllers\Sponsor\V1\GoodsController;
 use App\Http\Controllers\Sponsor\V1\PermissionController;
 use App\Http\Controllers\Sponsor\V1\RoleController;
 use App\Http\Controllers\Sponsor\V1\SponsorController;
+use App\Http\Controllers\Sponsor\V1\StaffController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,6 +32,10 @@ Route::middleware(['auth:sponsor', 'scopes:place-sponsor', 'sponsor'])->group(fu
 
     Route::get('/sponsor', [SponsorController::class, 'show']);
     Route::put('/sponsor', [SponsorController::class, 'update']);
+
+    Route::get('/staffs', [StaffController::class, 'index']);
+    Route::post('/staffs', [StaffController::class, 'store']);
+    Route::delete('/staffs/{user}', [StaffController::class, 'destroy']);
 
     Route::apiResources([
         'goods' => GoodsController::class,
