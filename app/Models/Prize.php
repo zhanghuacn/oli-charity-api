@@ -75,7 +75,7 @@ use function json_decode;
  * @method static \Illuminate\Database\Eloquent\Builder|Prize whereImages($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Prize wherePrizeableId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Prize wherePrizeableType($value)
- * @property string|null $price
+ * @property float|null $price
  * @method static \Illuminate\Database\Eloquent\Builder|Prize wherePrice($value)
  */
 class Prize extends Model
@@ -123,6 +123,7 @@ class Prize extends Model
     ];
 
     protected $casts = [
+        'price' => 'float',
         'images' => 'array',
         'winners' => 'array',
         'extends' => 'array',

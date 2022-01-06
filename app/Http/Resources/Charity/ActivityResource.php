@@ -63,8 +63,8 @@ class ActivityResource extends JsonResource
                 return [
                     'id' => $goods->id,
                     'name' => $goods->name,
-                    'stock' => $goods->name,
-                    'price' => $goods->name,
+                    'stock' => $goods->stock,
+                    'price' => $goods->price,
                     'sponsor' => $goods->goodsable->getMorphClass() != Sponsor::class ? [] : [
                         'id' => $goods->goodsable->id,
                         'name' => $goods->goodsable->name,
@@ -78,8 +78,9 @@ class ActivityResource extends JsonResource
             'staffs' => $this->tickets()->with('user')->whereIn('type', [TICKET::TYPE_HOST, Ticket::TYPE_STAFF])->get()
                 ->transform(function (Ticket $ticket) {
                     return [
+                        'id' => $ticket->id,
                         'type' => $ticket->type,
-                        'uid' => $ticket->id,
+                        'uid' => $ticket->user_id,
                         'avatar' => $ticket->user->avatar,
                         'name' => $ticket->user->name,
                     ];

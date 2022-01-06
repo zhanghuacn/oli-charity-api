@@ -107,6 +107,9 @@ use Overtrue\LaravelFavorite\Traits\Favoriteable;
  * @property-read Collection|User[] $staffs
  * @property-read int|null $staffs_count
  * @method static Builder|Charity whereStripeAccountId($value)
+ * @property-read \App\Models\News|null $news
+ * @property-read Collection|\App\Models\Role[] $roles
+ * @property-read int|null $roles_count
  */
 class Charity extends Model
 {

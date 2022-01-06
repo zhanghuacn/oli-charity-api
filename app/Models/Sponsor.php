@@ -93,6 +93,8 @@ use Overtrue\LaravelFavorite\Traits\Favoriteable;
  * @method static Builder|Sponsor whereLike(string $column, string $value, string $boolean = 'and')
  * @property-read Collection|\App\Models\User[] $staffs
  * @property-read int|null $staffs_count
+ * @property-read Collection|\App\Models\Prize[] $prizes
+ * @property-read int|null $prizes_count
  */
 class Sponsor extends Model
 {

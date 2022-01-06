@@ -73,6 +73,7 @@ use Illuminate\Support\Str;
  * @method static Builder|Ticket withTrashed()
  * @method static Builder|Ticket withoutTrashed()
  * @mixin Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereSeatNum($value)
  */
 class Ticket extends Model
 {
@@ -105,6 +106,7 @@ class Ticket extends Model
     ];
 
     protected $casts = [
+        'price' => 'float',
         'extends' => 'array',
         'verified_at' => 'datetime:Y-m-d H:i:s',
     ];

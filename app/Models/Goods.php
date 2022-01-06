@@ -127,6 +127,7 @@ class Goods extends Model
     ];
 
     protected $casts = [
+        'price' => 'float',
         'images' => 'array',
         'extends' => 'array',
         'cache' => 'array',

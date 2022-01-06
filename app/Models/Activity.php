@@ -115,6 +115,9 @@ use Overtrue\LaravelFavorite\Traits\Favoriteable;
  * @method static Builder|Activity whereName($value)
  * @method static Builder|Activity wherePrice($value)
  * @method static Builder|Activity whereStocks($value)
+ * @property-read string|null $state
+ * @property-read Collection|\App\Models\Prize[] $prizes
+ * @property-read int|null $prizes_count
  */
 class Activity extends Model
 {

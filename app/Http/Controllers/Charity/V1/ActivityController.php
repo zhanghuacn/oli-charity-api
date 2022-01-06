@@ -241,6 +241,7 @@ class ActivityController extends Controller
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
             'staffs' => 'sometimes|array',
+            'staffs.*.id' => 'sometimes|integer|exists:tickets,id',
             'staffs.*.type' => 'required|in:HOST,STAFF',
             'staffs.*.uid' => 'required|distinct|integer|exists:charity_user,user_id',
         ]);

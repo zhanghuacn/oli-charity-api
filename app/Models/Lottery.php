@@ -96,6 +96,7 @@ class Lottery extends Model
     ];
 
     protected $casts = [
+        'price' => 'float',
         'images' => 'array',
         'extends' => 'array',
     ];

@@ -56,6 +56,7 @@ use Illuminate\Support\Fluent;
  * @method static Builder|Apply whereLike(string $column, string $value, string $boolean = 'and')
  * @property string|null $reviewed_at 审核时间
  * @method static Builder|Apply whereReviewedAt($value)
+ * @property-read \App\Models\User $user
  */
 class Apply extends Model
 {
