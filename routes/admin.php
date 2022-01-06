@@ -34,13 +34,13 @@ Route::middleware(['auth:admin', 'scopes:place-admin', 'admin'])->group(function
 
     Route::get('/charities', [CharityController::class, 'index']);
     Route::get('/charities/{charity}', [CharityController::class, 'show']);
-    Route::put('/charities/{charity}/audit', [CharityController::class, 'audit']);
+    Route::post('/charities/{charity}/audit', [CharityController::class, 'audit']);
 
     Route::get('/sponsors', [SponsorController::class, 'index']);
     Route::get('/sponsors/{sponsor}', [SponsorController::class, 'show']);
-    Route::put('/sponsors/{sponsor}/audit', [SponsorController::class, 'audit']);
+    Route::post('/sponsors/{sponsor}/audit', [SponsorController::class, 'audit']);
 
     Route::get('/events', [ActivityController::class, 'index']);
     Route::get('/events/{activity}', [ActivityController::class, 'show']);
-    Route::put('/events/{activity}/audit', [ActivityController::class, 'audit']);
+    Route::post('/events/{activity}/audit', [ActivityController::class, 'audit']);
 });

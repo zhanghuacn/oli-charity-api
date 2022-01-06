@@ -74,7 +74,7 @@ class ActivityResource extends JsonResource
                 ->transform(function (Ticket $ticket) {
                     return [
                         'type' => $ticket->type,
-                        'user_id' => $ticket->id,
+                        'uid' => $ticket->id,
                         'avatar' => $ticket->user->avatar,
                         'name' => $ticket->user->name,
                     ];

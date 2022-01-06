@@ -33,7 +33,7 @@ class SponsorController extends Controller
     {
         $request->validate([
             'status' => 'required|in:PASSED,REFUSE',
-            'remark' => 'sometime|string',
+            'remark' => 'sometimes|string',
         ]);
         $sponsor->update($request->all());
         return Response::success();

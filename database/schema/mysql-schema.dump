@@ -1,0 +1,792 @@
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `activities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `activities` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `charity_id` bigint unsigned NOT NULL COMMENT '机构',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '活动名称',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '描述',
+  `content` text COLLATE utf8mb4_unicode_ci COMMENT '活动内容',
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '活动地点',
+  `begin_time` timestamp NOT NULL COMMENT '活动开始时间',
+  `end_time` timestamp NOT NULL COMMENT '活动结束时间',
+  `price` decimal(8,2) NOT NULL COMMENT '门票价格',
+  `stocks` int unsigned NOT NULL COMMENT '门票库存',
+  `is_visible` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否可见',
+  `is_private` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否私有',
+  `images` json DEFAULT NULL COMMENT '活动图片',
+  `settings` json DEFAULT NULL COMMENT '活动设置',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `cache` json DEFAULT NULL COMMENT '数据缓存',
+  `status` enum('WAIT','REVIEW','PASSED','REFUSE') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审核状态:等待，通过，拒绝',
+  `remark` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '审核备注',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admins`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `admins` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户名',
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '邮箱',
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码',
+  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '头像',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `last_ip` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '头像',
+  `last_active_at` timestamp NULL DEFAULT NULL COMMENT '最后活跃时间',
+  `frozen_at` timestamp NULL DEFAULT NULL COMMENT '冻结时间',
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `admins_username_unique` (`username`),
+  UNIQUE KEY `admins_email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `applies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `applies` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `charity_id` bigint unsigned NOT NULL COMMENT '慈善机构',
+  `activity_id` bigint unsigned NOT NULL COMMENT '活动',
+  `user_id` bigint unsigned NOT NULL COMMENT '用户',
+  `status` enum('WAIT','PASSED','REFUSE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'WAIT' COMMENT '审核状态:等待，通过，拒绝',
+  `reviewer` bigint unsigned DEFAULT NULL COMMENT '审核人',
+  `remark` text COLLATE utf8mb4_unicode_ci COMMENT '备注',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `reviewed_at` timestamp NULL DEFAULT NULL COMMENT '审核时间',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `charities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `charities` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'logo',
+  `backdrop` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '背景图',
+  `website` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '网站',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '描述',
+  `introduce` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '描述',
+  `staff_num` int unsigned NOT NULL COMMENT '员工数量',
+  `credentials` json DEFAULT NULL COMMENT '证件',
+  `documents` json DEFAULT NULL COMMENT '其他文件',
+  `contact` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '联系人',
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '联系人电话',
+  `mobile` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '联系人座机',
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮箱',
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '地址',
+  `stripe_account_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'stripe管理账号',
+  `is_visible` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否可见',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `cache` json DEFAULT NULL COMMENT '数据缓存',
+  `status` enum('WAIT','PASSED','REFUSE') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审核状态:等待，通过，拒绝',
+  `remark` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '审核备注',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `charities_name_unique` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `charity_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `charity_user` (
+  `charity_id` bigint unsigned NOT NULL COMMENT '机构',
+  `user_id` bigint unsigned NOT NULL COMMENT '用户',
+  UNIQUE KEY `charity_user_user_id_unique` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `failed_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `failed_jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `favorites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `favorites` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL COMMENT 'user_id',
+  `favoriteable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `favoriteable_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `favorites_favoriteable_type_favoriteable_id_index` (`favoriteable_type`,`favoriteable_id`),
+  KEY `favorites_user_id_index` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `goods`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `goods` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `charity_id` bigint unsigned NOT NULL COMMENT '机构',
+  `activity_id` bigint unsigned NOT NULL COMMENT '活动',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '商品名称',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '商品描述',
+  `content` text COLLATE utf8mb4_unicode_ci COMMENT '商品内容',
+  `price` decimal(8,2) NOT NULL COMMENT '价格',
+  `stock` int unsigned NOT NULL COMMENT '库存数量',
+  `images` json NOT NULL COMMENT '商品图片',
+  `cache` json DEFAULT NULL COMMENT '数据缓存',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `goodsable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `goodsable_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `goods_goodsable_type_goodsable_id_index` (`goodsable_type`,`goodsable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `group_invite`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `group_invite` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ticket_id` bigint unsigned NOT NULL COMMENT '门票',
+  `inviter_id` bigint unsigned NOT NULL COMMENT '邀请人',
+  `group_id` bigint unsigned NOT NULL COMMENT '团队',
+  `type` enum('INVITE','REQUEST') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '类型',
+  `accept_token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '接受token',
+  `deny_token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '拒绝token',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `group_invite_ticket_id_unique` (`ticket_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `group_ticket`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `group_ticket` (
+  `group_id` bigint unsigned NOT NULL COMMENT '团队',
+  `ticket_id` bigint unsigned NOT NULL COMMENT '门票',
+  UNIQUE KEY `group_ticket_ticket_id_unique` (`ticket_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `groups` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `charity_id` bigint unsigned NOT NULL COMMENT '机构',
+  `activity_id` bigint unsigned NOT NULL COMMENT '活动',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '描述',
+  `num` int unsigned DEFAULT NULL COMMENT '团队人数限制',
+  `owner_id` bigint unsigned DEFAULT NULL COMMENT '创建人',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `lotteries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `lotteries` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `charity_id` bigint unsigned NOT NULL COMMENT '慈善机构',
+  `activity_id` bigint unsigned NOT NULL COMMENT '活动',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '描述',
+  `images` json DEFAULT NULL COMMENT '图片',
+  `begin_time` timestamp NOT NULL COMMENT '开始时间',
+  `end_time` timestamp NOT NULL COMMENT '结束时间',
+  `standard_amount` decimal(8,2) NOT NULL COMMENT '达标金额',
+  `draw_time` timestamp NOT NULL COMMENT '开奖时间',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `migrations` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `model_has_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `model_has_permissions` (
+  `permission_id` bigint unsigned NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint unsigned NOT NULL,
+  `team_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`team_id`,`permission_id`,`model_id`,`model_type`),
+  KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`),
+  KEY `model_has_permissions_permission_id_foreign` (`permission_id`),
+  KEY `model_has_permissions_team_foreign_key_index` (`team_id`),
+  CONSTRAINT `model_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `model_has_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `model_has_roles` (
+  `role_id` bigint unsigned NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint unsigned NOT NULL,
+  `team_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`team_id`,`role_id`,`model_id`,`model_type`),
+  KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`),
+  KEY `model_has_roles_role_id_foreign` (`role_id`),
+  KEY `model_has_roles_team_foreign_key_index` (`team_id`),
+  CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `news`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `news` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `thumb` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '缩略图',
+  `keyword` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '关键词',
+  `source` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '来源',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '摘要',
+  `content` text COLLATE utf8mb4_unicode_ci COMMENT '内容',
+  `status` enum('ENABLE','DISABLE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ENABLE' COMMENT '状态: 上架,下架',
+  `newsable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `newsable_id` bigint unsigned NOT NULL,
+  `published_at` timestamp NOT NULL COMMENT '发布时间',
+  `sort` int unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `news_newsable_type_newsable_id_index` (`newsable_type`,`newsable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notifications` (
+  `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notifiable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notifiable_id` bigint unsigned NOT NULL,
+  `data` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `read_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `oauth_access_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `oauth_access_tokens` (
+  `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint unsigned DEFAULT NULL,
+  `client_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `scopes` text COLLATE utf8mb4_unicode_ci,
+  `revoked` tinyint(1) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `expires_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `oauth_access_tokens_user_id_index` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `oauth_auth_codes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `oauth_auth_codes` (
+  `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `client_id` bigint unsigned NOT NULL,
+  `scopes` text COLLATE utf8mb4_unicode_ci,
+  `revoked` tinyint(1) NOT NULL,
+  `expires_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `oauth_auth_codes_user_id_index` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `oauth_clients`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `oauth_clients` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `secret` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `provider` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `redirect` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `personal_access_client` tinyint(1) NOT NULL,
+  `password_client` tinyint(1) NOT NULL,
+  `revoked` tinyint(1) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `oauth_clients_user_id_index` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `oauth_personal_access_clients`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `oauth_personal_access_clients` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `client_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `oauth_refresh_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `oauth_refresh_tokens` (
+  `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `access_token_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `revoked` tinyint(1) NOT NULL,
+  `expires_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `oauth_refresh_tokens_access_token_id_index` (`access_token_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `orders` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `charity_id` bigint unsigned NOT NULL COMMENT '机构',
+  `activity_id` bigint DEFAULT NULL,
+  `order_sn` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '订单编号',
+  `type` enum('CHARITY','ACTIVITY','BAZAAR','TICKETS') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '订单:机构捐赠，活动捐赠，义卖商品, 门票',
+  `user_id` bigint unsigned NOT NULL COMMENT '用户',
+  `currency` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '货币类型',
+  `amount` decimal(8,2) NOT NULL COMMENT '付款金额',
+  `fee_amount` decimal(8,2) NOT NULL COMMENT '手续费',
+  `total_amount` decimal(8,2) NOT NULL COMMENT '实际到手金额',
+  `payment_no` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '交易号',
+  `payment_type` enum('ONLINE','OFFLINE') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '支付类型',
+  `payment_method` enum('STRIPE','BANK') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '支付方式',
+  `payment_status` enum('UNPAID','IN_PAYMENT','PAID','CLOSED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'UNPAID' COMMENT '订单支付状态',
+  `payment_time` timestamp NULL DEFAULT NULL COMMENT '支付时间',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `orderable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `orderable_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `orders_order_sn_unique` (`order_sn`),
+  UNIQUE KEY `orders_payment_no_unique` (`payment_no`),
+  KEY `orders_orderable_type_orderable_id_index` (`orderable_type`,`orderable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `password_resets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `password_resets` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  KEY `password_resets_email_index` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `permissions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `personal_access_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `personal_access_tokens` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text COLLATE utf8mb4_unicode_ci,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `prizes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `prizes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `charity_id` bigint unsigned NOT NULL COMMENT '机构',
+  `activity_id` bigint unsigned NOT NULL COMMENT '活动',
+  `lottery_id` bigint unsigned NOT NULL COMMENT '抽奖',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '描述',
+  `price` decimal(10,2) DEFAULT NULL,
+  `num` int unsigned NOT NULL COMMENT '奖品数量',
+  `images` json DEFAULT NULL COMMENT '奖品图片',
+  `winners` json DEFAULT NULL COMMENT '中奖榜单',
+  `cache` json DEFAULT NULL COMMENT '数据缓存',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `prizeable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `prizeable_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `prizes_prizeable_type_prizeable_id_index` (`prizeable_type`,`prizeable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `role_has_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `role_has_permissions` (
+  `permission_id` bigint unsigned NOT NULL,
+  `role_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`permission_id`,`role_id`),
+  KEY `role_has_permissions_role_id_foreign` (`role_id`),
+  CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `roles` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `team_id` bigint unsigned DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `roles_team_id_name_guard_name_unique` (`team_id`,`name`,`guard_name`),
+  KEY `roles_team_foreign_key_index` (`team_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `sponsor_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sponsor_user` (
+  `sponsor_id` bigint unsigned NOT NULL COMMENT '赞助商',
+  `user_id` bigint unsigned NOT NULL COMMENT '用户',
+  UNIQUE KEY `sponsor_user_user_id_unique` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `sponsors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sponsors` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'logo',
+  `backdrop` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '背景图',
+  `website` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '网站',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '描述',
+  `introduce` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '描述',
+  `credentials` json DEFAULT NULL COMMENT '证件',
+  `documents` json DEFAULT NULL COMMENT '其他文件',
+  `contact` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '联系人',
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '联系人电话',
+  `mobile` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '联系人座机',
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮箱',
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '地址',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `cache` json DEFAULT NULL COMMENT '数据缓存',
+  `status` enum('WAIT','PASSED','REFUSE') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审核状态:等待，通过，拒绝',
+  `remark` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '审核备注',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `sponsors_name_unique` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `subscription_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subscription_items` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `subscription_id` bigint unsigned NOT NULL,
+  `stripe_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `stripe_product` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `stripe_price` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `quantity` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `subscription_items_subscription_id_stripe_price_unique` (`subscription_id`,`stripe_price`),
+  UNIQUE KEY `subscription_items_stripe_id_unique` (`stripe_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `subscriptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subscriptions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `stripe_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `stripe_status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `stripe_price` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `quantity` int DEFAULT NULL,
+  `trial_ends_at` timestamp NULL DEFAULT NULL,
+  `ends_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `subscriptions_stripe_id_unique` (`stripe_id`),
+  KEY `subscriptions_user_id_stripe_status_index` (`user_id`,`stripe_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `telescope_entries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `telescope_entries` (
+  `sequence` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `family_hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `should_display_on_index` tinyint(1) NOT NULL DEFAULT '1',
+  `type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`sequence`),
+  UNIQUE KEY `telescope_entries_uuid_unique` (`uuid`),
+  KEY `telescope_entries_batch_id_index` (`batch_id`),
+  KEY `telescope_entries_family_hash_index` (`family_hash`),
+  KEY `telescope_entries_created_at_index` (`created_at`),
+  KEY `telescope_entries_type_should_display_on_index_index` (`type`,`should_display_on_index`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `telescope_entries_tags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `telescope_entries_tags` (
+  `entry_uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  KEY `telescope_entries_tags_entry_uuid_tag_index` (`entry_uuid`,`tag`),
+  KEY `telescope_entries_tags_tag_index` (`tag`),
+  CONSTRAINT `telescope_entries_tags_entry_uuid_foreign` FOREIGN KEY (`entry_uuid`) REFERENCES `telescope_entries` (`uuid`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `telescope_monitoring`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `telescope_monitoring` (
+  `tag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tickets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tickets` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `code` char(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '门票编码',
+  `lottery_code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '彩票编号',
+  `charity_id` bigint unsigned NOT NULL COMMENT '慈善机构',
+  `activity_id` bigint unsigned NOT NULL COMMENT '活动',
+  `user_id` bigint unsigned NOT NULL COMMENT '用户',
+  `group_id` bigint unsigned DEFAULT NULL COMMENT '当前团队',
+  `seat_num` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '桌号',
+  `type` enum('DONOR','STAFF','SPONSOR','HOST') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DONOR' COMMENT '门票类型: 普通 工作人员 赞助商',
+  `price` decimal(8,2) unsigned NOT NULL COMMENT '门票价格',
+  `amount` decimal(8,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '捐款总额',
+  `anonymous` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否匿名捐款',
+  `verified_at` timestamp NULL DEFAULT NULL COMMENT '核销时间',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tickets_activity_id_user_id_unique` (`activity_id`,`user_id`),
+  UNIQUE KEY `tickets_code_unique` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `transfers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `transfers` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '转账编号',
+  `charity_id` bigint unsigned NOT NULL COMMENT '机构',
+  `activity_id` bigint unsigned NOT NULL COMMENT '活动',
+  `ticket_id` bigint unsigned NOT NULL COMMENT '门票',
+  `user_id` bigint unsigned NOT NULL COMMENT '用户',
+  `amount` decimal(8,2) NOT NULL COMMENT '转账金额',
+  `status` enum('WAIT','PASSED','REFUSE') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '核验时间',
+  `remark` text COLLATE utf8mb4_unicode_ci COMMENT '备注',
+  `reviewer` bigint unsigned DEFAULT NULL COMMENT '审核人',
+  `voucher` json DEFAULT NULL COMMENT '凭证',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `verified_at` timestamp NULL DEFAULT NULL COMMENT '核验时间',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `transfers_code_unique` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `user_follower`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_follower` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `following_id` bigint unsigned NOT NULL,
+  `follower_id` bigint unsigned NOT NULL,
+  `accepted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_follower_following_id_index` (`following_id`),
+  KEY `user_follower_follower_id_index` (`follower_id`),
+  KEY `user_follower_accepted_at_index` (`accepted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户名',
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '邮箱',
+  `email_verified_at` timestamp NULL DEFAULT NULL COMMENT '邮箱认证时间',
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码',
+  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '头像',
+  `backdrop` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '背景图',
+  `profile` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '简介',
+  `first_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '名',
+  `middle_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '中间名',
+  `last_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '姓',
+  `gender` enum('UNKNOWN','FEMALE','MALE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'UNKNOWN' COMMENT '性别：未知/女/男',
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '电话',
+  `birthday` date DEFAULT NULL COMMENT '生日',
+  `status` enum('INACTIVATED','ACTIVE','FROZEN') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INACTIVATED' COMMENT '状态：不活跃/激活/冻结',
+  `cache` json DEFAULT NULL COMMENT '数据缓存',
+  `extends` json DEFAULT NULL COMMENT '扩展信息',
+  `settings` json DEFAULT NULL COMMENT '用户设置',
+  `is_visible` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否可见',
+  `first_active_at` timestamp NULL DEFAULT NULL COMMENT '首次活跃时间',
+  `last_active_at` timestamp NULL DEFAULT NULL COMMENT '最后活跃时间',
+  `frozen_at` timestamp NULL DEFAULT NULL COMMENT '冻结时间',
+  `status_remark` timestamp NULL DEFAULT NULL COMMENT '状态说明',
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `stripe_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pm_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pm_last_four` varchar(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trial_ends_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_username_unique` (`username`),
+  UNIQUE KEY `users_email_unique` (`email`),
+  UNIQUE KEY `users_phone_unique` (`phone`),
+  KEY `users_stripe_id_index` (`stripe_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `visits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `visits` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `primary_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `secondary_key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `score` bigint unsigned NOT NULL,
+  `list` json DEFAULT NULL,
+  `expired_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `visits_primary_key_secondary_key_unique` (`primary_key`,`secondary_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+INSERT INTO `migrations` VALUES (129,'2014_10_12_000000_create_users_table',1);
+INSERT INTO `migrations` VALUES (130,'2014_10_12_100000_create_password_resets_table',1);
+INSERT INTO `migrations` VALUES (131,'2016_06_01_000001_create_oauth_auth_codes_table',1);
+INSERT INTO `migrations` VALUES (132,'2016_06_01_000002_create_oauth_access_tokens_table',1);
+INSERT INTO `migrations` VALUES (133,'2016_06_01_000003_create_oauth_refresh_tokens_table',1);
+INSERT INTO `migrations` VALUES (134,'2016_06_01_000004_create_oauth_clients_table',1);
+INSERT INTO `migrations` VALUES (135,'2016_06_01_000005_create_oauth_personal_access_clients_table',1);
+INSERT INTO `migrations` VALUES (136,'2018_08_08_100000_create_telescope_entries_table',1);
+INSERT INTO `migrations` VALUES (137,'2018_12_14_000000_create_favorites_table',1);
+INSERT INTO `migrations` VALUES (138,'2019_05_03_000001_create_customer_columns',1);
+INSERT INTO `migrations` VALUES (139,'2019_05_03_000002_create_subscriptions_table',1);
+INSERT INTO `migrations` VALUES (140,'2019_05_03_000003_create_subscription_items_table',1);
+INSERT INTO `migrations` VALUES (141,'2019_08_19_000000_create_failed_jobs_table',1);
+INSERT INTO `migrations` VALUES (142,'2019_12_14_000001_create_personal_access_tokens_table',1);
+INSERT INTO `migrations` VALUES (143,'2020_04_04_000000_create_user_follower_table',1);
+INSERT INTO `migrations` VALUES (144,'2021_12_10_021111_create_notifications_table',1);
+INSERT INTO `migrations` VALUES (145,'2021_12_10_052737_create_news_table',1);
+INSERT INTO `migrations` VALUES (146,'2021_12_10_063824_create_visits_table',1);
+INSERT INTO `migrations` VALUES (147,'2021_12_10_132039_create_charities_table',1);
+INSERT INTO `migrations` VALUES (148,'2021_12_10_135617_create_activities_table',1);
+INSERT INTO `migrations` VALUES (149,'2021_12_11_101639_create_groups_table',1);
+INSERT INTO `migrations` VALUES (150,'2021_12_11_111822_create_oauths_table',1);
+INSERT INTO `migrations` VALUES (151,'2021_12_11_142825_create_tickets_table',1);
+INSERT INTO `migrations` VALUES (152,'2021_12_12_210214_create_goods_table',1);
+INSERT INTO `migrations` VALUES (153,'2021_12_13_193126_create_lotteries_table',1);
+INSERT INTO `migrations` VALUES (154,'2021_12_13_194515_create_prizes_table',1);
+INSERT INTO `migrations` VALUES (155,'2021_12_14_180637_create_sponsors_table',1);
+INSERT INTO `migrations` VALUES (156,'2021_12_14_225045_create_orders_table',1);
+INSERT INTO `migrations` VALUES (157,'2021_12_16_223347_add_notification_count_to_users_table',1);
+INSERT INTO `migrations` VALUES (158,'2021_12_18_000721_create_transfers_table',1);
+INSERT INTO `migrations` VALUES (159,'2021_12_21_011027_create_admins_table',1);
+INSERT INTO `migrations` VALUES (160,'2021_12_21_074905_create_permission_tables',1);
+INSERT INTO `migrations` VALUES (161,'2021_12_21_075217_add_teams_fields',1);
+INSERT INTO `migrations` VALUES (162,'2021_12_21_080500_create_applies_table',1);

@@ -86,7 +86,7 @@ class ActivityService
                         'charity_id' => getPermissionsTeamId(),
                         'user_id' => $item['uid'],
                         'type' => $item['type'],
-                        'price' => $activity->price,
+                        'price' => 0,
                     ]);
                 }));
             }
@@ -164,12 +164,13 @@ class ActivityService
             $activity->tickets()->where(['activity_id' => $activity->id])->whereNotIn('user_id', collect($request->input('staffs'))
                 ->pluck('user_id'))->delete();
             if ($request->has('staffs')) {
+                $activity->tickets()->whereIn('type', [Ticket::TYPE_STAFF, Ticket::TYPE_HOST])->forceDelete();
                 $activity->tickets()->saveMany(collect($request->input('staffs'))->map(function ($item) use ($activity) {
                     return new Ticket([
-                        'activity_id' => $activity->id,
+                        'charity_id' => getPermissionsTeamId(),
                         'user_id' => $item['uid'],
                         'type' => $item['type'],
-                        'price' => $activity->price,
+                        'price' => 0,
                     ]);
                 }));
             }

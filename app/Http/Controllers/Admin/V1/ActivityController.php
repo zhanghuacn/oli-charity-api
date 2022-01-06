@@ -33,7 +33,7 @@ class ActivityController extends Controller
     {
         $request->validate([
             'status' => 'required|in:PASSED,REFUSE',
-            'remark' => 'sometime|string',
+            'remark' => 'sometimes|string',
         ]);
         $activity->update($request->all());
         return Response::success();

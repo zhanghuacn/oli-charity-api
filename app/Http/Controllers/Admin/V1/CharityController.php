@@ -33,7 +33,7 @@ class CharityController extends Controller
     {
         $request->validate([
             'status' => 'required|in:PASSED,REFUSE',
-            'remark' => 'sometime|string',
+            'remark' => 'sometimes|string',
         ]);
         $charity->update($request->all());
         return Response::success();

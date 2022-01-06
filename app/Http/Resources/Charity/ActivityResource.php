@@ -15,6 +15,7 @@ class ActivityResource extends JsonResource
     {
         return [
             'basic' => [
+                'id' => $this->id,
                 'name' => $this->name,
                 'description' => $this->description,
                 'content' => $this->content,
@@ -31,7 +32,9 @@ class ActivityResource extends JsonResource
             ],
             'lotteries' => $this->lotteries->transform(function (Lottery $lottery) {
                 return [
+                    'id' => $lottery->id,
                     'name' => $lottery->name,
+                    'description' => $lottery->description,
                     'begin_time' => $lottery->begin_time,
                     'end_time' => $lottery->end_time,
                     'standard_amount' => $lottery->standard_amount,
@@ -40,6 +43,7 @@ class ActivityResource extends JsonResource
                     'images' => $lottery->images,
                     'prizes' => $lottery->prizes->transform(function (Prize $prize) {
                         return [
+                            'id' => $prize->id,
                             'name' => $prize->name,
                             'stock' => $prize->num,
                             'price' => $prize->price,
@@ -57,6 +61,7 @@ class ActivityResource extends JsonResource
             }),
             'sales' => $this->goods->transform(function (Goods $goods) {
                 return [
+                    'id' => $goods->id,
                     'name' => $goods->name,
                     'stock' => $goods->name,
                     'price' => $goods->name,
@@ -74,7 +79,7 @@ class ActivityResource extends JsonResource
                 ->transform(function (Ticket $ticket) {
                     return [
                         'type' => $ticket->type,
-                        'user_id' => $ticket->id,
+                        'uid' => $ticket->id,
                         'avatar' => $ticket->user->avatar,
                         'name' => $ticket->user->name,
                     ];
