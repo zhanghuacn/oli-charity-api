@@ -89,8 +89,8 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required|string',
             'name' => 'required|string',
-            'logo' => 'required|url',
-            'backdrop' => 'required|url',
+            'logo' => 'sometimes|url',
+            'backdrop' => 'sometimes|url',
             'website' => 'required|url',
             'description' => 'required|string',
             'introduce' => 'required|string',

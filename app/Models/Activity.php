@@ -195,6 +195,33 @@ class Activity extends Model
         'status' => self::STATUS_WAIT,
     ];
 
+    protected $appends = [
+        'state',
+    ];
+
+    public function getStateAttribute(): ?string
+    {
+        $state = null;
+        $hours = now()->diffInHours($this->begin_time);
+        if ($this->begin_time > now() && $hours > 24) {
+            $state = 'POST';
+        }
+        if ($hours <= 24 && $hours >= 4) {
+            $state = 'WAIT';
+        }
+        if ($hours <= 4 && $hours >= 0) {
+            $state = 'CHECK';
+        }
+        if ($this->begin_time <= now() && $this->end_time >= now()) {
+            $state = 'PROGRESS';
+        }
+
+        if ($this->end_time < now()) {
+            $state = 'PAST';
+        }
+        return $state;
+    }
+
     public function charity(): BelongsTo
     {
         return $this->belongsTo(Charity::class);

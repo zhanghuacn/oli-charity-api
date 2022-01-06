@@ -16,8 +16,8 @@ class CreateSponsorsTable extends Migration
         Schema::create('sponsors', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique()->comment('名称');
-            $table->string('logo')->comment('logo');
-            $table->string('backdrop')->comment('背景图');
+            $table->string('logo')->nullable()->comment('logo');
+            $table->string('backdrop')->nullable()->comment('背景图');
             $table->string('website')->comment('网站');
             $table->string('description')->comment('描述');
             $table->text('introduce')->comment('描述');

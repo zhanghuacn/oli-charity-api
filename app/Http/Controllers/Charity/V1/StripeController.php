@@ -44,7 +44,7 @@ class StripeController extends Controller
         $charity = Charity::findOrFail(getPermissionsTeamId());
         if ($charity->hasStripeAccountId() && $charity->hasCompletedOnboarding()) {
             return Response::success([
-                'url' => $charity->redirectToAccountDashboard()
+                'url' => 'https://dashboard.stripe.com/',
             ]);
         }
         $charity->deleteAndCreateStripeAccount();

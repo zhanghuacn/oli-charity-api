@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Admin\NewsCollection;
+use App\Http\Resources\Admin\NewsResource;
 use App\Models\News;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +17,7 @@ class NewsController extends Controller
     public function index(Request $request): JsonResponse|JsonResource
     {
         $data = News::filter($request->all())->simplePaginate($request->input('per_page', 15));
-        return Response::success($data);
+        return Response::success(new NewsCollection($data));
     }
 
 
@@ -38,7 +40,7 @@ class NewsController extends Controller
 
     public function show(News $news): JsonResponse|JsonResource
     {
-        return Response::success($news);
+        return Response::success(new NewsResource($news));
     }
 
     public function update(Request $request, News $news): JsonResponse|JsonResource

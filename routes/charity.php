@@ -3,6 +3,7 @@
 use App\Http\Controllers\Charity\V1\ActivityController;
 use App\Http\Controllers\Charity\V1\ApplyController;
 use App\Http\Controllers\Charity\V1\AuthController;
+use App\Http\Controllers\Charity\V1\CharityController;
 use App\Http\Controllers\Charity\V1\HomeController;
 use App\Http\Controllers\Charity\V1\NewsController;
 use App\Http\Controllers\Charity\V1\PermissionController;
@@ -59,7 +60,10 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
 
     Route::get('/sponsors', [SponsorController::class, 'index']);
 
-    Route::get('/stripe/board', [StripeController::class, 'board']);
-    Route::get('/stripe/return', [StripeController::class, 'return']);
-    Route::get('/stripe/refresh', [StripeController::class, 'refresh']);
+    Route::get('/charity', [CharityController::class, 'show']);
+    Route::put('/charity', [CharityController::class, 'update']);
+
+    Route::post('/stripe/board', [StripeController::class, 'board']);
+    Route::post('/stripe/return', [StripeController::class, 'return']);
+    Route::post('/stripe/refresh', [StripeController::class, 'refresh']);
 });

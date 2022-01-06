@@ -5,6 +5,7 @@ use App\Http\Controllers\Sponsor\V1\AuthController;
 use App\Http\Controllers\Sponsor\V1\GoodsController;
 use App\Http\Controllers\Sponsor\V1\PermissionController;
 use App\Http\Controllers\Sponsor\V1\RoleController;
+use App\Http\Controllers\Sponsor\V1\SponsorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +28,9 @@ Route::middleware(['auth:sponsor', 'scopes:place-sponsor', 'sponsor'])->group(fu
     Route::get('/events', [ActivityController::class, 'index']);
     Route::get('/events/{activity}', [ActivityController::class, 'show']);
     Route::put('/events/{activity}', [ActivityController::class, 'update']);
+
+    Route::get('/sponsor', [SponsorController::class, 'show']);
+    Route::put('/sponsor', [SponsorController::class, 'update']);
 
     Route::apiResources([
         'goods' => GoodsController::class,

@@ -136,6 +136,10 @@ class Charity extends Model
         'amount' => 0,
     ];
 
+    public const DEFAULT_EXTENDS = [
+        'cards' => [],
+    ];
+
     protected $fillable = [
         'name',
         'logo',
@@ -155,6 +159,7 @@ class Charity extends Model
         'is_visible',
         'cache',
         'extends',
+        'extends->cards',
         'status',
         'remark',
     ];

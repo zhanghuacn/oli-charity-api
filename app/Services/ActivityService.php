@@ -84,7 +84,7 @@ class ActivityService
                 $activity->tickets()->saveMany(collect($request->input('staffs'))->map(function ($item) use ($activity) {
                     return new Ticket([
                         'charity_id' => getPermissionsTeamId(),
-                        'user_id' => $item['user_id'],
+                        'user_id' => $item['uid'],
                         'type' => $item['type'],
                         'price' => $activity->price,
                     ]);
@@ -167,7 +167,7 @@ class ActivityService
                 $activity->tickets()->saveMany(collect($request->input('staffs'))->map(function ($item) use ($activity) {
                     return new Ticket([
                         'activity_id' => $activity->id,
-                        'user_id' => $item['user_id'],
+                        'user_id' => $item['uid'],
                         'type' => $item['type'],
                         'price' => $activity->price,
                     ]);

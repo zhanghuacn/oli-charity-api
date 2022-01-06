@@ -178,7 +178,7 @@ class ActivityController extends Controller
             'sales.*.images.*' => 'required|url',
             'staffs' => 'sometimes|array',
             'staffs.*.type' => 'required|in:HOST,STAFF',
-            'staffs.*.user_id' => 'required|distinct|integer|exists:charity_user,user_id',
+            'staffs.*.uid' => 'required|distinct|integer|exists:charity_user,user_id',
         ]);
     }
 
@@ -242,7 +242,7 @@ class ActivityController extends Controller
             'sales.*.images.*' => 'required|url',
             'staffs' => 'sometimes|array',
             'staffs.*.type' => 'required|in:HOST,STAFF',
-            'staffs.*.user_id' => 'required|distinct|integer|exists:charity_user,user_id',
+            'staffs.*.uid' => 'required|distinct|integer|exists:charity_user,user_id',
         ]);
     }
 

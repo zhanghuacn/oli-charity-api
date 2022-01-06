@@ -37,13 +37,13 @@ class RoleFilter extends ModelFilter
         if (Auth::check()) {
             $this->push('guard', Auth::getDefaultDriver());
             $this->push('team', getPermissionsTeamId());
-            if (Passport::hasScope('place-charity')) {
+            if (Auth::user()->tokenCan('place-charity')) {
                 $this->where('name', '<>', Role::ROLE_CHARITY_SUPER_ADMIN);
             }
-            if (Passport::hasScope('place-sponsor')) {
+            if (Auth::user()->tokenCan('place-sponsor')) {
                 $this->where('name', '<>', Role::ROLE_SPONSOR_SUPER_ADMIN);
             }
-            if (Passport::hasScope('place-admin')) {
+            if (Auth::user()->tokenCan('place-admin')) {
                 $this->where('name', '<>', Role::ROLE_ADMIN_SUPER_ADMIN);
             }
         }

@@ -4,7 +4,7 @@ namespace App\ModelFilters;
 
 use Carbon\Carbon;
 use EloquentFilter\ModelFilter;
-use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Auth;
 
 class ActivityFilter extends ModelFilter
 {
@@ -60,7 +60,7 @@ class ActivityFilter extends ModelFilter
         if (!$this->input('sort')) {
             $this->push('sort', 'default');
         }
-        if (Passport::hasScope('place-charity')) {
+        if (Auth::user()->tokenCan('place-charity')) {
             $this->push('charity', getPermissionsTeamId());
         }
     }

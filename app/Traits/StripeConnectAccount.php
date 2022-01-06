@@ -93,7 +93,6 @@ trait StripeConnectAccount
     public function accountDashboardUrl(array $options = []): ?string
     {
         $this->assertAccountExists();
-
         // Can only create login link if details has been submitted.
         return $this->hasSubmittedAccountDetails()
             ? $this->stripe()->accounts->createLoginLink($this->stripeAccountId(), $options, $this->stripeAccountOptions())->url

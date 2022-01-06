@@ -1,16 +1,12 @@
 <?php
 
-namespace App\Http\Resources\Charity;
+namespace App\Http\Resources\Admin;
 
-use Carbon\Carbon;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Collection;
-use JsonSerializable;
 
 class ActivityCollection extends ResourceCollection
 {
-    public function toArray($request): array|Collection|JsonSerializable|Arrayable
+    public function toArray($request)
     {
         return $this->collection->map(function ($item) {
             return [
