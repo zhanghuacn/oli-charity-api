@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\DB;
 
 class ActivityService
 {
+    /**
+     * @throws \Throwable
+     */
     public function create(Request $request): Activity
     {
         return DB::transaction(function () use ($request) {
@@ -94,6 +97,9 @@ class ActivityService
         });
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function update(Activity $activity, Request $request): void
     {
         DB::transaction(function () use ($activity, $request) {
@@ -120,13 +126,14 @@ class ActivityService
             } else {
                 $activity->lotteries()->delete();
             }
-            collect($request->input('lotteries'))->each(function ($item) use ($activity) {
-                $activity->lotteries()->updateOrCreate(
+            collect($request->get('lotteries'))->whereNotNull('name')->each(function ($item) use ($activity) {
+                $lottery = Lottery::updateOrCreate(
                     [
                         'id' => $item['id'] ?? null,
+                        'activity_id' => $activity->id,
+                        'charity_id' => getPermissionsTeamId(),
                     ],
                     [
-                        'charity_id' => getPermissionsTeamId(),
                         'name' => $item['name'],
                         'description' => $item['description'],
                         'images' => $item['images'],
@@ -136,45 +143,49 @@ class ActivityService
                         'draw_time' => $item['draw_time'],
                     ]
                 );
+                $prize_ids = collect($item['prizes'])->whereNotNull('id')->pluck('id');
+                if (!empty($prize_ids)) {
+                    $lottery->prizes()->whereNotIn('id', $prize_ids)->delete();
+                } else {
+                    $lottery->prizes()->delete();
+                }
+                if (!empty($item['prizes'])) {
+                    collect($item['prizes'])->whereNotNull('name')->each(function ($item) use ($activity, $lottery) {
+                        Prize::updateOrCreate(
+                            [
+                                'id' => $item['id'] ?? null,
+                                'activity_id' => $activity->id,
+                                'charity_id' => getPermissionsTeamId(),
+                                'lottery_id' => $lottery->id,
+                            ],
+                            [
+                                'name' => $item['name'],
+                                'description' => $item['description'],
+                                'num' => $item['stock'],
+                                'price' => $item['price'],
+                                'images' => $item['images'],
+                                'prizeable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
+                                'prizeable_id' => empty($item['sponsor']) ? getPermissionsTeamId() : $item['sponsor']['id'],
+                            ]
+                        );
+                    });
+                }
             });
-            $prize_ids = collect($request->input('lotteries.*.prizes'))->whereNotNull('id')->pluck('id');
-            if (!empty($prize_ids)) {
-                $activity->prizes()->whereNotIn('id', $prize_ids)->delete();
-            } else {
-                $activity->prizes()->delete();
-            }
-            if ($request->has('lotteries.*.prizes')) {
-                collect($request->input('lotteries.*.prizes'))->each(function ($item) use ($activity) {
-                    $activity->prizes()->updateOrCreate(
-                        [
-                            'id' => $item['id'] ?? null,],
-                        [
-                            'charity_id' => getPermissionsTeamId(),
-                            'name' => $item['name'],
-                            'description' => $item['description'],
-                            'num' => $item['stock'],
-                            'price' => $item['price'],
-                            'images' => $item['images'],
-                            'prizeable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
-                            'prizeable_id' => empty($item['sponsor']) ? getPermissionsTeamId() : $item['sponsor']['id'],
-                        ]
-                    );
-                });
-            }
             $goods_ids = collect($request->input('sales'))->whereNotNull('id')->pluck('id');
             if (!empty($goods_ids)) {
-                $activity->goods()->whereNotIn('id', $lottery_ids)->delete();
+                $activity->goods()->whereNotIn('id', $goods_ids)->delete();
             } else {
                 $activity->goods()->delete();
             }
             if ($request->has('sales')) {
                 collect($request->input('sales'))->each(function ($item) use ($activity) {
-                    $activity->goods()->updateOrCreate(
+                    Goods::updateOrCreate(
                         [
                             'id' => $item['id'] ?? null,
+                            'activity_id' => $activity->id,
+                            'charity_id' => getPermissionsTeamId(),
                         ],
                         [
-                            'charity_id' => getPermissionsTeamId(),
                             'name' => $item['name'],
                             'description' => $item['description'],
                             'content' => $item['content'],
@@ -195,9 +206,10 @@ class ActivityService
             }
             if ($request->has('staffs')) {
                 collect($request->input('staffs'))->each(function ($item) use ($activity) {
-                    $activity->tickets()->updateOrCreate(
+                    Ticket::updateOrCreate(
                         [
                             'id' => $item['id'] ?? null,
+                            'activity_id' => $activity->id,
                         ],
                         [
                             'charity_id' => getPermissionsTeamId(),
@@ -211,13 +223,13 @@ class ActivityService
         });
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function delete(Activity $activity): void
     {
         DB::transaction(function () use ($activity) {
-            $activity->lotteries->each(function (Lottery $lottery) {
-                $lottery->prizes()->delete();
-                $lottery->delete();
-            });
+            $activity->lotteries()->delete();
             $activity->goods()->delete();
             $activity->tickets()->delete();
             $activity->delete();

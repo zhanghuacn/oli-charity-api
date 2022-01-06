@@ -115,4 +115,13 @@ class Lottery extends Model
     {
         return $this->hasMany(Prize::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function (Lottery $lottery) {
+            $lottery->prizes()->delete();
+        });
+    }
 }
