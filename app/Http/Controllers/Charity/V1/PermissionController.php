@@ -13,7 +13,7 @@ class PermissionController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(Permission::class, 'permission');
+//        $this->authorizeResource(Permission::class, 'permission');
     }
 
     public function index(Request $request): JsonResponse|JsonResource

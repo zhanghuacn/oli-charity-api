@@ -2,7 +2,7 @@ id: 27445
 name: oli-chartiy-api
 environments:
     production:
-      domain: api.olicharity.org
+        domain: api.olicharity.org
         database: oli-charity
         octane: true
         octane-database-session-persist: true

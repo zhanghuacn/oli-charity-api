@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Charity\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Charity\RoleCollection;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,13 +16,13 @@ class RoleController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(Role::class, 'role');
+//        $this->authorizeResource(Role::class, 'role');
     }
 
     public function index(Request $request): JsonResponse|JsonResource
     {
-        $roles = Role::filter($request->all())->simplePaginate($request->input('per_page', 15));
-        return Response::success($roles);
+        $roles = Role::filter($request->all())->with('permissions')->simplePaginate($request->input('per_page', 15));
+        return Response::success(new RoleCollection($roles));
     }
 
     public function show(Role $role): JsonResponse|JsonResource
@@ -53,7 +54,7 @@ class RoleController extends Controller
     {
         $request->validate([
             'name' => [
-                'required',
+                'sometimes',
                 Rule::unique('roles')
                     ->where(function ($query) use ($request) {
                         return $query->where([
@@ -65,7 +66,9 @@ class RoleController extends Controller
             ],
             'permissions' => 'sometimes|array|exists:permissions,name'
         ]);
-        $role->update(['name' => $request->get('name')]);
+        if ($request->has('name')) {
+            $role->update(['name' => $request->get('name')]);
+        }
         $role->syncPermissions($request->get('permissions'));
         return Response::success($role);
     }
