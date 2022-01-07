@@ -33,7 +33,7 @@ class OrderService
                     'amount' => $goods->price * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
-                ], ['stripe_account' => $charity->stripe_account]);
+                ], ['stripe_account' => $charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_BAZAAR,
@@ -130,7 +130,7 @@ class OrderService
                     'amount' => $amount * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
-                ], ['stripe_account' => $charity->stripe_account]);
+                ], ['stripe_account' => $charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_CHARITY,

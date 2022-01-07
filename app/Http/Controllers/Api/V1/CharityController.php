@@ -51,7 +51,7 @@ class CharityController extends Controller
             'method' => 'sometimes|in:STRIPE',
             'amount' => 'required|numeric|min:1|not_in:0',
         ]);
-        abort_if(empty($charity->stripe_account), 500, 'No stripe connect account opened');
+        abort_if(empty($charity->stripe_account_id), 500, 'No stripe connect account opened');
         $order = $this->orderService->charity(Auth::user(), $charity, $request->amount);
         return Response::success([
             'order_sn' => $order->order_sn,

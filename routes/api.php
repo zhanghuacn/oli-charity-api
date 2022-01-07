@@ -43,10 +43,6 @@ Route::post('/auth/social-login', [AuthController::class, 'socialite']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
 
-Route::get('/ucenter/follow-charities', [UcenterController::class, 'followCharities']);
-Route::get('/ucenter/follow-events', [UcenterController::class, 'followActivities']);
-Route::get('/ucenter/follow-users', [UcenterController::class, 'followUsers']);
-
 Route::get('/explore', [HomeController::class, 'explore']);
 Route::get('/search', [HomeController::class, 'search']);
 
@@ -70,7 +66,6 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 
 Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-
     Route::get('/ucenter/notifications', [UcenterController::class, 'notifications']);
     Route::get('/ucenter/events', [UcenterController::class, 'activities']);
     Route::get('/ucenter/information', [UcenterController::class, 'show']);
@@ -79,6 +74,11 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::get('/ucenter/chart-history', [UcenterController::class, 'chart']);
     Route::get('/ucenter/charity-token', [UcenterController::class, 'charityToken']);
     Route::get('/ucenter/sponsor-token', [UcenterController::class, 'sponsorToken']);
+
+    Route::get('/ucenter/follow-charities', [UcenterController::class, 'followCharities']);
+    Route::get('/ucenter/follow-events', [UcenterController::class, 'followActivities']);
+    Route::get('/ucenter/follow-users', [UcenterController::class, 'followUsers']);
+
 
     Route::post('/events/{activity}/actions/apply', [ActivityController::class, 'apply']);
     Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);

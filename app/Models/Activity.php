@@ -91,6 +91,7 @@ class Activity extends Model
         'extends' => 'array',
         'is_visible' => 'bool',
         'is_private' => 'bool',
+        'is_online' => 'bool',
     ];
 
     protected $attributes = [
