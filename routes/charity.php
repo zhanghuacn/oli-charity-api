@@ -45,7 +45,8 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
 
     Route::get('/events', [ActivityController::class, 'index']);
     Route::get('/events/{activity}', [ActivityController::class, 'show']);
-    Route::get('/events/{activity}/details', [ActivityController::class, 'details']);
+    Route::get('/events/{activity}/audit-details', [ActivityController::class, 'details']);
+    Route::get('/events/{activity}/details', [ActivityController::class, 'views']);
     Route::post('/events', [ActivityController::class, 'store']);
     Route::post('/events/{activity}/submit', [ActivityController::class, 'submit']);
     Route::put('/events/{activity}', [ActivityController::class, 'update']);

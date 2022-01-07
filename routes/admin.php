@@ -42,5 +42,6 @@ Route::middleware(['auth:admin', 'scopes:place-admin', 'admin'])->group(function
 
     Route::get('/events', [ActivityController::class, 'index']);
     Route::get('/events/{activity}', [ActivityController::class, 'show']);
+    Route::get('/events/{activity}/audit-details', [ActivityController::class, 'details']);
     Route::post('/events/{activity}/audit', [ActivityController::class, 'audit']);
 });

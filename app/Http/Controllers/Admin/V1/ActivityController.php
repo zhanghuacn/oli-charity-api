@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\ActivityCollection;
 use App\Http\Resources\Admin\ActivityResource;
 use App\Models\Activity;
+use App\Services\ActivityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,6 +14,16 @@ use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class ActivityController extends Controller
 {
+    private ActivityService $activityService;
+
+    /**
+     * @param ActivityService $activityService
+     */
+    public function __construct(ActivityService $activityService)
+    {
+        $this->activityService = $activityService;
+    }
+
     public function index(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
@@ -29,13 +40,26 @@ class ActivityController extends Controller
         return Response::success(new ActivityResource($activity));
     }
 
+    public function details(Activity $activity): JsonResponse|JsonResource
+    {
+        abort_if($activity->status == Activity::STATUS_PASSED, 403);
+        return Response::success($activity->cache);
+    }
+
     public function audit(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         $request->validate([
             'status' => 'required|in:PASSED,REFUSE',
             'remark' => 'sometimes|string',
         ]);
-        $activity->update($request->all());
+
+        $activity->status = $request->get('status');
+        $activity->remark = $request->get('remark');
+        if ($activity->status == Activity::STATUS_PASSED) {
+            $this->activityService->update($activity, $activity->cache);
+            $activity->is_online = true;
+        }
+        $activity->save();
         return Response::success();
     }
 }

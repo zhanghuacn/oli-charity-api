@@ -41,7 +41,7 @@ class ActivityController extends Controller
         return Response::success(new ActivityCollection($activities));
     }
 
-    public function details(Activity $activity): JsonResponse|JsonResource
+    public function views(Activity $activity): JsonResponse|JsonResource
     {
         return Response::success($this->getDetails($activity));
     }
@@ -90,7 +90,7 @@ class ActivityController extends Controller
     public function store(Request $request): JsonResponse|JsonResource
     {
         $this->checkStore($request);
-        $activity = $this->activityService->create($request);
+        $activity = $this->activityService->create($request->all());
         return Response::success([
             'id' => $activity->id,
             'status' => $activity->status,
@@ -102,10 +102,22 @@ class ActivityController extends Controller
         return Response::success(new ActivityResource($activity));
     }
 
+    public function details(Activity $activity): JsonResponse|JsonResource
+    {
+        abort_if($activity->status != Activity::STATUS_REVIEW, 403);
+        return Response::success($activity->cache);
+    }
+
+
     public function update(Request $request, Activity $activity): JsonResponse|JsonResource
     {
+        abort_if($activity->status == Activity::STATUS_REVIEW, 403);
         $this->checkUpdate($request);
-        $this->activityService->update($activity, $request);
+        if (!$activity->is_online) {
+            $this->activityService->update($activity, $request->all());
+        } else {
+            $activity->update(['cache' => $request->all()]);
+        }
         return Response::success([
             'id' => $activity->id,
             'status' => $activity->status,

@@ -2,164 +2,29 @@
 
 namespace App\Models;
 
-use App\Http\Resources\Api\UserResource;
-use App\Notifications\ResetPassword;
-use App\Notifications\VerifyEmail;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
 use App\Traits\ModelFilter;
-use Database\Factories\UserFactory;
-use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Cashier\Billable;
-use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
 use Laravel\Scout\Searchable;
-use Overtrue\LaravelFavorite\Favorite;
 use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
-use Overtrue\LaravelSubscribe\Subscription;
 use Spatie\Permission\Traits\HasRoles;
 
-/**
- * App\Models\User
- *
- * @property string $name
- * @property string $first_name
- * @property string $middle_name
- * @property string $last_name
- * @property string $username
- * @property string $avatar
- * @property string $profile
- * @property string $email
- * @property string $phone
- * @property string $gender
- * @property string $status
- * @property \Carbon\Carbon $birthday
- * @property string $password
- * @property object $cache
- * @property object $extends
- * @property object $settings
- * @property bool $is_visible
- * @property \Carbon\Carbon $email_verified_at
- * @property \Carbon\Carbon $first_active_at
- * @property \Carbon\Carbon $last_active_at
- * @property \Carbon\Carbon $frozen_at
- * @method static where(string $string, mixed $username)
- * @method static create(array $all)
- * @property int $id
- * @property string|null $status_remark 状态说明
- * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
- * @property-read string $display_status
- * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property-read int|null $notifications_count
- * @property-read Collection|PersonalAccessToken[] $tokens
- * @property-read int|null $tokens_count
- * @method static UserFactory factory(...$parameters)
- * @method static \Illuminate\Database\Eloquent\Builder|User filter(?array $input = null)
- * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
- * @method static Builder|User onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|User query()
- * @method static \Illuminate\Database\Eloquent\Builder|User whereAvatar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereBirthday($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereCache($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereExtends($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereFirstActiveAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereFirstName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereFrozenAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereGender($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereLastActiveAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereLastName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereMiddleName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User wherePhone($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereProfile($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereSettings($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereStatusRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereUsername($value)
- * @method static Builder|User withTrashed()
- * @method static Builder|User withoutTrashed()
- * @mixin Eloquent
- * @property-read Collection|UserSocialite[] $socialites
- * @property-read int|null $socialites_count
- * @property-read Collection|UserSocialite[] $userSocialites
- * @property-read int|null $user_socialites_count
- * @property-read Collection|Subscription[] $subscriptions
- * @property-read int|null $subscriptions_count
- * @property-read Collection|User[] $followers
- * @property-read int|null $followers_count
- * @property-read Collection|User[] $followings
- * @property-read int|null $followings_count
- * @property-read Collection|Oauth[] $oauths
- * @property-read int|null $oauths_count
- * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCount(string $direction = 'desc')
- * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCountAsc()
- * @method static \Illuminate\Database\Eloquent\Builder|User orderByFollowersCountDesc()
- * @property string|null $backdrop 背景图
- * @method static \Illuminate\Database\Eloquent\Builder|User whereBackdrop($value)
- * @property string|null $stripe_id
- * @property string|null $pm_type
- * @property string|null $pm_last_four
- * @property string|null $trial_ends_at
- * @property-read Collection|Favorite[] $favorites
- * @property-read int|null $favorites_count
- * @method static \Illuminate\Database\Eloquent\Builder|User wherePmLastFour($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User wherePmType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereStripeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereTrialEndsAt($value)
- * @property-read Collection|Order[] $orders
- * @property-read int|null $orders_count
- * @property-read Collection|Ticket[] $tickets
- * @property-read int|null $tickets_count
- * @property-read Collection|Client[] $clients
- * @property-read int|null $clients_count
- * @property-read Collection|\App\Models\Charity[] $charities
- * @property-read int|null $charities_count
- * @property-read Collection|\Spatie\Permission\Models\Permission[] $permissions
- * @property-read int|null $permissions_count
- * @property-read Collection|\Spatie\Permission\Models\Role[] $roles
- * @property-read int|null $roles_count
- * @method static \Illuminate\Database\Eloquent\Builder|User permission($permissions)
- * @method static \Illuminate\Database\Eloquent\Builder|User role($roles, $guard = null)
- * @property-read Collection|\App\Models\Sponsor[] $sponsors
- * @property-read int|null $sponsors_count
- * @method static \Illuminate\Database\Eloquent\Builder|User paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
- * @method static \Illuminate\Database\Eloquent\Builder|User simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereBeginsWith(string $column, string $value, string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEndsWith(string $column, string $value, string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder|User whereLike(string $column, string $value, string $boolean = 'and')
- */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
@@ -375,11 +240,6 @@ class User extends Authenticatable implements MustVerifyEmail
             return parent::attributesToArray();
         }
         return Arr::only(parent::attributesToArray(), self::SAFE_FIELDS);
-    }
-
-    public function searchableAs(): string
-    {
-        return 'users_index';
     }
 
     public function shouldBeSearchable(): bool

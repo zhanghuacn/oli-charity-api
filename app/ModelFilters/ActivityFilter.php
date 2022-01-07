@@ -43,6 +43,11 @@ class ActivityFilter extends ModelFilter
         return $this->where('charity_id', '=', $id);
     }
 
+    public function isOnline($value): ActivityFilter
+    {
+        return $this->where('is_online', '=', true);
+    }
+
     public function sort($value)
     {
         switch ($value) {
@@ -60,7 +65,7 @@ class ActivityFilter extends ModelFilter
         if (!$this->input('sort')) {
             $this->push('sort', 'default');
         }
-        if (Auth::user()->tokenCan('place-charity')) {
+        if (Auth::check() && Auth::user()->tokenCan('place-charity')) {
             $this->push('charity', getPermissionsTeamId());
         }
     }

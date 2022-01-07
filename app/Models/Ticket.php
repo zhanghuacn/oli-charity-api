@@ -2,79 +2,16 @@
 
 namespace App\Models;
 
-use App\ModelFilters\TicketFilter;
 use App\Traits\HasExtendsProperty;
 use App\Traits\ModelFilter;
-use Eloquent;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
 
-/**
- * App\Models\Ticket
- *
- * @property int $id
- * @property string $code 门票编码
- * @property string|null $lottery_code 彩票编号
- * @property int $charity_id 慈善机构
- * @property int $activity_id 活动
- * @property int $user_id 用户
- * @property int|null $group_id 当前团队
- * @property string|null $seat_num 桌号
- * @property string $type 门票类型: 普通 工作人员 赞助商
- * @property string $price 门票价格
- * @property string $amount 捐款总额
- * @property int $anonymous 是否匿名捐款
- * @property Carbon|null $verified_at 核销时间
- * @property Fluent $extends 扩展信息
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
- * @property-read \App\Models\Activity $activity
- * @property-read \App\Models\Charity $charity
- * @property-read \App\Models\Group|null $group
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Group[] $groups
- * @property-read int|null $groups_count
- * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket filter(array $input = [], $filter = null)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket newQuery()
- * @method static Builder|Ticket onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket paginateFilter($perPage = null, $columns = [], $pageName = 'page', $page = null)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket query()
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket simplePaginateFilter(?int $perPage = null, ?int $columns = [], ?int $pageName = 'page', ?int $page = null)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereActivityId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereAnonymous($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereBeginsWith(string $column, string $value, string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCharityId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereEndsWith(string $column, string $value, string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereExtends($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereGroupId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereLike(string $column, string $value, string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereLotteryCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTableNum($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereVerifiedAt($value)
- * @method static Builder|Ticket withTrashed()
- * @method static Builder|Ticket withoutTrashed()
- * @mixin Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereSeatNum($value)
- */
 class Ticket extends Model
 {
     use HasFactory;

@@ -38,7 +38,13 @@ class HomeController extends Controller
         $request->validate([
             'keyword' => 'required|string',
         ]);
-        $data = [];
+        $data = [
+            'charities' => [],
+            'activities' => [],
+            'news' => [],
+            'users' => [],
+            'sponsors' => [],
+        ];
         $searches = Search::search($request->keyword)->get();
         foreach ($searches as $model) {
             switch (get_class($model)) {
@@ -57,6 +63,8 @@ class HomeController extends Controller
                 case Sponsor::class:
                     $data['sponsors'][] = $model;
                     break;
+                default:
+                    throw new \Exception('Unexpected value');
             }
         }
         return Response::success([
