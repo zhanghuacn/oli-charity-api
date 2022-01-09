@@ -40,11 +40,11 @@ class TransferController extends Controller
     public function transfer(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'amount' => 'required|numeric|min:1|not_in:0',
             'voucher' => 'required|array',
+            'voucher.*' => 'required|url',
         ]);
         $ticket = $activity->ticket();
-        $order = $this->orderService->transfer($activity, $ticket, $request->amount, $request->voucher);
+        $order = $this->orderService->transfer($activity, $ticket, 0, $request->get('voucher'));
         return Response::success([
             'order_sn' => $order->order_sn,
         ]);
@@ -54,15 +54,16 @@ class TransferController extends Controller
     {
         $request->validate([
             'transfer_sn' => 'required|exists:transfers,transfer_sn,activity_id,' . $activity->id,
-            'amount' => 'required|numeric|min:1|not_in:0',
+            'amount' => 'required|confirmed|numeric|min:1|not_in:0',
             'status' => 'required|in:PASSED,REFUSE',
             'remark' => 'sometimes|string',
         ]);
         try {
             DB::transaction(function () use ($request) {
-                $transfer = Transfer::whereTransferSn($request->transfer_sn)->first();
-                $transfer->status = $request->status;
-                $transfer->remark = $request->remark;
+                $transfer = Transfer::whereTransferSn($request->get('transfer_sn'))->first();
+                $transfer->amount = $request->get('amount');
+                $transfer->status = $request->get('status');
+                $transfer->remark = $request->get('remakr');
                 $transfer->verified_at = Carbon::now();
                 $transfer->save();
 

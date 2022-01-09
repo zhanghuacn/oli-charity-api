@@ -42,12 +42,11 @@ class Charity extends Model
     ];
 
     // 默认缓存信息
-    public const DEFAULT_CACHE = [
-        'amount' => 0,
-    ];
+    public const DEFAULT_CACHE = [];
 
     public const DEFAULT_EXTENDS = [
         'cards' => [],
+        'total_amount' => 0,
     ];
 
     protected $fillable = [
@@ -70,6 +69,7 @@ class Charity extends Model
         'cache',
         'extends',
         'extends->cards',
+        'extends->total_amount',
         'status',
         'remark',
     ];

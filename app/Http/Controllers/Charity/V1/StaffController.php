@@ -44,8 +44,8 @@ class StaffController extends Controller
 
     public function destroy(User $user): JsonResponse|JsonResource
     {
-        abort_if(!$user->charities->pluck('id')->contains(getPermissionsTeamId()), 403);
-        abort_if($user->hasRole(Role::ROLE_CHARITY_SUPER_ADMIN, Charity::GUARD_NAME), 403);
+        abort_if(!$user->charities->pluck('id')->contains(getPermissionsTeamId()), 403, 'Permission denied');
+        abort_if($user->hasRole(Role::ROLE_CHARITY_SUPER_ADMIN, Charity::GUARD_NAME), 403, 'Permission denied');
         $charity = Charity::findOrFail(getPermissionsTeamId());
         $charity->staffs()->detach($user->id);
         return Response::success();

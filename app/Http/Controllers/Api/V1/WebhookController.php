@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Activity;
+use App\Models\Charity;
 use App\Models\Order;
 use App\Models\Ticket;
 use Carbon\Carbon;
@@ -82,25 +84,36 @@ class WebhookController extends CashierController
 
     private function handleTickets(Order $order): void
     {
+        $activity = Activity::find($order->activity_id);
         $tickets = new Ticket([
             'charity_id' => $order->charity_id,
-            'activity_id' => $order->orderable->id,
+            'activity_id' => $activity->id,
             'user_id' => $order->user_id,
             'type' => Ticket::TYPE_DONOR,
             'price' => $order->amount,
         ]);
+        $activity->increment('extends->participates');
+        $activity->increment('extends->total_amount', $order->amount);
         $tickets->save();
     }
 
     private function handleBazaar(Order $order): void
     {
+        $activity = Activity::find($order->activity_id);
+        $activity->increment('extends->total_amount', $order->amount);
+        $activity->charity->increment('extends->total_amount', $order->amount);
     }
 
     private function handleCharity(Order $order): void
     {
+        $charity = Charity::find($order->charity_id);
+        $charity->increment('extends->total_amount', $order->amount);
     }
 
     private function handleActivity(Order $order): void
     {
+        $activity = Activity::find($order->activity_id);
+        $activity->increment('extends->total_amount', $order->amount);
+        $activity->charity->increment('extends->total_amount', $order->amount);
     }
 }

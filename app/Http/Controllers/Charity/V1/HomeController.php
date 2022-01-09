@@ -23,7 +23,9 @@ class HomeController extends Controller
             'keyword' => 'required|string',
         ]);
         $data = [
-            'events' => Activity::filter($request->all())->limit(5)->get()
+            'events' => Activity::filter($request->all())
+                ->withCount('tickets')
+                ->withSum('orders', 'amount')->limit(5)->get()
                 ->transform(function (Activity $activity) {
                     return [
                         'id' => $activity->id,
@@ -33,6 +35,8 @@ class HomeController extends Controller
                         'location' => $activity->location,
                         'begin_time' => $activity->begin_time,
                         'end_time' => $activity->end_time,
+                        'participates' => $activity->extends['participates'],
+                        'total_income' => $activity->extends['total_income'],
                     ];
                 }),
             'news' => News::filter($request->all())->limit(5)->get()

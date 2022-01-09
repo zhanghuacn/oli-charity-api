@@ -104,14 +104,16 @@ class ActivityController extends Controller
 
     public function details(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if($activity->status != Activity::STATUS_REVIEW, 403);
-        return Response::success($activity->cache);
+        $data = $activity->cache->toArray();
+        $data['basic']['status'] = $activity->status;
+        $data['basic']['state'] = $activity->state;
+        return Response::success($data);
     }
 
 
     public function update(Request $request, Activity $activity): JsonResponse|JsonResource
     {
-        abort_if($activity->status == Activity::STATUS_REVIEW, 403);
+        abort_if($activity->status == Activity::STATUS_REVIEW, 403, 'Permission denied');
         $this->checkUpdate($request);
         if (!$activity->is_online) {
             $this->activityService->update($activity, $request->all());

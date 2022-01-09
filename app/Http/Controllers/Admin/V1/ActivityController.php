@@ -42,7 +42,7 @@ class ActivityController extends Controller
 
     public function details(Activity $activity): JsonResponse|JsonResource
     {
-        abort_if($activity->status == Activity::STATUS_PASSED, 403);
+        abort_if($activity->status == Activity::STATUS_PASSED, 403, 'Permission denied');
         return Response::success($activity->cache);
     }
 

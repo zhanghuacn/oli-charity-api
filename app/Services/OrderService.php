@@ -102,7 +102,8 @@ class OrderService
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_TICKETS,
-                    'charity_id' => $activity->charity->id,
+                    'charity_id' => $activity->charity_id,
+                    'activity_id' => $activity->id,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'amount' => $price,
                     'fee_amount' => 0,
