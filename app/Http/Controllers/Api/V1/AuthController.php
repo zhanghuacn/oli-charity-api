@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Oauth;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
@@ -119,7 +120,7 @@ class AuthController extends Controller
             'middle_name' => $user->middle_name,
             'last_name' => $user->last_name,
             'gender' => $user->gender,
-            'birthday' => $user->birthday,
+            'birthday' => Carbon::parse($user->birthday)->toDateString(),
             'is_public_records' => $user->extends['records'],
             'is_public_portfolio' => $user->extends['portfolio'],
         ];

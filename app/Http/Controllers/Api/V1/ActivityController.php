@@ -68,19 +68,22 @@ class ActivityController extends Controller
                     $data['apply_status'] = $activityApplyRecord->status;
                 }
             }
-            $teamInvite = GroupInvite::whereTicketId($activity->ticket()->id)->first();
-            if ($teamInvite) {
-                $data['invite'] = [
-                    'inviter_id' => $teamInvite->inviter->id,
-                    'inviter_name' => $teamInvite->inviter->name,
-                    'inviter_avatar' => $teamInvite->inviter->avatar,
-                    'team_name' => $teamInvite->team->name,
-                    'accept_token' => $teamInvite->accept_token,
-                    'deny_token' => $teamInvite->deny_token,
-                ];
+            if ($activity->ticket()) {
+                $teamInvite = GroupInvite::whereTicketId($activity->ticket()->id)->first();
+                if ($teamInvite) {
+                    $data['invite'] = [
+                        'inviter_id' => $teamInvite->inviter->id,
+                        'inviter_name' => $teamInvite->inviter->name,
+                        'inviter_avatar' => $teamInvite->inviter->avatar,
+                        'team_name' => $teamInvite->team->name,
+                        'accept_token' => $teamInvite->accept_token,
+                        'deny_token' => $teamInvite->deny_token,
+                    ];
+                }
+                $data['role'] = $activity->ticket()->type;
+                $data['is_anonymous'] = $activity->ticket()->anonymous;
+                $data['is_group'] = $activity->ticket()->group->exists();
             }
-            $data['role'] = $activity->ticket()->type;
-            $data['is_anonymous'] = $activity->ticket()->anonymous;
         }
         visits($activity)->increment();
         return Response::success(array_merge($activity->toArray(), $data));
@@ -101,12 +104,12 @@ class ActivityController extends Controller
     {
         Gate::authorize('check-ticket', $activity);
         $ranks = $activity->tickets()->with('user')->orderByDesc('amount')->get()
-            ->map(function ($item) {
+            ->map(function (Ticket $ticket) {
                 return [
-                    'id' => $item->user->id,
-                    'name' => $item->user->name,
-                    'avatar' => $item->user->avatar,
-                    'amount' => $item->amount,
+                    'id' => $ticket->user->id,
+                    'name' => $ticket->anonymous ? '' : $ticket->user->name,
+                    'avatar' => $ticket->anonymous ? 'anonymous' : $ticket->user->avatar,
+                    'amount' => $ticket->amount,
                 ];
             });
         return Response::success($ranks);
@@ -165,6 +168,7 @@ class ActivityController extends Controller
         abort_if(empty($activity->charity->stripe_account), 500, 'No stripe connect account opened');
         $order = $this->orderService->activity(Auth::user(), $activity, $request->amount);
         return Response::success([
+            'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,
             'client_secret' => $order->extends['client_secret']
         ]);

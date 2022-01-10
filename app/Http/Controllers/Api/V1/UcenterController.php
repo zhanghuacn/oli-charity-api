@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Notifications\ApplyPaid;
 use App\Notifications\InvitePaid;
 use App\Notifications\LotteryPaid;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class UcenterController extends Controller
         $user->refresh();
         return Response::success([
             'id' => $user->id,
-            'birthday' => $user->birthday,
+            'birthday' => Carbon::parse($user->birthday)->toDateString(),
             'gender' => $user->gender,
             'last_name' => $user->last_name,
             'middle_name' => $user->middle_name,

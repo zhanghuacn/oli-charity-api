@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\Api;
+namespace App\Policies;
 
 use App\Models\Activity;
 use App\Models\Apply;
@@ -8,9 +8,8 @@ use App\Models\Group;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use function getPermissionsTeamId;
 
-class ActivityPolicy
+class ApiPolicy
 {
     use HandlesAuthorization;
 

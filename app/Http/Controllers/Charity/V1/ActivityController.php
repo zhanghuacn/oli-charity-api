@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Throwable;
 
@@ -24,7 +25,6 @@ class ActivityController extends Controller
 
     public function __construct(ActivityService $activityService)
     {
-        $this->authorizeResource(Activity::class, 'activity');
         $this->activityService = $activityService;
     }
 
@@ -43,11 +43,13 @@ class ActivityController extends Controller
 
     public function views(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         return Response::success($this->getDetails($activity));
     }
 
     public function tickets(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         $tickets = $activity->tickets()->with(['user:id,name,avatar,profile', 'group:id,name'])->get()
             ->transform(function (Ticket $ticket) {
                 return [
@@ -63,6 +65,7 @@ class ActivityController extends Controller
 
     public function seatAllocation(Request $request, Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         $request->validate([
             'config' => 'required|string|json',
             'seats' => 'sometimes|array',
@@ -84,6 +87,7 @@ class ActivityController extends Controller
 
     public function seatConfig(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         return Response::success(['seat_config' => $activity->settings['seat_config']]);
     }
 
@@ -99,11 +103,13 @@ class ActivityController extends Controller
 
     public function show(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         return Response::success(new ActivityResource($activity));
     }
 
     public function details(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         $data = $activity->cache->toArray();
         $data['basic']['status'] = $activity->status;
         $data['basic']['state'] = $activity->state;
@@ -113,6 +119,7 @@ class ActivityController extends Controller
 
     public function update(Request $request, Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         abort_if($activity->status == Activity::STATUS_REVIEW, 403, 'Permission denied');
         $this->checkUpdate($request);
         if (!$activity->is_online) {
@@ -128,12 +135,14 @@ class ActivityController extends Controller
 
     public function destroy(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         $this->activityService->delete($activity);
         return Response::success();
     }
 
     public function submit(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         abort_if(!in_array($activity->status, [Activity::STATUS_WAIT, Activity::STATUS_REFUSE]), 422, 'Under Review');
         $activity->status = Activity::STATUS_REVIEW;
         $activity->save();

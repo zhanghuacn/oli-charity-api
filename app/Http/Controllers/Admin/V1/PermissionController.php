@@ -7,15 +7,11 @@ use App\Models\Permission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class PermissionController extends Controller
 {
-    public function __construct()
-    {
-        $this->authorizeResource(Permission::class, 'permission');
-    }
-
     public function index(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
@@ -29,6 +25,7 @@ class PermissionController extends Controller
 
     public function show(Permission $permission): JsonResponse|JsonResource
     {
+        Gate::authorize('check-admin-driver', $permission);
         return Response::success($permission);
     }
 
@@ -42,6 +39,7 @@ class PermissionController extends Controller
 
     public function update(Request $request, Permission $permission): JsonResponse|JsonResource
     {
+        Gate::authorize('check-admin-driver', $permission);
         $request->validate([
             'name' => 'required|string|unique:permissions,name,' . $permission->id,
         ]);
@@ -51,6 +49,7 @@ class PermissionController extends Controller
 
     public function destroy(Permission $permission): JsonResponse|JsonResource
     {
+        Gate::authorize('check-admin-driver', $permission);
         $permission->delete();
         return Response::success();
     }

@@ -5,6 +5,11 @@ namespace App\Providers;
 use App\Models\Activity;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Policies\Admin\PermissionPolicy;
+use App\Policies\Admin\RolePolicy;
+use App\Policies\AdminPolicy;
+use App\Policies\ApiPolicy;
+use App\Policies\CharityPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
@@ -17,9 +22,6 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        Activity::class => \App\Policies\Charity\ActivityPolicy::class,
-        Role::class => \App\Policies\Admin\RolePolicy::class,
-        Permission::class => \App\Policies\Admin\PermissionPolicy::class,
     ];
 
     /**
@@ -30,10 +32,6 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-        Gate::define('check-ticket', [\App\Policies\Api\ActivityPolicy::class, 'purchase']);
-        Gate::define('check-apply', [\App\Policies\Api\ActivityPolicy::class, 'apply']);
-        Gate::define('check-staffs', [\App\Policies\Api\ActivityPolicy::class, 'apply']);
-        Gate::define('check-group', [\App\Policies\Api\ActivityPolicy::class, 'owner']);
         Passport::routes();
         Passport::tokensCan([
             'place-app' => 'Check place app',
@@ -41,5 +39,27 @@ class AuthServiceProvider extends ServiceProvider
             'place-charity' => 'Check place charity',
             'place-sponsor' => 'Check place sponsor',
         ]);
+
+        $this->checkApi();
+        $this->checkAdmin();
+        $this->checkCharity();
+    }
+
+    private function checkApi(): void
+    {
+        Gate::define('check-ticket', [ApiPolicy::class, 'purchase']);
+        Gate::define('check-apply', [ApiPolicy::class, 'apply']);
+        Gate::define('check-staffs', [ApiPolicy::class, 'apply']);
+        Gate::define('check-group', [ApiPolicy::class, 'owner']);
+    }
+
+    private function checkAdmin(): void
+    {
+        Gate::define('check-admin-driver', [AdminPolicy::class, 'checkDriver']);
+    }
+
+    private function checkCharity(): void
+    {
+        Gate::define('check-charity-source', [CharityPolicy::class, 'checkCharity']);
     }
 }

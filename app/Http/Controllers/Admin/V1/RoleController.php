@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use function auth;
@@ -15,11 +16,6 @@ use function getPermissionsTeamId;
 
 class RoleController extends Controller
 {
-    public function __construct()
-    {
-        $this->authorizeResource(Role::class, 'role');
-    }
-
     public function index(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
@@ -41,6 +37,7 @@ class RoleController extends Controller
 
     public function show(Role $role): JsonResponse|JsonResource
     {
+        Gate::authorize('check-admin-driver', $role);
         return Response::success($role);
     }
 
@@ -66,6 +63,7 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role): JsonResponse|JsonResource
     {
+        Gate::authorize('check-admin-driver', $role);
         $request->validate([
             'name' => [
                 'required',
@@ -87,6 +85,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role): JsonResponse|JsonResource
     {
+        Gate::authorize('check-admin-driver', $role);
         $role->delete();
         return Response::success();
     }

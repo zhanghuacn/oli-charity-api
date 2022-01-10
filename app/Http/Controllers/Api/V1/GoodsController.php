@@ -46,6 +46,7 @@ class GoodsController extends Controller
         ]);
         $order = $this->orderService->bazaar(Auth::user(), $activity->charity, $goods);
         return Response::success([
+            'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,
             'client_secret' => $order->extends['client_secret']
         ]);

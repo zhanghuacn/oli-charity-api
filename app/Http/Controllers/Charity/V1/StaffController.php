@@ -15,11 +15,6 @@ use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class StaffController extends Controller
 {
-    public function __construct()
-    {
-//        $this->authorizeResource(Admin::class, 'admin');
-    }
-
     public function index(Request $request): JsonResponse|JsonResource
     {
         $request->validate([

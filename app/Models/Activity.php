@@ -164,7 +164,7 @@ class Activity extends Model
         return $this->hasMany(Prize::class);
     }
 
-    public function ticket(): Model
+    public function ticket(): Model|null
     {
         return $this->tickets()->where(['user_id' => Auth::id()])->first();
     }

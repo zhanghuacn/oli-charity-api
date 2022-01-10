@@ -30,6 +30,7 @@ class TicketController extends Controller
         Gate::authorize('check-apply', $activity);
         $order = $this->orderService->tickets(Auth::user(), $activity);
         return Response::success([
+            'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,
             'client_secret' => $order->extends['client_secret']
         ]);
