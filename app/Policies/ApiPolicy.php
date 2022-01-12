@@ -27,12 +27,12 @@ class ApiPolicy
 
     public function purchase(User $user, Activity $activity): bool
     {
-        return in_array($activity->id, $user->tickets->pluck('activity_id')->toArray());
+        return $activity->my_ticket->activity_id == $activity->id;
     }
 
     public function staff(User $user, Activity $activity): bool
     {
-        return $activity->tickets()->where(['user_id' => $user->id])->whereIn('type', [Ticket::TYPE_STAFF, Ticket::TYPE_HOST, Ticket::TYPE_CHARITY])->exists();
+        return in_array($activity->my_ticket->type, [Ticket::TYPE_STAFF, Ticket::TYPE_HOST, Ticket::TYPE_CHARITY]);
     }
 
     public function owner(User $user, Group $group): bool

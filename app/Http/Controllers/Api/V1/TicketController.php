@@ -29,6 +29,7 @@ class TicketController extends Controller
     public function buyTicket(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-apply', $activity);
+        abort_if(!empty($activity->my_ticket), 422, 'Tickets purchased');
         $order = $this->orderService->tickets(Auth::user(), $activity);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Activity;
-use App\Models\Charity;
 use App\Models\Order;
 use App\Models\Ticket;
 use Carbon\Carbon;
@@ -80,7 +78,7 @@ class WebhookController extends CashierController
         return Response::ok();
     }
 
-    private function handleTickets(Order $order): void
+    public function handleTickets(Order $order): void
     {
         $tickets = new Ticket([
             'charity_id' => $order->charity_id,
@@ -97,10 +95,9 @@ class WebhookController extends CashierController
         $order->charity()->update([
             'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
         ]);
-
     }
 
-    private function handleCommon(Order $order): void
+    private static function handleCommon(Order $order): void
     {
         $order->activity()->update([
             'extends->total_amount' => bcadd($order->activity->extends['total_amount'], $order->amount)
@@ -110,7 +107,7 @@ class WebhookController extends CashierController
         ]);
     }
 
-    private function handleCharity(Order $order): void
+    private static function handleCharity(Order $order): void
     {
         $order->charity()->update([
             'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
