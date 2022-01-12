@@ -82,29 +82,37 @@ class WebhookController extends CashierController
 
     private function handleTickets(Order $order): void
     {
-        $activity = Activity::find($order->activity_id);
         $tickets = new Ticket([
             'charity_id' => $order->charity_id,
-            'activity_id' => $activity->id,
+            'activity_id' => $order->activity_id,
             'user_id' => $order->user_id,
             'type' => Ticket::TYPE_DONOR,
-            'price' => $order->amount,
+            'price' => $order->activity->amount,
         ]);
-        $activity->increment('extends->participates');
-        $activity->increment('extends->total_amount', $order->amount);
+        $order->activity->update([
+            'extends->participates' => bcadd($order->activity->extends['participates'], 1),
+            'extends->total_amount' => bcadd($order->activity->extends['total_amount'], $order->amount)
+        ]);
+        $order->charity->update([
+            'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
+        ]);
         $tickets->save();
     }
 
     private function handleCommon(Order $order): void
     {
-        $activity = Activity::find($order->activity_id);
-        $activity->increment('extends->total_amount', $order->amount);
-        $activity->charity->increment('extends->total_amount', $order->amount);
+        $order->activity->update([
+            'extends->total_amount' => bcadd($order->activity->extends['total_amount'], $order->amount)
+        ]);
+        $order->charity->update([
+            'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
+        ]);
     }
 
     private function handleCharity(Order $order): void
     {
-        $charity = Charity::find($order->charity_id);
-        $charity->increment('extends->total_amount', $order->amount);
+        $order->charity->update([
+            'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
+        ]);
     }
 }

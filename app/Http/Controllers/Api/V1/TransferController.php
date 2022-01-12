@@ -54,8 +54,8 @@ class TransferController extends Controller
     {
         $request->validate([
             'transfer_id' => 'required|exists:transfers,id,activity_id,' . $activity->id,
-            'amount' => 'required|confirmed|numeric|min:1|not_in:0',
             'status' => 'required|in:PASSED,REFUSE',
+            'amount' => 'required_if:status,PASSED|confirmed|numeric|min:1|not_in:0',
             'remark' => 'sometimes|string',
         ]);
         try {
