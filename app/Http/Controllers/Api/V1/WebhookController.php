@@ -89,11 +89,11 @@ class WebhookController extends CashierController
             'type' => Ticket::TYPE_DONOR,
             'price' => $order->amount,
         ]);
-        $order->activity->update([
+        $order->activity()->update([
             'extends->participates' => bcadd($order->activity->extends['participates'], 1),
             'extends->total_amount' => bcadd($order->activity->extends['total_amount'], $order->amount)
         ]);
-        $order->charity->update([
+        $order->charity()->update([
             'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
         ]);
         $tickets->save();
@@ -101,17 +101,17 @@ class WebhookController extends CashierController
 
     private function handleCommon(Order $order): void
     {
-        $order->activity->update([
+        $order->activity()->update([
             'extends->total_amount' => bcadd($order->activity->extends['total_amount'], $order->amount)
         ]);
-        $order->charity->update([
+        $order->charity()->update([
             'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
         ]);
     }
 
     private function handleCharity(Order $order): void
     {
-        $order->charity->update([
+        $order->charity()->update([
             'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
         ]);
     }
