@@ -65,7 +65,7 @@ class OrderService
                     'amount' => $amount * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
-                ], ['stripe_account' => $activity->charity->stripe_account]);
+                ], ['stripe_account' => $activity->charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_ACTIVITY,
@@ -92,22 +92,21 @@ class OrderService
     {
         try {
             return DB::transaction(function () use ($activity, $user) {
-                $price = $activity->getSettings()['ticket']['price'];
                 $payment_intent = PaymentIntent::create([
                     'payment_method_types' => ['card'],
-                    'amount' => $price * 100,
+                    'amount' => $activity->price * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
-                ], ['stripe_account' => $activity->charity->stripe_account]);
+                ], ['stripe_account' => $activity->charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_TICKETS,
                     'charity_id' => $activity->charity_id,
                     'activity_id' => $activity->id,
                     'currency' => Str::lower(Config::get('cashier.currency')),
-                    'amount' => $price,
+                    'amount' => $activity->price,
                     'fee_amount' => 0,
-                    'total_amount' => $price,
+                    'total_amount' => $activity->price,
                     'payment_no' => $payment_intent->id,
                     'extends' => [
                         'client_secret' => $payment_intent->client_secret,

@@ -24,6 +24,7 @@ class Ticket extends Model
     public const TYPE_STAFF = 'STAFF';
     public const TYPE_HOST = 'HOST';
     public const TYPE_SPONSOR = 'SPONSOR';
+    public const TYPE_CHARITY = 'CHARITY';
 
     public const DEFAULT_EXTENDS = [];
 

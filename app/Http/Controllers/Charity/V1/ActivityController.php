@@ -122,7 +122,7 @@ class ActivityController extends Controller
         Gate::authorize('check-charity-source', $activity);
         abort_if($activity->status == Activity::STATUS_REVIEW, 403, 'Permission denied');
         $this->checkUpdate($request);
-        if (!$activity->is_online) {
+        if (!$activity->is_visible) {
             $this->activityService->update($activity, $request->all());
         } else {
             $activity->update(['cache' => $request->all()]);

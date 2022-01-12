@@ -48,14 +48,12 @@ class WebhookController extends CashierController
                     case Order::TYPE_TICKETS:
                         $this->handleTickets($order);
                         break;
-                    case Order::TYPE_BAZAAR:
-                        $this->handleBazaar($order);
-                        break;
                     case Order::TYPE_CHARITY:
                         $this->handleCharity($order);
                         break;
+                    case Order::TYPE_BAZAAR:
                     case Order::TYPE_ACTIVITY:
-                        $this->handleActivity($order);
+                        $this->handleCommon($order);
                         break;
                     default:
                 }
@@ -97,7 +95,7 @@ class WebhookController extends CashierController
         $tickets->save();
     }
 
-    private function handleBazaar(Order $order): void
+    private function handleCommon(Order $order): void
     {
         $activity = Activity::find($order->activity_id);
         $activity->increment('extends->total_amount', $order->amount);
@@ -108,12 +106,5 @@ class WebhookController extends CashierController
     {
         $charity = Charity::find($order->charity_id);
         $charity->increment('extends->total_amount', $order->amount);
-    }
-
-    private function handleActivity(Order $order): void
-    {
-        $activity = Activity::find($order->activity_id);
-        $activity->increment('extends->total_amount', $order->amount);
-        $activity->charity->increment('extends->total_amount', $order->amount);
     }
 }

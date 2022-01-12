@@ -50,9 +50,7 @@ class Activity extends Model
         'total_income' => 0,
     ];
 
-    public const DEFAULT_CACHE = [
-        'sales' => 0,
-    ];
+    public const DEFAULT_CACHE = [];
 
     protected $fillable = [
         'charity_id',
@@ -95,7 +93,6 @@ class Activity extends Model
         'extends' => 'array',
         'is_visible' => 'bool',
         'is_private' => 'bool',
-        'is_online' => 'bool',
     ];
 
     protected $attributes = [
@@ -169,6 +166,11 @@ class Activity extends Model
         return $this->tickets()->where(['user_id' => Auth::id()])->first();
     }
 
+    public function scopeTicket($query)
+    {
+//        return $query->where('votes', '>', 100);
+    }
+
     protected static function booted()
     {
         static::saving(
@@ -184,6 +186,6 @@ class Activity extends Model
 
     public function shouldBeSearchable(): bool
     {
-        return $this->is_online == true;
+        return $this->is_visible == true;
     }
 }

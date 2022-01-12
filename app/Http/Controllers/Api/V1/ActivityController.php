@@ -40,7 +40,7 @@ class ActivityController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $request->merge(['is_online' => true]);
+        $request->merge(['is_v' => true]);
         $activities = Activity::filter($request->all())->simplePaginate($request->input('per_page', 15));
         return Response::success(new ActivityCollection($activities));
     }
@@ -68,6 +68,7 @@ class ActivityController extends Controller
                     $data['apply_status'] = $activityApplyRecord->status;
                 }
             }
+            $data['is_buy'] = !empty($activity->ticket());
             if ($activity->ticket()) {
                 $teamInvite = GroupInvite::whereTicketId($activity->ticket()->id)->first();
                 if ($teamInvite) {
@@ -80,9 +81,13 @@ class ActivityController extends Controller
                         'deny_token' => $teamInvite->deny_token,
                     ];
                 }
-                $data['role'] = $activity->ticket()->type;
+                $data['role'] = match ($activity->ticket()->type) {
+                    TICKET::TYPE_DONOR => TICKET::TYPE_DONOR,
+                    TICKET::TYPE_SPONSOR => TICKET::TYPE_SPONSOR,
+                    default => TICKET::TYPE_CHARITY,
+                };
                 $data['is_anonymous'] = $activity->ticket()->anonymous;
-                $data['is_group'] = $activity->ticket()->group->exists();
+                $data['is_group'] = $activity->ticket()->has('group')->exists();
             }
         }
         visits($activity)->increment();
@@ -165,7 +170,7 @@ class ActivityController extends Controller
             'method' => 'sometimes|in:STRIPE',
             'amount' => 'required|numeric|min:1|not_in:0',
         ]);
-        abort_if(empty($activity->charity->stripe_account), 500, 'No stripe connect account opened');
+        abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
         $order = $this->orderService->activity(Auth::user(), $activity, $request->amount);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,

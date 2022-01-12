@@ -43,6 +43,8 @@ class GroupController extends Controller
         $data = [
             'id' => $ticket->group->id,
             'name' => $ticket->group->name,
+            'description' => $ticket->group->description,
+            'num' => $ticket->group->num,
             'rank' => $ranks->ranks,
             'seat_num' => $ticket->seat_num,
             'total_amount' => $ranks->total_amount,

@@ -56,8 +56,8 @@ class ActivityController extends Controller
         $activity->status = $request->get('status');
         $activity->remark = $request->get('remark');
         if ($activity->status == Activity::STATUS_PASSED) {
-            $this->activityService->update($activity, $activity->cache);
-            $activity->is_online = true;
+            $this->activityService->update($activity, $activity->cache->toArray());
+            $activity->is_visible = true;
         }
         $activity->save();
         return Response::success();

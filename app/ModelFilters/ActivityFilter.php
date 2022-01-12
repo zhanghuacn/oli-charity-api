@@ -45,7 +45,7 @@ class ActivityFilter extends ModelFilter
 
     public function isOnline($value): ActivityFilter
     {
-        return $this->where('is_online', '=', true);
+        return $this->where('is_visible', '=', true);
     }
 
     public function sort($value)
