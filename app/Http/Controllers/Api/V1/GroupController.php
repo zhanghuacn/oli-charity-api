@@ -33,7 +33,7 @@ class GroupController extends Controller
     public function show(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $ticket = $activity->ticket();
+        $ticket = $activity->ticket;
         abort_if(empty($ticket->group_id), 422, 'Not joined any team');
         $ranks = $activity->tickets()
             ->selectRaw('group_id, sum(amount) as total_amount, (RANK() OVER(ORDER BY sum(amount) DESC)) as ranks')
@@ -102,7 +102,7 @@ class GroupController extends Controller
     {
         Gate::authorize('check-ticket', $activity);
         $team = DB::transaction(function () use ($activity, $request) {
-            $ticket = $activity->ticket();
+            $ticket = $activity->ticket;
             abort_if(!empty($ticket->group_id), 422, 'Joined The Group');
             abort_if(GroupInvite::whereTicketId($ticket->id)->exists(), 422, 'Invitation In Progress');
             $request->validate([
@@ -148,8 +148,8 @@ class GroupController extends Controller
             'ticket' => 'required|exists:tickets,code',
         ]);
         $ticket = Ticket::whereCode($request->get('ticket'))->first();
-        if (!$this->teamService->hasPendingInvite($ticket, $activity->ticket()->group)) {
-            $this->teamService->inviteToGroup($ticket, $activity->ticket()->group, function (GroupInvite $invite) {
+        if (!$this->teamService->hasPendingInvite($ticket, $activity->my_ticket->group)) {
+            $this->teamService->inviteToGroup($ticket, $activity->my_ticket->group, function (GroupInvite $invite) {
                 $invite->ticket->user->notify(new InvitePaid($invite));
             });
         }
@@ -182,7 +182,7 @@ class GroupController extends Controller
     {
         Gate::authorize('check-ticket', $activity);
         DB::transaction(function () use ($activity) {
-            $ticket = $activity->ticket();
+            $ticket = $activity->ticket;
             if ($ticket->group->owner_id == $ticket->group_id) {
                 $owner = Group::whereId($ticket->group_id)->tickets()->where('id', '<>', $ticket->id)->first();
                 $ticket->group->owner_id = $owner->id;

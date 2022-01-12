@@ -64,13 +64,16 @@ class ActivityController extends Controller
         if (Auth::check()) {
             if ($activity->is_private) {
                 $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id()])->first();
-                if ($activityApplyRecord->exists()) {
-                    $data['apply_status'] = $activityApplyRecord->status;
-                }
+                $data['apply_status'] = match (optional($activityApplyRecord)->status) {
+                    Apply::STATUS_WAIT => 'APPLYINT',
+                    Apply::STATUS_PASSED => 'APPLIED',
+                    Apply::STATUS_REFUSE => 'REFUSE',
+                    default => 'WAIT'
+                };
             }
-            $data['is_buy'] = !empty($activity->ticket());
-            if ($activity->ticket()) {
-                $teamInvite = GroupInvite::whereTicketId($activity->ticket()->id)->first();
+            $data['is_buy'] = !empty($activity->ticket);
+            if ($activity->ticket) {
+                $teamInvite = GroupInvite::whereTicketId($activity->my_ticket->id)->first();
                 if ($teamInvite) {
                     $data['invite'] = [
                         'inviter_id' => $teamInvite->inviter->id,
@@ -81,13 +84,14 @@ class ActivityController extends Controller
                         'deny_token' => $teamInvite->deny_token,
                     ];
                 }
-                $data['role'] = match ($activity->ticket()->type) {
+                $data['role'] = match ($activity->my_ticket->type) {
                     TICKET::TYPE_DONOR => TICKET::TYPE_DONOR,
                     TICKET::TYPE_SPONSOR => TICKET::TYPE_SPONSOR,
                     default => TICKET::TYPE_CHARITY,
                 };
-                $data['is_anonymous'] = $activity->ticket()->anonymous;
-                $data['is_group'] = $activity->ticket()->has('group')->exists();
+                $data['is_anonymous'] = $activity->my_ticket->anonymous;
+                $data['is_group'] = !empty($activity->my_ticket->group);
+                $data['is_sign'] = !empty($activity->my_ticket->verified_at);
             }
         }
         visits($activity)->increment();

@@ -27,7 +27,7 @@ class LotteryController extends Controller
                 'image' => collect($item->images)->first(),
                 'time' => $item->draw_time,
                 'standard_amount' => $item->standard_amount,
-                'is_standard' => $activity->ticket()->amount >= $item->standard_amount,
+                'is_standard' => $activity->my_ticket->amount >= $item->standard_amount,
             ];
         });
         return Response::success($data);
@@ -40,7 +40,7 @@ class LotteryController extends Controller
             $lottery->toArray(),
             [
                 'prizes' => $lottery->prizes,
-                'lottery_code' => $activity->ticket()->lottery_code,
+                'lottery_code' => $activity->my_ticket->lottery_code,
                 'winner' => $lottery->prizes()->where('winners->uid', Auth::id())->first(['id', 'name']),
             ]
         );

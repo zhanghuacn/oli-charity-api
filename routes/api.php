@@ -110,6 +110,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::post('/events/{activity}/teams/actions/quit', [GroupController::class, 'quit']);
 
     Route::get('/events/{activity}/transfers', [TransferController::class, 'index']);
+    Route::get('/events/{activity}/transfers', [TransferController::class, 'list']);
     Route::post('/events/{activity}/actions/donation', [ActivityController::class, 'order']);
     Route::post('/events/{activity}/actions/transfer', [TransferController::class, 'transfer']);
     Route::post('/events/{activity}/actions/verify-transfer', [TransferController::class, 'check']);

@@ -32,7 +32,7 @@ class ApiPolicy
 
     public function staff(User $user, Activity $activity): bool
     {
-        return $activity->tickets()->where(['user_id' => $user->id, 'type' => Ticket::TYPE_STAFF])->doesntExist();
+        return $activity->tickets()->where(['user_id' => $user->id])->whereIn('type', [Ticket::TYPE_STAFF, Ticket::TYPE_HOST, Ticket::TYPE_CHARITY])->exists();
     }
 
     public function owner(User $user, Group $group): bool

@@ -143,7 +143,7 @@ class ActivityController extends Controller
     public function submit(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
-        abort_if(!in_array($activity->status, [Activity::STATUS_WAIT, Activity::STATUS_REFUSE]), 422, 'Under Review');
+        abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'Under Review');
         $activity->status = Activity::STATUS_REVIEW;
         $activity->save();
         return Response::success();

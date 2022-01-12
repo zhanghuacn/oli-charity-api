@@ -53,16 +53,14 @@ class TicketController extends Controller
             'code' => 'required|exists:tickets,code',
         ]);
         $ticket = Ticket::where(['code' => $request['code']])->firstOrFail();
-        abort_if($ticket->verified_at != null, 400, 'Do not repeat the verification');
-        $ticket->verified_at = Carbon::now();
+        abort_if($ticket->verified_at != null, 422, 'The QR code has been signed in. Please do not repeat the operation');
         do {
             $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
             if (Ticket::where(['activity_id' => $ticket->activity_id, 'lottery_code' => $code])->doesntExist()) {
-                $ticket->lottery_code = $code;
+                $ticket->update(['lottery_code' => $code, 'verified_at' => now()]);
                 break;
             }
         } while (true);
-        $ticket->save();
         return Response::success([
             'seat_num' => $ticket->seat_num,
             'code' => $ticket->code,
@@ -72,7 +70,7 @@ class TicketController extends Controller
     public function myTickets(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $ticket = $activity->ticket();
+        $ticket = $activity->ticket;
         return Response::success([
             'code' => $ticket->code,
             'lottery_code' => $ticket->lottery_code,

@@ -16,7 +16,12 @@ class ApplyController extends Controller
 {
     public function index(Request $request, Activity $activity): JsonResponse|JsonResource
     {
-        $applies = $activity->applies()->with('user:id,name,avatar,profile')->simplePaginate($request->input('per_page', 15));
+        $request->validate([
+            'status' => 'required|in:WAIT,PASSED,RESUFE',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
+        $applies = $activity->applies()->filter($request->all())->with('user:id,name,avatar,profile')->simplePaginate($request->input('per_page', 15));
         return Response::success(new ApplyCollection($applies));
     }
 

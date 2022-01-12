@@ -78,6 +78,7 @@ class Activity extends Model
     ];
 
     protected $hidden = [
+        'my_ticket',
         'charity_id',
         'cache',
         'settings',
@@ -101,7 +102,13 @@ class Activity extends Model
 
     protected $appends = [
         'state',
+        'my_ticket'
     ];
+
+    public function getMyTicketAttribute(): ?Model
+    {
+        return $this->tickets()->where(['user_id' => Auth::id()])->first() ?? null;
+    }
 
     public function getStateAttribute(): ?string
     {
@@ -159,16 +166,6 @@ class Activity extends Model
     public function prizes(): HasMany
     {
         return $this->hasMany(Prize::class);
-    }
-
-    public function ticket(): Model|null
-    {
-        return $this->tickets()->where(['user_id' => Auth::id()])->first();
-    }
-
-    public function scopeTicket($query)
-    {
-//        return $query->where('votes', '>', 100);
     }
 
     protected static function booted()

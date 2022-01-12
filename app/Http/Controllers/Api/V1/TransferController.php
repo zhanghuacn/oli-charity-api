@@ -28,7 +28,7 @@ class TransferController extends Controller
 
     public function index(Activity $activity, Request $request): JsonResponse|JsonResource
     {
-        $ticket = $activity->ticket();
+        $ticket = $activity->ticket;
         $request->merge([
             'ticket_id' => $ticket->id,
             'user_id' => $ticket->user_id,
@@ -43,7 +43,7 @@ class TransferController extends Controller
             'voucher' => 'required|array',
             'voucher.*' => 'required|url',
         ]);
-        $ticket = $activity->ticket();
+        $ticket = $activity->ticket;
         $order = $this->orderService->transfer($activity, $ticket, 0, $request->get('voucher'));
         return Response::success([
             'order_sn' => $order->order_sn,
@@ -53,14 +53,14 @@ class TransferController extends Controller
     public function check(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'transfer_sn' => 'required|exists:transfers,transfer_sn,activity_id,' . $activity->id,
+            'transfer_id' => 'required|exists:transfers,id,activity_id,' . $activity->id,
             'amount' => 'required|confirmed|numeric|min:1|not_in:0',
             'status' => 'required|in:PASSED,REFUSE',
             'remark' => 'sometimes|string',
         ]);
         try {
             DB::transaction(function () use ($request) {
-                $transfer = Transfer::whereTransferSn($request->get('transfer_sn'))->first();
+                $transfer = Transfer::findOrFail($request->get('transfer_id'));
                 $transfer->amount = $request->get('amount');
                 $transfer->status = $request->get('status');
                 $transfer->remark = $request->get('remakr');

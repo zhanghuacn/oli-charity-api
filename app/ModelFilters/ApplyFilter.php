@@ -13,4 +13,9 @@ class ApplyFilter extends ModelFilter
      * @var array
      */
     public $relations = [];
+
+    public function status($status): ApplyFilter
+    {
+        return $this->where('status', '=', $status);
+    }
 }
