@@ -43,9 +43,9 @@ class ActivityFilter extends ModelFilter
         return $this->where('charity_id', '=', $id);
     }
 
-    public function isOnline($value): ActivityFilter
+    public function isVisible($value): ActivityFilter
     {
-        return $this->where('is_visible', '=', true);
+        return $this->where('is_visible', '=', $value);
     }
 
     public function sort($value)

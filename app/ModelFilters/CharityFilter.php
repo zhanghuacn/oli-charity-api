@@ -20,6 +20,11 @@ class CharityFilter extends ModelFilter
             ->orWhere('description', 'like', $value . '%');
     }
 
+    public function isVisible($value): CharityFilter
+    {
+        return $this->where('is_visible', '=', $value);
+    }
+
     public function sort($value)
     {
         switch ($value) {
