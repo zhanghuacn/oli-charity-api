@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Apply;
 use App\Models\Ticket;
+use App\Models\Transfer;
 use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -87,7 +88,7 @@ class TicketController extends Controller
             'sort' => 'sometimes|in:ASC,DESC',
         ]);
         abort_if($activity->tickets()->where(['user_id' => Auth::id(), 'type' => Ticket::TYPE_STAFF])->doesntExist(), 403, 'Permission denied');
-        $data = $activity->tickets()->with('user')->filter($request->all())->get()
+        $data = $activity->tickets()->with(['user', 'transfers'])->filter($request->all())->get()
             ->transform(function ($item) {
                 return [
                     'id' => $item->user->id,
@@ -96,7 +97,14 @@ class TicketController extends Controller
                     'avatar' => $item->user->avatar,
                     'profile' => $item->user->profile,
                     'lottery_code' => $item->lottery_code,
-                    'is_sign' => !is_null($item->verified_at)
+                    'transfer' => $item->transfers->transform(function (Transfer $transfer) {
+                        return [
+                            'id' => $transfer->id,
+                            'created_at' => $transfer->created_at,
+                            'amount' => $transfer->amount,
+                            'voucher' => $transfer->voucher
+                        ];
+                    })
                 ];
             });
         return Response::success($data);
