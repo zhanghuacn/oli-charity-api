@@ -47,7 +47,7 @@ class Activity extends Model
         'specialty' => [],
         'timeline' => [],
         'participates' => 0,
-        'total_income' => 0,
+        'total_amount' => 0,
     ];
 
     public const DEFAULT_CACHE = [];
@@ -71,7 +71,7 @@ class Activity extends Model
         'extends->specialty',
         'extends->timeline',
         'extends->participates',
-        'extends->total_income',
+        'extends->total_amount',
         'cache',
         'status',
         'remark',

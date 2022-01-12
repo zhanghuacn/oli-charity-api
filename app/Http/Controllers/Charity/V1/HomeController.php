@@ -36,7 +36,7 @@ class HomeController extends Controller
                         'begin_time' => $activity->begin_time,
                         'end_time' => $activity->end_time,
                         'participates' => $activity->extends['participates'],
-                        'total_income' => $activity->extends['total_income'],
+                        'total_income' => $activity->extends['total_amount'],
                     ];
                 }),
             'news' => News::filter($request->all())->limit(5)->get()
