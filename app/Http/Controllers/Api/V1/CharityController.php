@@ -79,7 +79,7 @@ class CharityController extends Controller
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
         $total = 0;
         for ($i = 1; $i <= 12; $i++) {
-            $total += array_key_exists($i, $received) ? $received[strval($i)] : 0;
+            $total += $received[str_pad($i, 2, '0', STR_PAD_LEFT)] ?? 0;
             $data['received'][] = $total;
         }
         return Response::success($data);
