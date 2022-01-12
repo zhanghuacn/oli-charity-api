@@ -28,7 +28,7 @@ class TransferController extends Controller
 
     public function index(Activity $activity, Request $request): JsonResponse|JsonResource
     {
-        $ticket = $activity->ticket;
+        $ticket = $activity->my_ticket;
         $request->merge([
             'ticket_id' => $ticket->id,
             'user_id' => $ticket->user_id,
@@ -43,7 +43,7 @@ class TransferController extends Controller
             'voucher' => 'required|array',
             'voucher.*' => 'required|url',
         ]);
-        $ticket = $activity->ticket;
+        $ticket = $activity->my_ticket;
         $order = $this->orderService->transfer($activity, $ticket, 0, $request->get('voucher'));
         return Response::success([
             'order_sn' => $order->order_sn,

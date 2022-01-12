@@ -71,8 +71,8 @@ class ActivityController extends Controller
                     default => 'WAIT'
                 };
             }
-            $data['is_buy'] = !empty($activity->ticket);
-            if ($activity->ticket) {
+            $data['is_buy'] = !empty($activity->my_ticket);
+            if ($activity->my_ticket) {
                 $teamInvite = GroupInvite::whereTicketId($activity->my_ticket->id)->first();
                 if ($teamInvite) {
                     $data['invite'] = [

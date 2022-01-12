@@ -72,7 +72,7 @@ class TicketController extends Controller
     public function myTickets(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $ticket = $activity->ticket;
+        $ticket = $activity->my_ticket;
         return Response::success([
             'code' => $ticket->code,
             'lottery_code' => $ticket->lottery_code,
