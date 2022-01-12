@@ -87,7 +87,7 @@ class WebhookController extends CashierController
             'activity_id' => $order->activity_id,
             'user_id' => $order->user_id,
             'type' => Ticket::TYPE_DONOR,
-            'price' => $order->activity->price,
+            'price' => $order->amount,
         ]);
         $order->activity->update([
             'extends->participates' => bcadd($order->activity->extends['participates'], 1),
