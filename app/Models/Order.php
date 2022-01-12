@@ -40,6 +40,7 @@ class Order extends Model
         'order_sn',
         'user_id',
         'charity_id',
+        'activity_id',
         'type',
         'currency',
         'amount',
