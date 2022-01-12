@@ -120,7 +120,7 @@ class UcenterController extends Controller
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
         $total = 0;
         for ($i = 1; $i <= 12; $i++) {
-            $total += array_key_exists($i, $received) ? $received[strval($i)] : 0;
+            $total += array_key_exists($i, $received) ? $received[$i] : 0;
             $data['received'][] = $total;
         }
         return Response::success($data);
