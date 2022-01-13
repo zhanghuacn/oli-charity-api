@@ -42,7 +42,7 @@ class NewsFilter extends ModelFilter
         if (!$this->input('sort')) {
             $this->push('sort', 'default');
         }
-        if (Auth::user()->tokenCan('place-charity')) {
+        if (Auth::check() && Auth::user()->tokenCan('place-charity')) {
             $this->whereHasMorph('newsable', Charity::class, function (Builder $query) {
                 $query->where('id', '=', getPermissionsTeamId());
             });
