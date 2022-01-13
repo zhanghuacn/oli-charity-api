@@ -9,6 +9,8 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Laravel\Passport\Events\AccessTokenCreated;
 use Laravel\Passport\Events\RefreshTokenCreated;
+use SocialiteProviders\Apple\AppleExtendSocialite;
+use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -26,7 +28,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         RefreshTokenCreated::class => [
             PruneOldTokens::class,
-        ]
+        ],
+        SocialiteWasCalled::class => [
+            AppleExtendSocialite::class.'@handle',
+        ],
     ];
 
     /**

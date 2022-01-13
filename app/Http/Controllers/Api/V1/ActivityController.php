@@ -73,15 +73,15 @@ class ActivityController extends Controller
             }
             $data['is_buy'] = !empty($activity->my_ticket);
             if ($activity->my_ticket) {
-                $teamInvite = GroupInvite::whereTicketId($activity->my_ticket->id)->first();
-                if ($teamInvite) {
+                $groupInvite = GroupInvite::whereTicketId($activity->my_ticket->id)->first();
+                if ($groupInvite) {
                     $data['invite'] = [
-                        'inviter_id' => $teamInvite->inviter->id,
-                        'inviter_name' => $teamInvite->inviter->name,
-                        'inviter_avatar' => $teamInvite->inviter->avatar,
-                        'team_name' => $teamInvite->team->name,
-                        'accept_token' => $teamInvite->accept_token,
-                        'deny_token' => $teamInvite->deny_token,
+                        'inviter_id' => optional($groupInvite->inviter)->id,
+                        'inviter_name' => optional($groupInvite->inviter)->name,
+                        'inviter_avatar' => optional($groupInvite->inviter)->avatar,
+                        'team_name' => optional($groupInvite->group)->name,
+                        'accept_token' => $groupInvite->accept_token,
+                        'deny_token' => $groupInvite->deny_token,
                     ];
                 }
                 $data['role'] = match ($activity->my_ticket->type) {

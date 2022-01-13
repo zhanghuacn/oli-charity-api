@@ -27,6 +27,7 @@ class Transfer extends Model
         'charity_id',
         'activity_id',
         'ticket_id',
+        'code',
         'user_id',
         'amount',
         'status',
@@ -72,7 +73,7 @@ class Transfer extends Model
     {
         static::saving(
             function (Transfer $transfer) {
-                $transfer->transfer_sn = $transfer->transfer_sn ?? app('Kra8\Snowflake\Snowflake')->next();
+                $transfer->code = $transfer->code ?? app('Kra8\Snowflake\Snowflake')->next();
             }
         );
     }

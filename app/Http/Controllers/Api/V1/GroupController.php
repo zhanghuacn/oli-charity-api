@@ -8,7 +8,7 @@ use App\Models\Group;
 use App\Models\GroupInvite;
 use App\Models\Ticket;
 use App\Notifications\InvitePaid;
-use App\Services\TeamService;
+use App\Services\GroupService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,9 +23,9 @@ use function optional;
 
 class GroupController extends Controller
 {
-    private TeamService $teamService;
+    private GroupService $teamService;
 
-    public function __construct(TeamService $teamService)
+    public function __construct(GroupService $teamService)
     {
         $this->teamService = $teamService;
     }
@@ -58,7 +58,7 @@ class GroupController extends Controller
                         'total_amount' => $item->amount,
                     ];
                 }),
-            'invite' => GroupInvite::whereTeamId($ticket->group_id)->with('ticket.user')->get()
+            'invite' => GroupInvite::whereGroupId($ticket->group_id)->with('ticket.user')->get()
                 ->transform(function ($item) {
                     return [
                         'id' => $item->ticket->user->id,
@@ -79,6 +79,9 @@ class GroupController extends Controller
             'keyword' => 'required',
         ]);
         $data = $activity->tickets()->whereNull('group_id')
+            ->whereHas('groupInvite', function (Builder $query) use ($activity, $request) {
+                $query->whereNotIn('ticket_id', $activity->tickets->pluck('id'));
+            })
             ->whereHas('user', function (Builder $query) use ($request) {
                 $query->where('username', 'like', $request->keyword . '%')
                     ->orWhere('email', 'like', $request->keyword . '%');
@@ -89,7 +92,7 @@ class GroupController extends Controller
                     'avatar' => optional($item->user)->avatar,
                     'profile' => optional($item->user)->profile,
                     'ticket' => $item->code,
-                    'is_invite' => GroupInvite::whereTicketId($item->id)->exists()
+                    'is_invite' => !empty($item->groupInvite)
                 ];
             });
         return Response::success($data);
@@ -130,7 +133,7 @@ class GroupController extends Controller
     public function update(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        Gate::authorize('check-group', $activity);
+        Gate::authorize('check-group', $activity->my_ticket->group);
         $ticket = $activity->tickets()->where(['user_id' => Auth::id()])->firstOrFail();
         $request->validate([
             'name' => 'required|string',

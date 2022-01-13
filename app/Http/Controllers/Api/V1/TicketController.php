@@ -30,6 +30,7 @@ class TicketController extends Controller
     {
         Gate::authorize('check-apply', $activity);
         abort_if(!empty($activity->my_ticket), 422, 'Tickets purchased');
+        abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
         $order = $this->orderService->tickets(Auth::user(), $activity);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
@@ -103,7 +104,8 @@ class TicketController extends Controller
                             'id' => $transfer->id,
                             'created_at' => $transfer->created_at,
                             'amount' => $transfer->amount,
-                            'voucher' => $transfer->voucher
+                            'voucher' => $transfer->voucher,
+                            'status' => $transfer->status,
                         ];
                     })
                 ];

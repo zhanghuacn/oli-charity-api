@@ -6,9 +6,9 @@ use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\Goods;
 use App\Models\Order;
+use App\Models\Ticket;
 use App\Models\Transfer;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -153,7 +153,7 @@ class OrderService
         }
     }
 
-    public function transfer(Activity $activity, Model $ticket, mixed $amount, mixed $voucher): Order
+    public function transfer(Activity $activity, Ticket $ticket, mixed $amount, mixed $voucher): Order
     {
         try {
             return DB::transaction(function () use ($voucher, $amount, $ticket, $activity) {
@@ -175,10 +175,7 @@ class OrderService
                     'fee_amount' => 0,
                     'total_amount' => $amount,
                     'payment_type' => Order::PAYMENT_OFFLINE,
-                    'payment_no' => '',
-                    'extends' => [
-                        'transfer_sn' => $transfer->transfer_sn,
-                    ]
+                    'payment_no' => $transfer->code,
                 ]);
                 $order->orderable()->associate($activity);
                 $order->save();

@@ -61,14 +61,14 @@ class TransferController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $transfer = Transfer::findOrFail($request->get('transfer_id'));
-                $transfer->amount = $request->get('amount');
+                $transfer->amount = $request->get('amount') ?? 0;
                 $transfer->status = $request->get('status');
                 $transfer->remark = $request->get('remakr');
                 $transfer->verified_at = Carbon::now();
                 $transfer->save();
 
-                $order = Order::where('extends->transfer_sn', $transfer->transfer_sn)->firstOrFail();
-                $order->payment_status = $transfer->status == Transfer::STATUS_PASSED ? Order::STATUS_PAID : Order::STATUS_FAIL;
+                $order = Order::wherePaymentNo($transfer->code)->firstOrFail();
+                $order->payment_status = $transfer->status == Transfer::STATUS_PASSED ? Order::STATUS_PAID : Order::STATUS_CLOSED;
                 if ($transfer->status == Transfer::STATUS_PASSED) {
                     $order->payment_time = Carbon::now();
                 }

@@ -25,13 +25,13 @@ class GroupInvite extends Model
     protected $fillable = [
         'ticket_id',
         'inviter_id',
-        'team_id',
+        'group_id',
         'type',
         'accept_token',
         'deny_token',
     ];
 
-    public function team(): BelongsTo
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
