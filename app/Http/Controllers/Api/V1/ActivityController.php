@@ -11,6 +11,7 @@ use App\Models\GroupInvite;
 use App\Models\Order;
 use App\Models\Ticket;
 use App\Services\OrderService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -175,6 +176,7 @@ class ActivityController extends Controller
             'amount' => 'required|numeric|min:1|not_in:0',
         ]);
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
+        abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
         $order = $this->orderService->activity(Auth::user(), $activity, $request->amount);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,

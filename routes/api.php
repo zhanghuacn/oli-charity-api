@@ -79,17 +79,14 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::get('/ucenter/follow-events', [UcenterController::class, 'followActivities']);
     Route::get('/ucenter/follow-users', [UcenterController::class, 'followUsers']);
 
-
     Route::post('/events/{activity}/actions/apply', [ActivityController::class, 'apply']);
     Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);
     Route::post('/events/{activity}/actions/scan', [TicketController::class, 'scan']);
     Route::get('/events/{activity}/my-tickets', [TicketController::class, 'myTickets']);
     Route::get('/events/{activity}/guests', [TicketController::class, 'guests']);
     Route::put('/events/{activity}/actions/anonymous', [TicketController::class, 'anonymous']);
-
     Route::get('/events/{activity}/lotteries', [LotteryController::class, 'index']);
     Route::get('/events/{activity}/lotteries/{lottery}', [LotteryController::class, 'show']);
-
     Route::get('/events/{activity}/goods', [GoodsController::class, 'index']);
     Route::get('/events/{activity}/goods/{goods}', [GoodsController::class, 'show']);
     Route::post('/events/{activity}/goods/{goods}/actions/order', [GoodsController::class, 'order']);

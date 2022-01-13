@@ -8,6 +8,7 @@ use App\Http\Resources\Api\GoodsResource;
 use App\Models\Activity;
 use App\Models\Goods;
 use App\Services\OrderService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -40,7 +41,9 @@ class GoodsController extends Controller
 
     public function order(Activity $activity, Goods $goods, Request $request): JsonResponse|JsonResource
     {
-        abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404);
+        abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
+        abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
+        abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404, 'Goods is not found');
         $request->validate([
             'method' => 'required|in:STRIPE',
         ]);
