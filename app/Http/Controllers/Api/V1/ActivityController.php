@@ -119,7 +119,7 @@ class ActivityController extends Controller
                     'id' => $ticket->user->id,
                     'name' => $ticket->anonymous ? 'anonymous' : $ticket->user->name,
                     'avatar' => $ticket->anonymous ? null : $ticket->user->avatar,
-                    'amount' => $ticket->amount,
+                    'total' => $ticket->amount,
                 ];
             });
         return Response::success($ranks);
@@ -128,8 +128,8 @@ class ActivityController extends Controller
     public function tableRanks(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $ranks = $activity->tickets()->select('seat_num', DB::raw('SUM(amount) as total_amount'))
-            ->groupBy('seat_num')->orderByDesc('total_amount')->get();
+        $ranks = $activity->tickets()->select('seat_num', DB::raw('SUM(amount) as total'))->whereNotNull('seat_num')
+            ->groupBy('seat_num')->orderByDesc('total')->get();
         return Response::success($ranks);
     }
 
@@ -142,7 +142,7 @@ class ActivityController extends Controller
                 return [
                     'id' => $item->group->id,
                     'name' => $item->group->name,
-                    'total_amount' => $item->total_amount,
+                    'total' => $item->total_amount,
                 ];
             });
         return Response::success($ranks);
