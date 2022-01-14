@@ -48,7 +48,7 @@ class GroupController extends Controller
             'rank' => $ranks->ranks,
             'seat_num' => $ticket->seat_num,
             'total_amount' => $ranks->total_amount,
-            'members' => Ticket::wheregroupId($ticket->group_id)->with('user')->get()
+            'members' => Ticket::wheregroupId($ticket->group_id)->with('user')->orderByDesc('amount')->get()
                 ->transform(function ($item) {
                     return [
                         'id' => $item->user->id,
@@ -79,9 +79,6 @@ class GroupController extends Controller
             'keyword' => 'required',
         ]);
         $data = $activity->tickets()->whereNull('group_id')
-            ->whereHas('groupInvite', function (Builder $query) use ($activity, $request) {
-                $query->whereNotIn('ticket_id', $activity->tickets->pluck('id'));
-            })
             ->whereHas('user', function (Builder $query) use ($request) {
                 $query->where('username', 'like', $request->keyword . '%')
                     ->orWhere('email', 'like', $request->keyword . '%');

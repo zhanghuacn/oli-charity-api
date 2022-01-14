@@ -30,6 +30,8 @@ class AuthController extends Controller
         ]);
         $user = User::has('charities')->where('username', $request['username'])
             ->orWhere('email', $request['username'])->first();
+        $charity = Charity::findOrFail($user->getTeamIdFromCharity());
+        abort_if($charity->status != Charity::STATUS_PASSED, 403, 'Permission denied');
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
@@ -59,7 +61,7 @@ class AuthController extends Controller
         } catch (Throwable $e) {
             abort(500, $e->getMessage());
         }
-        return Response::success($this->getLoginInfo($user));
+        return Response::success();
     }
 
     public function socialite(Request $request): JsonResponse|JsonResource

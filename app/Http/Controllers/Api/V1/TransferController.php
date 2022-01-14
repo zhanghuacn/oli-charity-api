@@ -58,9 +58,10 @@ class TransferController extends Controller
             'amount' => 'required_if:status,PASSED|confirmed|numeric|min:1|not_in:0',
             'remark' => 'sometimes|string',
         ]);
+        $transfer = Transfer::findOrFail($request->get('transfer_id'));
+        abort_if($transfer->status != Transfer::STATUS_WAIT, '422', 'Please do not review again');
         try {
-            DB::transaction(function () use ($request) {
-                $transfer = Transfer::findOrFail($request->get('transfer_id'));
+            DB::transaction(function () use ($transfer, $request) {
                 $transfer->amount = $request->get('amount') ?? 0;
                 $transfer->status = $request->get('status');
                 $transfer->remark = $request->get('remakr');
@@ -69,10 +70,13 @@ class TransferController extends Controller
 
                 $order = Order::wherePaymentNo($transfer->code)->firstOrFail();
                 $order->payment_status = $transfer->status == Transfer::STATUS_PASSED ? Order::STATUS_PAID : Order::STATUS_CLOSED;
-                if ($transfer->status == Transfer::STATUS_PASSED) {
-                    $order->payment_time = Carbon::now();
-                }
+                $order->amount = $transfer->amount;
+                $order->fee_amount = 0;
+                $order->total_amount = $transfer->amount;
+                $order->payment_time = Carbon::now();
                 $order->save();
+
+                $transfer->ticket()->increment('amount', $transfer->amount);
             });
         } catch (Throwable $e) {
             abort(500, $e->getMessage());

@@ -9,6 +9,7 @@ use App\Models\Ticket;
 use App\Models\Transfer;
 use App\Services\OrderService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -31,6 +32,7 @@ class TicketController extends Controller
         Gate::authorize('check-apply', $activity);
         abort_if(!empty($activity->my_ticket), 422, 'Tickets purchased');
         abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
+        abort_if(empty($activity->charity->stripe_account_id), 422, 'Unbound payment platform account');
         $order = $this->orderService->tickets(Auth::user(), $activity);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
@@ -89,7 +91,6 @@ class TicketController extends Controller
             'name' => 'sometimes|string',
             'sort' => 'sometimes|in:ASC,DESC',
         ]);
-        abort_if($activity->tickets()->where(['user_id' => Auth::id(), 'type' => Ticket::TYPE_STAFF])->doesntExist(), 403, 'Permission denied');
         $data = $activity->tickets()->with(['user', 'transfers'])->filter($request->all())->get()
             ->transform(function ($item) {
                 return [
@@ -110,6 +111,6 @@ class TicketController extends Controller
                     })
                 ];
             });
-        return Response::success($data);
+        return Response::success($data ?? []);
     }
 }

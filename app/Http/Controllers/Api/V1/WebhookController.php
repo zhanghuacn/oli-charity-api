@@ -89,28 +89,31 @@ class WebhookController extends CashierController
         ]);
         $tickets->save();
         $order->activity()->update([
-            'extends->participates' => bcadd($order->activity->extends['participates'], 1),
-            'extends->total_amount' => bcadd($order->activity->extends['total_amount'], $order->amount)
+            'extends->participates' => bcadd($order->activity->extends['participates'] ?? 0, 1),
+            'extends->total_amount' => bcadd($order->activity->extends['total_amount'] ?? 0, $order->amount)
         ]);
         $order->charity()->update([
-            'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
+            'extends->total_amount' => bcadd($order->charity->extends['total_amount'] ?? 0, $order->amount)
         ]);
     }
 
     private static function handleCommon(Order $order): void
     {
         $order->activity()->update([
-            'extends->total_amount' => bcadd($order->activity->extends['total_amount'], $order->amount)
+            'extends->total_amount' => bcadd($order->activity->extends['total_amount'] ?? 0, $order->amount)
         ]);
         $order->charity()->update([
-            'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
+            'extends->total_amount' => bcadd($order->charity->extends['total_amount'] ?? 0, $order->amount)
         ]);
+        if ($order->type == Order::TYPE_ACTIVITY) {
+            $order->activity->tickets()->where(['user_id' => $order->user_id])->increment('amount', $order->amount);
+        }
     }
 
     private static function handleCharity(Order $order): void
     {
         $order->charity()->update([
-            'extends->total_amount' => bcadd($order->charity->extends['total_amount'], $order->amount)
+            'extends->total_amount' => bcadd($order->charity->extends['total_amount'] ?? 0, $order->amount)
         ]);
     }
 }

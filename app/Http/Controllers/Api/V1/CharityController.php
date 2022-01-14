@@ -77,10 +77,8 @@ class CharityController extends Controller
         $data['total_amount'] = Order::filter($request->all())->sum('amount');
         $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
-        $total = 0;
         for ($i = 1; $i <= 12; $i++) {
-            $total += $received[str_pad($i, 2, '0', STR_PAD_LEFT)] ?? 0;
-            $data['received'][] = $total;
+            $data['received'][] = $received[str_pad($i, 2, '0', STR_PAD_LEFT)] ?? 0;
         }
         return Response::success($data);
     }

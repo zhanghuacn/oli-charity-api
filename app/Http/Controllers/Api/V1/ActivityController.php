@@ -117,8 +117,8 @@ class ActivityController extends Controller
             ->map(function (Ticket $ticket) {
                 return [
                     'id' => $ticket->user->id,
-                    'name' => $ticket->anonymous ? '' : $ticket->user->name,
-                    'avatar' => $ticket->anonymous ? 'anonymous' : $ticket->user->avatar,
+                    'name' => $ticket->anonymous ? 'anonymous' : $ticket->user->name,
+                    'avatar' => $ticket->anonymous ? null : $ticket->user->avatar,
                     'amount' => $ticket->amount,
                 ];
             });
@@ -150,9 +150,10 @@ class ActivityController extends Controller
 
     public function history(Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         $ranks = $activity->tickets()->selectRaw('user_id, amount, (RANK() OVER(ORDER BY amount DESC)) as ranks')->get()
             ->firstWhere('user_id', '=', Auth::id());
-        $orders = $activity->orders()->where(['user_id' => Auth::id(), 'payment_status' => Order::STATUS_PAID])
+        $orders = $activity->orders()->where(['user_id' => Auth::id(), 'type' => Order::TYPE_ACTIVITY])
             ->orderByDesc('payment_time')->get(['payment_type', 'amount', 'payment_time', 'payment_status'])
             ->transform(function ($item) {
                 return [
@@ -163,8 +164,8 @@ class ActivityController extends Controller
                 ];
             });
         return Response::success([
-            'rank' => $ranks->ranks,
-            'total_amount' => $ranks->amount,
+            'rank' => optional($ranks)->ranks,
+            'total_amount' => optional($ranks)->amount,
             'records' => $orders,
         ]);
     }
@@ -177,7 +178,7 @@ class ActivityController extends Controller
         ]);
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
         abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
-        $order = $this->orderService->activity(Auth::user(), $activity, $request->amount);
+        $order = $this->orderService->activity(Auth::user(), $activity, $request->get('amount'));
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,

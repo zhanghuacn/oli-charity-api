@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\UserResource;
 use App\Models\Order;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -56,7 +57,7 @@ class UserController extends Controller
         $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
         for ($i = 1; $i <= 12; $i++) {
-            $data['received'][] = array_key_exists($i, $received) ? $received[strval($i)] : 0;
+            $data['received'][] = $received[str_pad($i, 2, '0', STR_PAD_LEFT)] ?? 0;
         }
         return Response::success($data);
     }
@@ -73,7 +74,7 @@ class UserController extends Controller
             return [
                 'id' => $order->order_sn,
                 'amount' => $order->amount,
-                'time' => $order->payment_time,
+                'time' => Carbon::parse($order->payment_time)->toDateString(),
                 'orderable' => [
                     'id' => $order->orderable->id,
                     'name' => $order->orderable->name,

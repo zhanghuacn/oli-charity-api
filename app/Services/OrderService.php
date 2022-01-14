@@ -33,6 +33,7 @@ class OrderService
                     'amount' => $goods->price * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
+                    'receipt_email' => $user->email,
                 ], ['stripe_account' => $charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
@@ -65,11 +66,13 @@ class OrderService
                     'amount' => $amount * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
+                    'receipt_email' => $user->email,
                 ], ['stripe_account' => $activity->charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_ACTIVITY,
-                    'charity_id' => $activity->charity->id,
+                    'charity_id' => $activity->charity_id,
+                    'activity_id' => $activity->id,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'amount' => $amount,
                     'fee_amount' => 0,
@@ -97,6 +100,7 @@ class OrderService
                     'amount' => $activity->price * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
+                    'receipt_email' => $user->email,
                 ], ['stripe_account' => $activity->charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
@@ -130,6 +134,7 @@ class OrderService
                     'amount' => $amount * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
+                    'receipt_email' => $user->email,
                 ], ['stripe_account' => $charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
@@ -164,12 +169,14 @@ class OrderService
                 $transfer->user_id = $ticket->user_id;
                 $transfer->amount = $amount;
                 $transfer->voucher = $voucher;
+                $transfer->status = Transfer::STATUS_WAIT;
                 $transfer->save();
 
                 $order = new Order([
                     'user_id' => Auth::id(),
                     'type' => Order::TYPE_ACTIVITY,
-                    'charity_id' => $activity->charity->id,
+                    'charity_id' => $activity->charity_id,
+                    'activity_id' => $activity->id,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'amount' => $amount,
                     'fee_amount' => 0,

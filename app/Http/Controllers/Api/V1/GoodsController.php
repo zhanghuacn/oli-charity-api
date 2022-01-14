@@ -29,7 +29,19 @@ class GoodsController extends Controller
     public function index(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        return Response::success(new GoodsCollection($activity->goods));
+        return Response::success($activity->goods->transform(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'image' => collect($item->images)->first(),
+                'description' => $item->description,
+                'sponsor' => [
+                    'id' => optional($item->goodsable)->id,
+                    'name' => optional($item->goodsable)->name,
+                    'logo' => optional($item->goodsable)->logo,
+                ],
+            ];
+        }));
     }
 
     public function show(Activity $activity, Goods $goods): JsonResponse|JsonResource

@@ -31,7 +31,7 @@ class GroupService
 
     public function acceptInvite($invite)
     {
-        $invite->ticket->attachGroup($invite->team);
+        $invite->ticket->attachGroup($invite->group);
         $invite->delete();
     }
 
