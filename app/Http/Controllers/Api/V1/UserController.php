@@ -17,9 +17,6 @@ class UserController extends Controller
 {
     public function show(User $user): JsonResponse|JsonResource
     {
-        if (Auth::check()) {
-            $user = $user->attachFollowStatus(Auth::user());
-        }
         return Response::success(new UserResource($user));
     }
 

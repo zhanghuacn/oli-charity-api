@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Models\User;
+use Auth;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -19,7 +21,7 @@ class UserResource extends JsonResource
             'events' => $this->tickets()->count(),
             'donations' => $this->orders()->count(),
             'members' => $this->followers()->count(),
-            'is_follow' => $this->has_followed ?? false,
+            'is_follow' => Auth::check() && Auth::user()->isFollowing(User::find($this->id)),
         ];
     }
 }
