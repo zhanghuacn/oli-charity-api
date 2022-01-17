@@ -200,13 +200,13 @@ class ActivityService
                         );
                     });
                 }
-                $ticket_ids = collect($arr['staffs'])->whereNotNull('id')->pluck('id');
-                if (!empty($ticket_ids)) {
-                    $activity->tickets()->whereNotIn('id', $ticket_ids)->delete();
-                } else {
-                    $activity->tickets()->delete();
-                }
                 if (!empty($arr['staffs'])) {
+                    $ticket_ids = collect($arr['staffs'])->whereNotNull('id')->pluck('id');
+                    if (!empty($ticket_ids)) {
+                        $activity->tickets()->whereNotIn('id', $ticket_ids)->delete();
+                    } else {
+                        $activity->tickets()->delete();
+                    }
                     collect($arr['staffs'])->each(function ($item) use ($activity) {
                         Ticket::updateOrCreate(
                             [
