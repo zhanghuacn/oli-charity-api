@@ -42,7 +42,10 @@ class ActivityController extends Controller
 
     public function details(Activity $activity): JsonResponse|JsonResource
     {
-        return Response::success($activity->cache);
+        $data = $activity->cache->toArray();
+        $data['basic']['status'] = $activity->status;
+        $data['basic']['state'] = $activity->state;
+        return Response::success($data);
     }
 
     public function audit(Request $request, Activity $activity): JsonResponse|JsonResource
