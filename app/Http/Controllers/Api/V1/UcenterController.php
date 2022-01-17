@@ -119,7 +119,8 @@ EOF;
         $received = collect(DB::select($sql, [Auth::id(), Auth::id()]))->pluck('total', 'm');
         $data = [];
         for ($i = 1; $i <= 12; $i++) {
-            $data[now()->subMonths($i - 1)->format('Y-m')] = $received[now()->subMonths($i - 1)->format('Y-m')] ?? 0;
+            $month = now()->subMonths($i - 1)->format('Y-m');
+            $data[$month] = floatval($received[$month]) ?? 0;
         }
         ksort($data);
         return Response::success($data);
