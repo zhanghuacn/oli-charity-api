@@ -120,64 +120,66 @@ class ActivityService
                     ],
                     'cache' => $arr
                 ]);
-                $lottery_ids = collect($arr['lotteries'])->whereNotNull('id')->pluck('id');
-                if (!empty($lottery_ids)) {
-                    $activity->lotteries()->whereNotIn('id', $lottery_ids)->delete();
-                } else {
-                    $activity->lotteries()->delete();
-                }
-                collect($arr['lotteries'])->whereNotNull('name')->each(function ($item) use ($activity) {
-                    $lottery = Lottery::updateOrCreate(
-                        [
-                            'id' => $item['id'] ?? null,
-                            'activity_id' => $activity->id,
-                            'charity_id' => getPermissionsTeamId(),
-                        ],
-                        [
-                            'name' => $item['name'],
-                            'description' => $item['description'],
-                            'images' => $item['images'],
-                            'begin_time' => $item['begin_time'],
-                            'end_time' => $item['end_time'],
-                            'standard_amount' => $item['standard_amount'],
-                            'draw_time' => $item['draw_time'],
-                        ]
-                    );
-                    $prize_ids = collect($item['prizes'])->whereNotNull('id')->pluck('id');
-                    if (!empty($prize_ids)) {
-                        $lottery->prizes()->whereNotIn('id', $prize_ids)->delete();
+                if (!empty($arr['lotteries'])) {
+                    $lottery_ids = collect($arr['lotteries'])->whereNotNull('id')->pluck('id');
+                    if (!empty($lottery_ids)) {
+                        $activity->lotteries()->whereNotIn('id', $lottery_ids)->delete();
                     } else {
-                        $lottery->prizes()->delete();
+                        $activity->lotteries()->delete();
                     }
-                    if (!empty($item['prizes'])) {
-                        collect($item['prizes'])->whereNotNull('name')->each(function ($item) use ($activity, $lottery) {
-                            Prize::updateOrCreate(
-                                [
-                                    'id' => $item['id'] ?? null,
-                                    'activity_id' => $activity->id,
-                                    'charity_id' => getPermissionsTeamId(),
-                                    'lottery_id' => $lottery->id,
-                                ],
-                                [
-                                    'name' => $item['name'],
-                                    'description' => $item['description'] ?? '',
-                                    'num' => $item['stock'],
-                                    'price' => $item['price'],
-                                    'images' => $item['images'],
-                                    'prizeable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
-                                    'prizeable_id' => empty($item['sponsor']) ? getPermissionsTeamId() : $item['sponsor']['id'],
-                                ]
-                            );
-                        });
-                    }
-                });
-                $goods_ids = collect($arr['sales'])->whereNotNull('id')->pluck('id');
-                if (!empty($goods_ids)) {
-                    $activity->goods()->whereNotIn('id', $goods_ids)->delete();
-                } else {
-                    $activity->goods()->delete();
+                    collect($arr['lotteries'])->whereNotNull('name')->each(function ($item) use ($activity) {
+                        $lottery = Lottery::updateOrCreate(
+                            [
+                                'id' => $item['id'] ?? null,
+                                'activity_id' => $activity->id,
+                                'charity_id' => getPermissionsTeamId(),
+                            ],
+                            [
+                                'name' => $item['name'],
+                                'description' => $item['description'],
+                                'images' => $item['images'],
+                                'begin_time' => $item['begin_time'],
+                                'end_time' => $item['end_time'],
+                                'standard_amount' => $item['standard_amount'],
+                                'draw_time' => $item['draw_time'],
+                            ]
+                        );
+                        $prize_ids = collect($item['prizes'])->whereNotNull('id')->pluck('id');
+                        if (!empty($prize_ids)) {
+                            $lottery->prizes()->whereNotIn('id', $prize_ids)->delete();
+                        } else {
+                            $lottery->prizes()->delete();
+                        }
+                        if (!empty($item['prizes'])) {
+                            collect($item['prizes'])->whereNotNull('name')->each(function ($item) use ($activity, $lottery) {
+                                Prize::updateOrCreate(
+                                    [
+                                        'id' => $item['id'] ?? null,
+                                        'activity_id' => $activity->id,
+                                        'charity_id' => getPermissionsTeamId(),
+                                        'lottery_id' => $lottery->id,
+                                    ],
+                                    [
+                                        'name' => $item['name'],
+                                        'description' => $item['description'] ?? '',
+                                        'num' => $item['stock'],
+                                        'price' => $item['price'],
+                                        'images' => $item['images'],
+                                        'prizeable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
+                                        'prizeable_id' => empty($item['sponsor']) ? getPermissionsTeamId() : $item['sponsor']['id'],
+                                    ]
+                                );
+                            });
+                        }
+                    });
                 }
                 if (!empty($arr['sales'])) {
+                    $goods_ids = collect($arr['sales'])->whereNotNull('id')->pluck('id');
+                    if (!empty($goods_ids)) {
+                        $activity->goods()->whereNotIn('id', $goods_ids)->delete();
+                    } else {
+                        $activity->goods()->delete();
+                    }
                     collect($arr['sales'])->each(function ($item) use ($activity) {
                         Goods::updateOrCreate(
                             [
