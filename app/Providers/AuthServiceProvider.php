@@ -50,7 +50,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('check-ticket', [ApiPolicy::class, 'purchase']);
         Gate::define('check-apply', [ApiPolicy::class, 'apply']);
         Gate::define('check-staff', [ApiPolicy::class, 'staff']);
-        Gate::define('check-group', [ApiPolicy::class, 'owner']);
+        Gate::define('check-group', [ApiPolicy::class, 'group']);
     }
 
     private function checkAdmin(): void

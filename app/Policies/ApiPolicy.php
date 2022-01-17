@@ -35,8 +35,8 @@ class ApiPolicy
         return in_array($activity->my_ticket->type, [Ticket::TYPE_STAFF, Ticket::TYPE_HOST, Ticket::TYPE_CHARITY]);
     }
 
-    public function owner(User $user, Group $group): bool
+    public function group(User $user, Group $group): bool
     {
-        return $user->id == $group->owner_id;
+        return $group->tickets()->where('user_id', $user->id)->exists();
     }
 }
