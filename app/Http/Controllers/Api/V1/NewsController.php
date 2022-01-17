@@ -17,6 +17,7 @@ class NewsController extends Controller
     public function index(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
+            'type' => 'sometimes|in:ALL,CHARITY,SYSTEM',
             'sort' => 'sometimes|string|in:ASC,DESC',
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',

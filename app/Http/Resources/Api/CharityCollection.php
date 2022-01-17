@@ -17,6 +17,7 @@ class CharityCollection extends ResourceCollection
                 'name' => $item->name,
                 'description' => $item->description,
                 'logo' => $item->logo,
+                'backdrop' => $item->backdrop
             ];
         });
     }

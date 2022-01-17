@@ -32,6 +32,7 @@ class Charity extends Model
 
     public const GUARD_NAME = 'charity';
     public const STATUS_WAIT = 'WAIT';
+    public const STATUS_REVIEW = 'REVIEW';
     public const STATUS_PASSED = 'PASSED';
     public const STATUS_REFUSE = 'REFUSE';
 
@@ -124,6 +125,11 @@ class Charity extends Model
     protected static function booted()
     {
         parent::boot();
+        static::creating(
+            function (Charity $charity) {
+                $charity->status = Charity::STATUS_REVIEW;
+            }
+        );
         self::created(function (Charity $charity) {
             $charity->roles()->createMany([
                 ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_CHARITY_SUPER_ADMIN, 'team_id' => $charity->id],
@@ -134,7 +140,7 @@ class Charity extends Model
 
     public function getDisplayStatusAttribute(): string
     {
-        return self::STATUSES[$this->status ?? self::STATUS_WAIT];
+        return self::STATUSES[$this->status ?? self::STATUS_REVIEW];
     }
 
     public function visits(): Relation

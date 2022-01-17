@@ -2,6 +2,7 @@
 
 namespace App\ModelFilters;
 
+use App\Models\Admin;
 use App\Models\Charity;
 use App\Models\News;
 use EloquentFilter\ModelFilter;
@@ -34,6 +35,21 @@ class NewsFilter extends ModelFilter
             default:
                 $this->orderBy('created_at', 'desc')->orderBy('id', 'desc');
                 break;
+        }
+    }
+
+    public function type($value)
+    {
+        switch ($value) {
+            case 'CHARITY':
+                $this->whereHasMorph('newsable', [Charity::class]);
+                break;
+            case 'SYSTEM':
+                $this->whereHasMorph('newsable', [Admin::class]);
+                break;
+            default:
+                $this->whereHasMorph('newsable', [Charity::class, Admin::class]);
+
         }
     }
 

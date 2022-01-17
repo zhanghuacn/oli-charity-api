@@ -65,7 +65,7 @@ class UcenterController extends Controller
             'backdrop' => 'sometimes|url',
         ]);
         $user = Auth::user();
-        $user->update($request->only(['avatar', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));
+        $user->update($request->only(['avatar', 'backdrop', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));
         $user->refresh();
         return Response::success([
             'id' => $user->id,
