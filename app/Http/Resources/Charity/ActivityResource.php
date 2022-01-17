@@ -22,7 +22,7 @@ class ActivityResource extends JsonResource
                 'location' => $this->location,
                 'begin_time' => $this->begin_time,
                 'end_time' => $this->end_time,
-                'price' => $this->price,
+                'price' => floatval($this->price),
                 'stock' => $this->stocks,
                 'is_private' => $this->is_private,
                 'images' => $this->images,
@@ -46,7 +46,7 @@ class ActivityResource extends JsonResource
                             'id' => $prize->id,
                             'name' => $prize->name,
                             'stock' => $prize->num,
-                            'price' => $prize->price,
+                            'price' => floatval($prize->price),
                             'sponsor' => $prize->prizeable->getMorphClass() != Sponsor::class ? [] : [
                                 'id' => $prize->prizeable->id,
                                 'name' => $prize->prizeable->name,
@@ -64,7 +64,7 @@ class ActivityResource extends JsonResource
                     'id' => $goods->id,
                     'name' => $goods->name,
                     'stock' => $goods->stock,
-                    'price' => $goods->price,
+                    'price' => floatval($goods->price),
                     'sponsor' => $goods->goodsable->getMorphClass() != Sponsor::class ? [] : [
                         'id' => $goods->goodsable->id,
                         'name' => $goods->goodsable->name,

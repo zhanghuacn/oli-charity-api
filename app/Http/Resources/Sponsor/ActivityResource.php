@@ -22,7 +22,7 @@ class ActivityResource extends JsonResource
                 'location' => $this->location,
                 'begin_time' => $this->begin_time,
                 'end_time' => $this->end_time,
-                'price' => $this->price,
+                'price' => floatval($this->price),
                 'is_private' => $this->is_private,
                 'images' => $this->images,
                 'specialty' => $this->extends['specialty'],
@@ -46,7 +46,7 @@ class ActivityResource extends JsonResource
                             'id' => $prize->id,
                             'name' => $prize->name,
                             'stock' => $prize->num,
-                            'price' => $prize->price,
+                            'price' => floatval($prize->price),
                             'images' => $prize->images,
                             'description' => $prize->description,
                         ];
@@ -60,8 +60,8 @@ class ActivityResource extends JsonResource
             })->transform(function (Goods $goods) {
                 return [
                     'name' => $goods->name,
-                    'stock' => $goods->name,
-                    'price' => $goods->name,
+                    'stock' => $goods->stock,
+                    'price' => floatval($goods->price),
                     'images' => $goods->images,
                     'description' => $goods->description,
                     'content' => $goods->content,

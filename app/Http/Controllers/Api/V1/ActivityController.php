@@ -61,7 +61,7 @@ class ActivityController extends Controller
             'name' => $activity->charity->name,
             'logo' => $activity->charity->logo,
         ];
-        $data['price'] = $activity->price;
+        $data['price'] = floatval($activity->price);
         if (Auth::check()) {
             if ($activity->is_private) {
                 $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id()])->first();

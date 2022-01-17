@@ -14,7 +14,7 @@ class GoodsResource extends JsonResource
             'images' => $this->images,
             'description' => $this->description,
             'content' => $this->content,
-            'price' => $this->price,
+            'price' => floatval($this->price),
             'sponsor' => [
                 'id' => optional($this->goodsable)->id,
                 'name' => optional($this->goodsable)->name,
