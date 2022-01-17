@@ -188,14 +188,18 @@ class ActivityController extends Controller
 
     public function favorite(Activity $activity): JsonResponse|JsonResource
     {
-        Auth::user()->favorite($activity);
+        if (!Auth()->user()->hasFavorited($activity)) {
+            Auth::user()->favorite($activity);
+        }
         return Response::success();
     }
 
     public function unfavorite(Activity $activity): JsonResponse|JsonResource
     {
         try {
-            Auth::user()->unfavorite($activity);
+            if (Auth()->user()->hasFavorited($activity)) {
+                Auth::user()->unfavorite($activity);
+            }
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }

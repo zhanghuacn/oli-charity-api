@@ -85,14 +85,18 @@ class CharityController extends Controller
 
     public function favorite(Charity $charity): JsonResponse|JsonResource
     {
-        Auth::user()->favorite($charity);
+        if (!Auth()->user()->hasFavorited($charity)) {
+            Auth::user()->favorite($charity);
+        }
         return Response::success();
     }
 
     public function unfavorite(Charity $charity): JsonResponse|JsonResource
     {
         try {
-            Auth::user()->unfavorite($charity);
+            if (Auth()->user()->hasFavorited($charity)) {
+                Auth::user()->unfavorite($charity);
+            }
         } catch (\Exception $e) {
             abort(500, $e->getMessage());
         }

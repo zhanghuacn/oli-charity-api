@@ -89,7 +89,9 @@ class UserController extends Controller
      */
     public function follow(User $user): JsonResponse|JsonResource
     {
-        Auth::user()->follow($user);
+        if (!Auth()->user()->isFollowing($user)) {
+            Auth::user()->follow($user);
+        }
         return Response::success();
     }
 
@@ -100,7 +102,9 @@ class UserController extends Controller
      */
     public function unfollow(User $user): JsonResponse|JsonResource
     {
-        Auth::user()->unfollow($user);
+        if (Auth()->user()->isFollowing($user)) {
+            Auth::user()->unfollow($user);
+        }
         return Response::success();
     }
 }
