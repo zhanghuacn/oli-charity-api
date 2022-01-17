@@ -23,6 +23,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
@@ -106,23 +107,21 @@ class UcenterController extends Controller
         return Response::success(new ActivityCollection($activities));
     }
 
-    public function chart(Request $request): JsonResponse|JsonResource
+    public function chart(): JsonResponse|JsonResource
     {
-        $request->validate([
-            'year' => 'sometimes|date_format:"Y"',
-        ]);
-        $request->merge([
-            'user_id' => Auth::id(),
-            'payment_status' => Order::STATUS_PAID,
-        ]);
-        $data['total_amount'] = floatval(Order::filter($request->all())->sum('amount'));
-        $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
-            ->groupBy('date')->pluck('total_amount', 'date')->toArray();
-        $total = 0;
+        $sql = <<<EOF
+SELECT a.m,SUM(b.total) AS total FROM (
+SELECT DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(total_amount) AS total FROM (
+SELECT payment_time,DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(amount) AS total_amount FROM orders WHERE user_id=? AND payment_status='PAID' GROUP BY m) orders GROUP BY m) a JOIN (
+SELECT DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(total_amount) AS total FROM (
+SELECT payment_time,DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(amount) AS total_amount FROM orders WHERE user_id=? AND payment_status='PAID' GROUP BY m) orders GROUP BY m) b ON a.m>=b.m GROUP BY a.m ORDER BY a.m;
+EOF;
+        $received = collect(DB::select($sql, [Auth::id(), Auth::id()]))->pluck('total', 'm');
+        $data = [];
         for ($i = 1; $i <= 12; $i++) {
-            $total += $received[str_pad($i, 2, '0', STR_PAD_LEFT)] ?? 0;
-            $data['received'][] = $total;
+            $data[now()->subMonths($i - 1)->format('Y-m')] = $received[now()->subMonths($i - 1)->format('Y-m')] ?? 0;
         }
+        ksort($data);
         return Response::success($data);
     }
 
