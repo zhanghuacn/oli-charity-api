@@ -60,9 +60,15 @@ class CharityController extends Controller
         ]);
     }
 
-    public function activities(Charity $charity): JsonResponse|JsonResource
+    public function activities(Request $request, Charity $charity): JsonResponse|JsonResource
     {
-        return Response::success(new ActivityCollection($charity->activities));
+        $request->validate([
+            'sort' => 'sometimes|string|in:AMOUNT,TIME',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
+        $activities = $charity->activities()->where(['is_visible' => true])->simplePaginate($request->input('per_page', 15));
+        return Response::success(new ActivityCollection($activities));
     }
 
     public function chart(Charity $charity, Request $request): JsonResponse|JsonResource
