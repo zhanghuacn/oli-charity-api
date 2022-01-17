@@ -111,19 +111,20 @@ class UcenterController extends Controller
     {
         $sql = <<<EOF
 SELECT a.m,SUM(b.total) AS total FROM (
-SELECT DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(total_amount) AS total FROM (
-SELECT payment_time,DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(amount) AS total_amount FROM orders WHERE user_id=? AND payment_status='PAID' GROUP BY m) orders GROUP BY m) a JOIN (
-SELECT DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(total_amount) AS total FROM (
-SELECT payment_time,DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(amount) AS total_amount FROM orders WHERE user_id=? AND payment_status='PAID' GROUP BY m) orders GROUP BY m) b ON a.m>=b.m GROUP BY a.m ORDER BY a.m;
+SELECT DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(p) AS total FROM (
+SELECT payment_time,DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(total_amount) AS p FROM orders WHERE user_id=? AND payment_status='PAID' GROUP BY m) orders GROUP BY m) a JOIN (
+SELECT DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(p) AS total FROM (
+SELECT payment_time,DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(total_amount) AS p FROM orders WHERE user_id=? AND payment_status='PAID' GROUP BY m) orders GROUP BY m) b ON a.m>=b.m GROUP BY a.m ORDER BY a.m;
 EOF;
         $received = collect(DB::select($sql, [Auth::id(), Auth::id()]))->pluck('total', 'm');
+        $total = Order::where(['user_id' => Auth::id(), 'payment_status' => Order::STATUS_PAID])->sum('total_amount');
         $data = [];
         for ($i = 1; $i <= 12; $i++) {
             $month = now()->subMonths($i - 1)->format('Y-m');
-            $data[$month] = floatval($received[$month]) ?? 0;
+            $data[$month] = floatval($received[$month] ?? 0);
         }
         ksort($data);
-        return Response::success($data);
+        return Response::success(['total' => floatval($total), 'received' => $data]);
     }
 
     public function followCharities(Request $request): JsonResponse|JsonResource
