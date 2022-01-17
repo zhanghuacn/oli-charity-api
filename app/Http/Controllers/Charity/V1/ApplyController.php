@@ -17,7 +17,7 @@ class ApplyController extends Controller
     public function index(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         $request->validate([
-            'status' => 'sometimes|in:WAIT,PASSED,RESUFE',
+            'status' => 'sometimes|in:WAIT,PASSED,REFUSE',
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
