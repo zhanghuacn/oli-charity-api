@@ -143,7 +143,7 @@ class ActivityController extends Controller
     public function submit(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
-        $this->checkUpdate($request);
+        $this->checkSubmit($request);
         abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'Under Review');
         $activity->status = Activity::STATUS_REVIEW;
         $activity->save();
@@ -206,10 +206,6 @@ class ActivityController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return void
-     */
     private function checkUpdate(Request $request): void
     {
         $request->validate([
@@ -265,6 +261,67 @@ class ActivityController extends Controller
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
             'staffs' => 'sometimes|array',
+            'staffs.*.id' => 'sometimes|integer|exists:tickets,id',
+            'staffs.*.type' => 'required|in:HOST,STAFF',
+            'staffs.*.uid' => 'required|distinct|integer|exists:charity_user,user_id',
+        ]);
+    }
+
+    private function checkSubmit(Request $request): void
+    {
+        $request->validate([
+            'basic.id' => 'required|integer|exists:activities,id',
+            'basic.name' => 'required|string',
+            'basic.description' => 'required|string',
+            'basic.content' => 'required|string',
+            'basic.location' => 'required|string',
+            'basic.begin_time' => 'required|date_format:Y-m-d H:i:s',
+            'basic.end_time' => 'required|date_format:Y-m-d H:i:s',
+            'basic.price' => 'required|numeric|min:0|not_in:0',
+            'basic.stock' => 'required|integer|min:1|not_in:0',
+            'basic.is_private' => 'required|boolean',
+            'basic.images' => 'required|array',
+            'basic.specialty' => 'sometimes|array',
+            'basic.specialty.*.title' => 'required|string',
+            'basic.specialty.*.description' => 'required|string',
+            'basic.timeline' => 'sometimes|array',
+            'basic.timeline.*.time' => 'required|date',
+            'basic.timeline.*.title' => 'required|string',
+            'basic.timeline.*.description' => 'required|string',
+            'lotteries' => 'sometimes|array',
+            'lotteries.*.id' => 'sometimes|integer|exists:lotteries,id',
+            'lotteries.*.name' => 'required|string',
+            'lotteries.*.description' => 'required|string',
+            'lotteries.*.begin_time' => 'required|date_format:Y-m-d H:i:s',
+            'lotteries.*.end_time' => 'required|date_format:Y-m-d H:i:s',
+            'lotteries.*.standard_amount' => 'required|numeric|min:0|not_in:0',
+            'lotteries.*.type' => 'required|in:AUTOMATIC,MANUAL',
+            'lotteries.*.draw_time' => 'exclude_unless:type,true|required|date_format:Y-m-d H:i:s',
+            'lotteries.*.images' => 'required|array',
+            'lotteries.*.images.*' => 'required|url',
+            'lotteries.*.prizes' => 'sometimes|array',
+            'lotteries.*.prizes.*.id' => 'sometimes|integer|exists:prizes,id',
+            'lotteries.*.prizes.*.name' => 'required|string',
+            'lotteries.*.prizes.*.description' => 'required|string',
+            'lotteries.*.prizes.*.stock' => 'required|integer|min:1|not_in:0',
+            'lotteries.*.prizes.*.price' => 'required|numeric|min:0|not_in:0',
+            'lotteries.*.prizes.*.content' => 'sometimes|string',
+            'lotteries.*.prizes.*.images' => 'required|array',
+            'lotteries.*.prizes.*.images.*' => 'required|url',
+            'lotteries.*.prizes.*.sponsor' => 'sometimes',
+            'lotteries.*.prizes.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
+            'sales' => 'sometimes|array',
+            'sales.*.id' => 'sometimes|integer|exists:goods,id',
+            'sales.*.name' => 'required|string',
+            'sales.*.description' => 'required|string',
+            'sales.*.stock' => 'required|integer|min:1|not_in:0',
+            'sales.*.price' => 'required|numeric|min:0|not_in:0',
+            'sales.*.content' => 'sometimes|string',
+            'sales.*.sponsor' => 'sometimes',
+            'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
+            'sales.*.images' => 'required|array',
+            'sales.*.images.*' => 'required|url',
+            'staffs' => 'required|array',
             'staffs.*.id' => 'sometimes|integer|exists:tickets,id',
             'staffs.*.type' => 'required|in:HOST,STAFF',
             'staffs.*.uid' => 'required|distinct|integer|exists:charity_user,user_id',
