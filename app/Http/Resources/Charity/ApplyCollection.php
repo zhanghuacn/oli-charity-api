@@ -15,7 +15,7 @@ class ApplyCollection extends ResourceCollection
             return [
                 'id' => $item->id,
                 'name' => $item->user->name,
-                'avatar' => $item->user->description,
+                'avatar' => $item->user->avatar,
                 'profile' => $item->user->profile,
                 'status' => $item->status,
                 'remark' => $item->remark,
