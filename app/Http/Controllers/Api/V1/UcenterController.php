@@ -107,24 +107,21 @@ class UcenterController extends Controller
         return Response::success(new ActivityCollection($activities));
     }
 
-    public function chart(): JsonResponse|JsonResource
+    public function chart(Request $request): JsonResponse|JsonResource
     {
-        $sql = <<<EOF
-SELECT a.m,SUM(b.total) AS total FROM (
-SELECT DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(p) AS total FROM (
-SELECT payment_time,DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(total_amount) AS p FROM orders WHERE user_id=? AND payment_status='PAID' GROUP BY m) orders GROUP BY m) a JOIN (
-SELECT DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(p) AS total FROM (
-SELECT payment_time,DATE_FORMAT(payment_time,'%Y-%m') AS m,SUM(total_amount) AS p FROM orders WHERE user_id=? AND payment_status='PAID' GROUP BY m) orders GROUP BY m) b ON a.m>=b.m GROUP BY a.m ORDER BY a.m;
-EOF;
-        $received = collect(DB::select($sql, [Auth::id(), Auth::id()]))->pluck('total', 'm');
-        $total = Order::where(['user_id' => Auth::id(), 'payment_status' => Order::STATUS_PAID])->sum('total_amount');
-        $data = [];
+        $request->merge([
+            'user_id' => Auth::id(),
+            'payment_status' => Order::STATUS_PAID,
+        ]);
+        $data['total_amount'] = Order::filter($request->all())->sum('amount');
+        $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
+            ->groupBy('date')->pluck('total_amount', 'date')->toArray();
+        $total = 0;
         for ($i = 1; $i <= 12; $i++) {
-            $month = now()->subMonths($i - 1)->format('Y-m');
-            $data[$month] = floatval($received[$month] ?? 0);
+            $total += $received[str_pad($i, 2, '0', STR_PAD_LEFT)] ?? 0;
+            $data['received'][] = $total;
         }
-        ksort($data);
-        return Response::success(['total' => floatval($total), 'received' => $data]);
+        return Response::success($data);
     }
 
     public function followCharities(Request $request): JsonResponse|JsonResource
