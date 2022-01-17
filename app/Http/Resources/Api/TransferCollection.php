@@ -14,7 +14,7 @@ class TransferCollection extends ResourceCollection
         return $this->collection->map(function ($item) {
             return [
                 'id' => $item->id,
-                'amount' => $item->amount,
+                'amount' => floatval($item->amount),
                 'voucher' => $item->voucher,
                 'status' => $item->status,
                 'remark' => $item->remark,

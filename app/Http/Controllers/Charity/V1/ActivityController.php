@@ -297,7 +297,7 @@ class ActivityController extends Controller
                 ];
             }),
             'statistics' => [
-                'income' => $orders->sum('total_amount'),
+                'income' => floatval($orders->sum('total_amount')),
                 'constitute' => $orders
             ],
         ];

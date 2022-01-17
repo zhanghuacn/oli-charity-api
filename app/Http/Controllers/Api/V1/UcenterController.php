@@ -115,7 +115,7 @@ class UcenterController extends Controller
             'user_id' => Auth::id(),
             'payment_status' => Order::STATUS_PAID,
         ]);
-        $data['total_amount'] = Order::filter($request->all())->sum('amount');
+        $data['total_amount'] = floatval(Order::filter($request->all())->sum('amount'));
         $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
         $total = 0;

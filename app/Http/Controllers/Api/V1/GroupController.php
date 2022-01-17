@@ -47,7 +47,7 @@ class GroupController extends Controller
             'num' => $ticket->group->num,
             'rank' => $ranks->ranks,
             'seat_num' => $ticket->seat_num,
-            'total_amount' => $ranks->total_amount,
+            'total_amount' => floatval($ranks->total_amount),
             'members' => Ticket::wheregroupId($ticket->group_id)->with('user')->orderByDesc('amount')->get()
                 ->transform(function ($item) {
                     return [
@@ -55,7 +55,7 @@ class GroupController extends Controller
                         'name' => $item->user->name,
                         'avatar' => $item->user->avatar,
                         'profile' => $item->user->profile,
-                        'total_amount' => $item->amount,
+                        'total_amount' => floatval($item->amount),
                     ];
                 }),
             'invite' => GroupInvite::whereGroupId($ticket->group_id)->with('ticket.user')->get()
@@ -65,7 +65,7 @@ class GroupController extends Controller
                         'name' => $item->ticket->user->name,
                         'avatar' => $item->ticket->user->avatar,
                         'profile' => $item->ticket->user->profile,
-                        'total_amount' => $item->ticket->amount,
+                        'total_amount' => floatval($item->ticket->amount),
                     ];
                 })
         ];

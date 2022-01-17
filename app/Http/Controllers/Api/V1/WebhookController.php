@@ -85,7 +85,7 @@ class WebhookController extends CashierController
             'activity_id' => $order->activity_id,
             'user_id' => $order->user_id,
             'type' => Ticket::TYPE_DONOR,
-            'price' => $order->amount,
+            'price' => floatval($order->amount),
         ]);
         $tickets->save();
         $order->activity()->update([

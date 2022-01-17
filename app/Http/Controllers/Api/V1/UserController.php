@@ -34,7 +34,7 @@ class UserController extends Controller
                 return [
                     'id' => $order->charity_id,
                     'name' => $order->charity->name,
-                    'total_amount' => $order->total_amount
+                    'total_amount' => floatval($order->total_amount),
                 ];
             });
         return Response::success($orders);
@@ -70,7 +70,7 @@ class UserController extends Controller
         $orders->getCollection()->transform(function (Order $order) {
             return [
                 'id' => $order->order_sn,
-                'amount' => $order->amount,
+                'amount' => floatval($order->amount),
                 'time' => Carbon::parse($order->payment_time)->toDateString(),
                 'orderable' => [
                     'id' => $order->orderable->id,

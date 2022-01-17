@@ -119,7 +119,7 @@ class ActivityController extends Controller
                     'id' => $ticket->user->id,
                     'name' => $ticket->anonymous ? 'anonymous' : $ticket->user->name,
                     'avatar' => $ticket->anonymous ? null : $ticket->user->avatar,
-                    'total' => $ticket->amount,
+                    'total' => floatval($ticket->amount),
                 ];
             });
         return Response::success($ranks);
@@ -142,7 +142,7 @@ class ActivityController extends Controller
                 return [
                     'id' => $item->group->id,
                     'name' => $item->group->name,
-                    'total' => $item->total_amount,
+                    'total' => floatval($item->total_amount),
                 ];
             });
         return Response::success($ranks);
@@ -165,7 +165,7 @@ class ActivityController extends Controller
             });
         return Response::success([
             'rank' => optional($ranks)->ranks,
-            'total_amount' => optional($ranks)->amount,
+            'total_amount' => floatval(optional($ranks)->amount),
             'records' => $orders,
         ]);
     }

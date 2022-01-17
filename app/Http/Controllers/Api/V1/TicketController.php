@@ -104,7 +104,7 @@ class TicketController extends Controller
                         return [
                             'id' => $transfer->id,
                             'created_at' => $transfer->created_at,
-                            'amount' => $transfer->amount,
+                            'amount' => floatval($transfer->amount),
                             'voucher' => $transfer->voucher,
                             'status' => $transfer->status,
                         ];
