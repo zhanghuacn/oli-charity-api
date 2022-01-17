@@ -43,7 +43,7 @@ class ActivityResource extends JsonResource
                             'name' => $prize->name,
                             'stock' => $prize->num,
                             'price' => $prize->price,
-                            'sponsor' => !empty($prize->prizeable->getMorphClass()) && $prize->prizeable->getMorphClass() != Sponsor::class ? [] : [
+                            'sponsor' => $prize->prizeable->getMorphClass() != Sponsor::class ? [] : [
                                 'id' => $prize->prizeable->id,
                                 'name' => $prize->prizeable->name,
                                 'logo' => $prize->prizeable->logo,
@@ -60,7 +60,7 @@ class ActivityResource extends JsonResource
                     'name' => $goods->name,
                     'stock' => $goods->name,
                     'price' => $goods->name,
-                    'sponsor' => !empty($goods->goodsable->getMorphClass()) && $goods->goodsable->getMorphClass() != Sponsor::class ? [] : [
+                    'sponsor' => $goods->goodsable->getMorphClass() != Sponsor::class ? [] : [
                         'id' => $goods->goodsable->id,
                         'name' => $goods->goodsable->name,
                         'logo' => $goods->goodsable->logo,
