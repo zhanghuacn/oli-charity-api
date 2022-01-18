@@ -25,7 +25,7 @@ class HomeController extends Controller
     public function explore(): JsonResponse|JsonResource
     {
         $data = [
-            'events' => new ActivityCollection(Activity::whereIsVisible(true)->limit(5)->get()),
+            'events' => new ActivityCollection(Activity::whereIsVisible(true)->where('end_time', '>=', now())->limit(5)->get()),
             'peoples' => new UserCollection(User::limit(5)->get()),
             'news' => new NewsCollection(News::limit(5)->get()),
             'charities' => new CharityCollection(Charity::whereIsVisible(true)->limit(5)->get()),

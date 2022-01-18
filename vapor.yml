@@ -27,7 +27,8 @@ environments:
         deploy:
           - 'php artisan migrate --force'
     staging:
-        domain: dev-api.olicharity.org
+        domain:
+          - dev-api.olicharity.org
         database: oli-charity
         octane: true
         octane-database-session-persist: true

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\CharityCollection;
 use App\Http\Resources\Api\CharityResource;
+use App\Http\Resources\Api\NewsCollection;
 use App\Models\Charity;
+use App\Models\News;
 use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
@@ -107,5 +109,18 @@ class CharityController extends Controller
             abort(500, $e->getMessage());
         }
         return Response::success();
+    }
+
+    public function news(Charity $charity): JsonResponse|JsonResource
+    {
+        return Response::success($charity->news()->get()->transform(function (News $news) {
+            return [
+                'id' => $news->id,
+                'title' => $news->title,
+                'image' => $news->thumb,
+                'description' => $news->description,
+                'time'=> $news->published_at
+            ];
+        }));
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Oauth;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Contracts\Foundation\Application;
@@ -17,10 +17,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Validation\Rules\Password as Pwd;
 use function abort;
 use function abort_if;
 
@@ -31,7 +32,7 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
-            'password' => ['required', Password::min(8)->mixedCase()->numbers()->uncompromised()],
+            'password' => ['required', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
         $user = User::create($request->all());
         Event::dispatch(new Registered($user));
@@ -92,13 +93,12 @@ class AuthController extends Controller
     {
         $user = User::find($request->route('id'));
         if ($user->hasVerifiedEmail()) {
-            return 'Mailbox verified';
+            return redirect(config('app.url') . '/auth/email-succeded?msg=Mailbox verified');
         }
-
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
-        return redirect('https://www.qq.com');
+        return redirect(config('app.url') . '/auth/email-succeded');
     }
 
     public function resend(Request $request): JsonResponse|JsonResource
@@ -125,5 +125,52 @@ class AuthController extends Controller
             'is_public_portfolio' => $user->extends['portfolio'],
         ];
         return $data;
+    }
+
+    public function forgotPassword(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return Response::success([
+                'status' => __($status)
+            ]);
+        }
+        return Response::fail(trans($status), 500, [
+            'email' => [trans($status)],
+        ]);
+    }
+
+    public function reset(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($request->get('password')),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                $user->tokens()->delete();
+
+                event(new PasswordReset($user));
+            }
+        );
+        if ($status == Password::PASSWORD_RESET) {
+            return Response::success('Password reset successfully');
+        }
+        return Response::fail(__($status));
     }
 }

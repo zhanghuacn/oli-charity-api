@@ -10,6 +10,7 @@ use App\Policies\Admin\RolePolicy;
 use App\Policies\AdminPolicy;
 use App\Policies\ApiPolicy;
 use App\Policies\CharityPolicy;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
@@ -32,6 +33,11 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            return config('app.url') . '/auth/reset-password?token=' . $token;
+        });
+
         Passport::routes();
         Passport::tokensCan([
             'place-app' => 'Check place app',

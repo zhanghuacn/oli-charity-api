@@ -42,6 +42,8 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/social-login', [AuthController::class, 'socialite']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::get('/explore', [HomeController::class, 'explore']);
 Route::get('/search', [HomeController::class, 'search']);
@@ -51,6 +53,7 @@ Route::get('/news/{news}', [NewsController::class, 'show']);
 
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{charity}', [CharityController::class, 'show']);
+Route::get('/charities/{charity}/news', [CharityController::class, 'news']);
 Route::get('/charities/{charity}/events', [CharityController::class, 'activities']);
 Route::get('/charities/{charity}/historical-donation', [CharityController::class, 'chart']);
 

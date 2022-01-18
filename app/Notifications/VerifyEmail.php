@@ -23,7 +23,7 @@ class VerifyEmail extends Notification implements ShouldQueue
     {
         $url = URL::temporarySignedRoute(
             'verification.verify',
-            Carbon::now()->addDays(1),
+            Carbon::now()->addDay(),
             ['id' => Crypt::encryptString($notifiable->id)]
         );
         return (new MailMessage())
