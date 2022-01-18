@@ -61,7 +61,7 @@ class AuthController extends Controller
     public function socialite(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'provider' => 'required|in:GOOGLE,FACEBOOK,TWITTER',
+            'provider' => 'required|in:GOOGLE,FACEBOOK,TWITTER,APPLE',
             'token' => 'required|string',
         ]);
         $provider = Str::lower($request->get('provider'));

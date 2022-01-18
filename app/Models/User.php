@@ -49,6 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const SOCIALITE_GOOGLE = 'google';
     public const SOCIALITE_FACEBOOK = 'facebook';
     public const SOCIALITE_TWITTER = 'twitter';
+    public const SOCIALITE_APPLE = 'apple';
 
     public const SAFE_FIELDS = [
         'id',
@@ -71,6 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail
         self::SOCIALITE_GOOGLE => '',
         self::SOCIALITE_FACEBOOK => '',
         self::SOCIALITE_TWITTER => '',
+        self::SOCIALITE_APPLE => '',
     ];
     // 默认设置信息
     public const DEFAULT_SETTINGS = [
@@ -106,6 +108,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'extends->' . self::SOCIALITE_GOOGLE,
         'extends->' . self::SOCIALITE_FACEBOOK,
         'extends->' . self::SOCIALITE_TWITTER,
+        'extends->' . self::SOCIALITE_APPLE,
         'is_admin',
         'is_visible',
         'first_active_at',
