@@ -29,6 +29,7 @@ environments:
     staging:
         domain:
           - dev-api.olicharity.org
+          - dev-api.imagine2080.com.au
         database: oli-charity
         octane: true
         octane-database-session-persist: true
