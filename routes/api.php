@@ -71,7 +71,6 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/ucenter/notifications', [UcenterController::class, 'notifications']);
     Route::get('/ucenter/events', [UcenterController::class, 'activities']);
-//    Route::get('/ucenter/information', [UcenterController::class, 'show']);
     Route::put('/ucenter/information', [UcenterController::class, 'update']);
     Route::put('/ucenter/privacy', [UcenterController::class, 'privacy']);
     Route::get('/ucenter/chart-history', [UcenterController::class, 'chart']);
@@ -86,6 +85,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);
     Route::post('/events/{activity}/actions/scan', [TicketController::class, 'scan']);
     Route::get('/events/{activity}/my-tickets', [TicketController::class, 'myTickets']);
+    Route::post('/events/{activity}/ticket-status', [TicketController::class, 'state']);
     Route::get('/events/{activity}/guests', [TicketController::class, 'guests']);
     Route::put('/events/{activity}/actions/anonymous', [TicketController::class, 'anonymous']);
     Route::get('/events/{activity}/lotteries', [LotteryController::class, 'index']);

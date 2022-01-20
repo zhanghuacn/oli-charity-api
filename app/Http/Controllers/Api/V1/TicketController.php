@@ -113,4 +113,14 @@ class TicketController extends Controller
             });
         return Response::success($data ?? []);
     }
+
+    public function state(Request $request, Activity $activity): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'code' => 'required|exists:tickets,code',
+        ]);
+        return Response::success(['verified_at' => optional($activity->my_ticket)->verified_at ?
+            Carbon::parse($activity->my_ticket->verified_at)->format('Y-m-d H:i:s')
+            : null]);
+    }
 }
