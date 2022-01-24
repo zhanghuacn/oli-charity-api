@@ -33,6 +33,7 @@ class TicketController extends Controller
         abort_if(!empty($activity->my_ticket), 422, 'Tickets purchased');
         abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
         abort_if(empty($activity->charity->stripe_account_id), 422, 'Unbound payment platform account');
+        abort_if($activity->stocks <= $activity->extends['participates'], 422, 'Tickets have been sold out');
         $order = $this->orderService->tickets(Auth::user(), $activity);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,

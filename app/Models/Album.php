@@ -32,6 +32,7 @@ class Album extends Model
     ];
 
     protected $casts = [
+        'is_visible' => 'bool',
         'created_at' => 'datetime:Y-m-d H:i:s',
     ];
 

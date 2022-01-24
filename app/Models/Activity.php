@@ -49,6 +49,7 @@ class Activity extends Model
         'timeline' => [],
         'participates' => 0,
         'total_amount' => 0,
+        'is_albums' => true,
     ];
 
     public const DEFAULT_CACHE = [];
@@ -73,6 +74,7 @@ class Activity extends Model
         'extends->timeline',
         'extends->participates',
         'extends->total_amount',
+        'extends->is_albums',
         'cache',
         'status',
         'remark',
@@ -95,6 +97,7 @@ class Activity extends Model
         'extends' => 'array',
         'is_visible' => 'bool',
         'is_private' => 'bool',
+        'extends->is_albums' => 'bool'
     ];
 
     protected $attributes = [

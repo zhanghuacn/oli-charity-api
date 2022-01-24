@@ -18,7 +18,7 @@ CREATE TABLE `activities` (
   `end_time` timestamp NOT NULL COMMENT '活动结束时间',
   `price` decimal(8,2) NOT NULL COMMENT '门票价格',
   `stocks` int unsigned NOT NULL COMMENT '门票库存',
-  `is_visible` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否可见',
+  `is_visible` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否可见',
   `is_private` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否私有',
   `images` json DEFAULT NULL COMMENT '活动图片',
   `settings` json DEFAULT NULL COMMENT '活动设置',
@@ -53,6 +53,23 @@ CREATE TABLE `admins` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `admins_username_unique` (`username`),
   UNIQUE KEY `admins_email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `albums`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `albums` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '地址',
+  `user_id` bigint NOT NULL COMMENT '用户ID',
+  `is_visible` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否展示',
+  `albumable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `albumable_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `albums_albumable_type_albumable_id_index` (`albumable_type`,`albumable_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `applies`;
@@ -94,7 +111,7 @@ CREATE TABLE `charities` (
   `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮箱',
   `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '地址',
   `stripe_account_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'stripe管理账号',
-  `is_visible` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否可见',
+  `is_visible` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否可见',
   `extends` json DEFAULT NULL COMMENT '扩展信息',
   `cache` json DEFAULT NULL COMMENT '数据缓存',
   `status` enum('WAIT','PASSED','REFUSE') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审核状态:等待，通过，拒绝',
@@ -183,8 +200,7 @@ CREATE TABLE `group_invite` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `group_invite_ticket_id_unique` (`ticket_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `group_ticket`;
@@ -404,7 +420,7 @@ CREATE TABLE `orders` (
   `payment_no` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '交易号',
   `payment_type` enum('ONLINE','OFFLINE') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '支付类型',
   `payment_method` enum('STRIPE','BANK') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '支付方式',
-  `payment_status` enum('UNPAID','IN_PAYMENT','PAID','CLOSED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'UNPAID' COMMENT '订单支付状态',
+  `payment_status` enum('UNPAID','IN_PAYMENT','PAID','CLOSED','FAIL') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'UNPAID' COMMENT '订单支付状态',
   `payment_time` timestamp NULL DEFAULT NULL COMMENT '支付时间',
   `extends` json DEFAULT NULL COMMENT '扩展信息',
   `orderable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -646,7 +662,6 @@ CREATE TABLE `tickets` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `tickets_activity_id_user_id_unique` (`activity_id`,`user_id`),
   UNIQUE KEY `tickets_code_unique` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -758,19 +773,9 @@ CREATE TABLE `visits` (
 
 INSERT INTO `migrations` VALUES (129,'2014_10_12_000000_create_users_table',1);
 INSERT INTO `migrations` VALUES (130,'2014_10_12_100000_create_password_resets_table',1);
-INSERT INTO `migrations` VALUES (131,'2016_06_01_000001_create_oauth_auth_codes_table',1);
-INSERT INTO `migrations` VALUES (132,'2016_06_01_000002_create_oauth_access_tokens_table',1);
-INSERT INTO `migrations` VALUES (133,'2016_06_01_000003_create_oauth_refresh_tokens_table',1);
-INSERT INTO `migrations` VALUES (134,'2016_06_01_000004_create_oauth_clients_table',1);
-INSERT INTO `migrations` VALUES (135,'2016_06_01_000005_create_oauth_personal_access_clients_table',1);
-INSERT INTO `migrations` VALUES (136,'2018_08_08_100000_create_telescope_entries_table',1);
 INSERT INTO `migrations` VALUES (137,'2018_12_14_000000_create_favorites_table',1);
-INSERT INTO `migrations` VALUES (138,'2019_05_03_000001_create_customer_columns',1);
-INSERT INTO `migrations` VALUES (139,'2019_05_03_000002_create_subscriptions_table',1);
-INSERT INTO `migrations` VALUES (140,'2019_05_03_000003_create_subscription_items_table',1);
 INSERT INTO `migrations` VALUES (141,'2019_08_19_000000_create_failed_jobs_table',1);
 INSERT INTO `migrations` VALUES (142,'2019_12_14_000001_create_personal_access_tokens_table',1);
-INSERT INTO `migrations` VALUES (143,'2020_04_04_000000_create_user_follower_table',1);
 INSERT INTO `migrations` VALUES (144,'2021_12_10_021111_create_notifications_table',1);
 INSERT INTO `migrations` VALUES (145,'2021_12_10_052737_create_news_table',1);
 INSERT INTO `migrations` VALUES (146,'2021_12_10_063824_create_visits_table',1);
@@ -790,3 +795,14 @@ INSERT INTO `migrations` VALUES (159,'2021_12_21_011027_create_admins_table',1);
 INSERT INTO `migrations` VALUES (160,'2021_12_21_074905_create_permission_tables',1);
 INSERT INTO `migrations` VALUES (161,'2021_12_21_075217_add_teams_fields',1);
 INSERT INTO `migrations` VALUES (162,'2021_12_21_080500_create_applies_table',1);
+INSERT INTO `migrations` VALUES (164,'2016_06_01_000001_create_oauth_auth_codes_table',2);
+INSERT INTO `migrations` VALUES (165,'2016_06_01_000002_create_oauth_access_tokens_table',2);
+INSERT INTO `migrations` VALUES (166,'2016_06_01_000003_create_oauth_refresh_tokens_table',2);
+INSERT INTO `migrations` VALUES (167,'2016_06_01_000004_create_oauth_clients_table',2);
+INSERT INTO `migrations` VALUES (168,'2016_06_01_000005_create_oauth_personal_access_clients_table',2);
+INSERT INTO `migrations` VALUES (169,'2018_08_08_100000_create_telescope_entries_table',2);
+INSERT INTO `migrations` VALUES (170,'2019_05_03_000001_create_customer_columns',2);
+INSERT INTO `migrations` VALUES (171,'2019_05_03_000002_create_subscriptions_table',2);
+INSERT INTO `migrations` VALUES (172,'2019_05_03_000003_create_subscription_items_table',2);
+INSERT INTO `migrations` VALUES (173,'2020_04_04_000000_create_user_follower_table',2);
+INSERT INTO `migrations` VALUES (174,'2022_01_24_151029_create_albums_table',2);
