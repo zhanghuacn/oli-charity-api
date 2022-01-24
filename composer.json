@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.0",
         "ext-bcmath": "*",
+        "ext-pdo": "*",
         "algolia/scout-extended": "^1.20",
         "aws/aws-sdk-php": "^3.208",
         "awssat/laravel-visits": "^3.0",
@@ -38,8 +39,7 @@
         "spatie/laravel-permission": "^5.4",
         "spiral/roadrunner": "^2.6",
         "stripe/stripe-php": "^7.107",
-        "tucker-eric/eloquentfilter": "^3.0",
-        "ext-pdo": "*"
+        "tucker-eric/eloquentfilter": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",

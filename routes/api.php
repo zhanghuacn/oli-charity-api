@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ActivityController;
+use App\Http\Controllers\Api\V1\AlbumController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CharityController;
 use App\Http\Controllers\Api\V1\GoodsController;
@@ -127,6 +128,10 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::get('/users/{user}/donation-history', [UserController::class, 'history']);
     Route::get('/users/{user}/charts/constitute', [UserController::class, 'constitute']);
     Route::get('/users/{user}/charts/history', [UserController::class, 'chart']);
+
+    Route::get('/events/{activity}/albums', [AlbumController::class, 'index']);
+    Route::post('/events/{activity}/albums', [AlbumController::class, 'store']);
+    Route::delete('/events/{activity}/albums/{album}', [AlbumController::class, 'destroy']);
 });
 
 

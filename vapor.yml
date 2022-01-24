@@ -42,11 +42,5 @@ environments:
           - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
           - 'php artisan event:cache'
           - 'npm ci && npm run dev && rm -rf node_modules'
-        firewall:
-          rate-limit: 1000
-          bot-control:
-            - CategorySearchEngine
-            - CategorySocialMedia
-            - CategoryScrapingFramework
         deploy:
           - 'php artisan migrate --force'
