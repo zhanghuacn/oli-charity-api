@@ -7,6 +7,7 @@ use App\Http\Resources\Api\AlbumCollection;
 use App\Http\Resources\Api\NewsCollection;
 use App\Models\Activity;
 use App\Models\Album;
+use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -32,6 +33,7 @@ class AlbumController extends Controller
     public function store(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
+        abort_if($activity->extends['is_albums'] == false && $activity->my_ticket->type == Ticket::TYPE_DONOR, 403, 'Permission denied');
         $request->validate([
             'paths' => 'required|array',
             'paths.*' => 'sometimes|url',
