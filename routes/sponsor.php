@@ -3,6 +3,7 @@
 use App\Http\Controllers\Sponsor\V1\ActivityController;
 use App\Http\Controllers\Sponsor\V1\AuthController;
 use App\Http\Controllers\Sponsor\V1\GoodsController;
+use App\Http\Controllers\Sponsor\V1\HomeController;
 use App\Http\Controllers\Sponsor\V1\PermissionController;
 use App\Http\Controllers\Sponsor\V1\RoleController;
 use App\Http\Controllers\Sponsor\V1\SponsorController;
@@ -25,6 +26,9 @@ Route::post('/auth/register', [AuthController::class, 'register'])->name('sponso
 
 Route::middleware(['auth:sponsor', 'scopes:place-sponsor', 'sponsor'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    Route::get('/home/search', [HomeController::class, 'search']);
+    Route::get('/home/dashboard', [HomeController::class, 'dashboard']);
 
     Route::get('/events', [ActivityController::class, 'index']);
     Route::get('/events/{activity}', [ActivityController::class, 'show']);

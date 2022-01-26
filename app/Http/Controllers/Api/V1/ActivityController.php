@@ -74,6 +74,7 @@ class ActivityController extends Controller
                 };
             }
             $data['is_buy'] = !empty($activity->my_ticket);
+            $data['is_albums'] = $activity->extends['is_albums'];
             if ($activity->my_ticket) {
                 $groupInvite = GroupInvite::whereTicketId($activity->my_ticket->id)->first();
                 if ($groupInvite) {
