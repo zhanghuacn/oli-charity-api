@@ -127,10 +127,10 @@ HTtY8w7O2NiDYqkH++tZURsCAwEAAQ==
         ],
     ],
 
-    'cache' => [
-        'prefix' => 'passport_',
-        'expires_in' => 300,
-        'tags' => [],
-    ],
+//    'cache' => [
+//        'prefix' => 'passport_',
+//        'expires_in' => 300,
+//        'tags' => [],
+//    ],
 
 ];

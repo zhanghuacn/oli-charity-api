@@ -78,7 +78,7 @@ class HomeController extends Controller
 
     private function received(): array
     {
-        $order = Order::filter([
+        $received = Order::filter([
             'charity_id' => getPermissionsTeamId(),
             'payment_status' => Order::STATUS_PAID,
         ])->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')

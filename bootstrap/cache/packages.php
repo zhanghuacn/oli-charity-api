@@ -166,13 +166,6 @@
       0 => 'Overtrue\\LaravelFollow\\FollowServiceProvider',
     ),
   ),
-  'overtrue/laravel-passport-cache-token' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Overtrue\\LaravelPassportCacheToken\\CacheTokenServiceProvider',
-    ),
-  ),
   'socialiteproviders/manager' => 
   array (
     'providers' => 

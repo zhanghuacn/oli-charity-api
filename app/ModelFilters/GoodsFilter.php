@@ -13,4 +13,10 @@ class GoodsFilter extends ModelFilter
      * @var array
      */
     public $relations = [];
+
+    public function keyword($value): ?GoodsFilter
+    {
+        return $this->where('name', 'like', $value . '%')
+            ->orWhere('description', 'like', $value . '%');
+    }
 }

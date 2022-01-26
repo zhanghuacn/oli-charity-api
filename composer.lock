@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "69b40b614ed9c5bd2cf77ed01c73d6b3",
+    "content-hash": "8488c847f1d25473c70b97b5fd5ce86b",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -4787,85 +4787,6 @@
                 }
             ],
             "time": "2021-11-04T03:31:42+00:00"
-        },
-        {
-            "name": "overtrue/laravel-passport-cache-token",
-            "version": "2.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/overtrue/laravel-passport-cache-token.git",
-                "reference": "4a64b3c7ffb6103846c7ad7d5c54b4d7cf453a41"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/overtrue/laravel-passport-cache-token/zipball/4a64b3c7ffb6103846c7ad7d5c54b4d7cf453a41",
-                "reference": "4a64b3c7ffb6103846c7ad7d5c54b4d7cf453a41",
-                "shasum": ""
-            },
-            "require": {
-                "laravel/framework": "^6.20|^7.14|^8.0",
-                "laravel/passport": "^9.2|^10.0"
-            },
-            "require-dev": {
-                "brainmaestro/composer-git-hooks": "^2.7",
-                "friendsofphp/php-cs-fixer": "^3.0",
-                "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^5.3",
-                "phpunit/phpunit": "^9.0"
-            },
-            "type": "library",
-            "extra": {
-                "hooks": {
-                    "pre-commit": [
-                        "composer test",
-                        "composer check-style"
-                    ],
-                    "pre-push": [
-                        "composer test",
-                        "composer check-style"
-                    ]
-                },
-                "laravel": {
-                    "providers": [
-                        "Overtrue\\LaravelPassportCacheToken\\CacheTokenServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Overtrue\\LaravelPassportCacheToken\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "overtrue",
-                    "email": "anzhengchao@gmail.com"
-                }
-            ],
-            "description": "Make laravel/passport token cacheable.",
-            "support": {
-                "issues": "https://github.com/overtrue/laravel-passport-cache-token/issues",
-                "source": "https://github.com/overtrue/laravel-passport-cache-token/tree/2.2.2"
-            },
-            "funding": [
-                {
-                    "url": "https://www.easywechat.com/img/pay/wechat.jpg",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/",
-                    "type": "github"
-                },
-                {
-                    "url": "https://www.patreon.com/overtrue",
-                    "type": "patreon"
-                }
-            ],
-            "time": "2021-12-26T14:55:57+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
