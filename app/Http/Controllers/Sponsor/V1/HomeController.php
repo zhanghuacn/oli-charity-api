@@ -115,6 +115,6 @@ class HomeController extends Controller
                 'begin_time' => optional($goods->activity)->begin_time,
                 'end_time' => optional($goods->activity)->end_time,
             ];
-        })->take(3);
+        })->unique('id')->take(3);
     }
 }
