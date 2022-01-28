@@ -14,11 +14,13 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Traits\Favoriteable;
+use Spatie\Permission\Traits\HasRoles;
 
 class Sponsor extends Model
 {
     use SoftDeletes;
     use HasFactory;
+    use HasRoles;
     use HasCacheProperty;
     use HasExtendsProperty;
     use Favoriteable;
@@ -85,10 +87,10 @@ class Sponsor extends Model
 
     protected static function booted()
     {
-        self::created(function (Charity $charity) {
-            $charity->roles()->createMany([
-                ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_SPONSOR_SUPER_ADMIN, 'team_id' => $charity->id],
-                ['guard_name' => Charity::GUARD_NAME, 'name' => Role::ROLE_SPONSOR_STAFF, 'team_id' => $charity->id],
+        self::created(function (Sponsor $sponsor) {
+            $sponsor->roles()->createMany([
+                ['guard_name' => Sponsor::GUARD_NAME, 'name' => Role::ROLE_SPONSOR_SUPER_ADMIN, 'team_id' => $sponsor->id],
+                ['guard_name' => Sponsor::GUARD_NAME, 'name' => Role::ROLE_SPONSOR_STAFF, 'team_id' => $sponsor->id],
             ]);
         });
         static::saving(

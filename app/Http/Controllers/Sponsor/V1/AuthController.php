@@ -50,11 +50,11 @@ class AuthController extends Controller
         abort_if(Carbon::parse($signature['expires'])->lt(now()), 422, 'The token has expired.');
         try {
             $user = User::findOrFail($signature['user_id'], ['id', 'name', 'avatar', 'profile']);
-            DB::transaction(function () use ($user, $request, $signature) {
-                $charity = Sponsor::create($request->except('token'));
-                $charity->staffs()->attach($user->id);
-                setPermissionsTeamId($charity->id);
-                $user->assignRole(Role::findByName(Role::ROLE_CHARITY_SUPER_ADMIN, Sponsor::GUARD_NAME));
+            DB::transaction(function () use ($user, $request) {
+                $sponsor = Sponsor::create($request->except('token'));
+                $sponsor->staffs()->attach($user->id);
+                setPermissionsTeamId($sponsor->id);
+                $user->assignRole(Role::findByName(Role::ROLE_SPONSOR_SUPER_ADMIN, Sponsor::GUARD_NAME));
             });
         } catch (Throwable $e) {
             abort(500, $e->getMessage());

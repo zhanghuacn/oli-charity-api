@@ -107,7 +107,7 @@ class AuthController extends Controller
         return Response::success();
     }
 
-    private function getLoginInfo($user): array
+    private function getLoginInfo(User $user): array
     {
         $data = $user->createPlaceToken('api', ['place-app']);
         $data['user'] = [
@@ -123,6 +123,7 @@ class AuthController extends Controller
             'birthday' => Carbon::parse($user->birthday)->toDateString(),
             'is_public_records' => $user->extends['records'],
             'is_public_portfolio' => $user->extends['portfolio'],
+            'type' => $user->charities_count ? 'CHARITY' : ($user->sponsors_count ? 'SPONSOR' : 'USER')
         ];
         return $data;
     }
