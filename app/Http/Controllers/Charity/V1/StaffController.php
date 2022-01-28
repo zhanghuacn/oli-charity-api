@@ -33,6 +33,7 @@ class StaffController extends Controller
         ]);
         $user = User::whereUsername($request->get('username'))->orWhere('email', $request->get('username'))->first();
         abort_if(DB::table('charity_user')->where('user_id', $user->id)->exists(), 422, 'Joined Charity');
+        abort_if(DB::table('sponsor_user')->where('user_id', $user->id)->exists(), 422, 'Non sponsor users');
         $user->charities()->attach(getPermissionsTeamId());
         return Response::success();
     }

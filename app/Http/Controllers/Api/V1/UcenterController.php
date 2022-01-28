@@ -176,6 +176,7 @@ EOF;
     public function charityToken(): JsonResponse|JsonResource
     {
         abort_if(Auth::user()->charities()->exists(), 422, 'Joined Charity');
+        abort_if(DB::table('sponsor_user')->where('user_id', Auth::id())->exists(), 422, 'Non charity users');
         $data = [
             'type' => Charity::class,
             'expires' => now()->addDays(),
@@ -189,6 +190,7 @@ EOF;
     public function sponsorToken(): JsonResponse|JsonResource
     {
         abort_if(Auth::user()->sponsors()->exists(), 422, 'Joined Sponsor');
+        abort_if(DB::table('charity_user')->where('user_id', Auth::id())->exists(), 422, 'Non charity users');
         $data = [
             'type' => Sponsor::class,
             'expires' => now()->addDays(),

@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class StaffController extends Controller
@@ -36,7 +37,8 @@ class StaffController extends Controller
             'username' => 'required|string'
         ]);
         $user = User::whereUsername($request->get('username'))->orWhere('email', $request->get('username'))->first();
-        abort_if($user->sponsors()->where('id', getPermissionsTeamId())->exists(), 422, 'Joined Sponsor');
+        abort_if(DB::table('sponsor_user')->where('user_id', $user->id)->exists(), 422, 'Joined Sponsor');
+        abort_if(DB::table('charity_user')->where('user_id', $user->id)->exists(), 422, 'Non charity users');
         $user->sponsors()->attach(getPermissionsTeamId());
         return Response::success();
     }
