@@ -34,9 +34,9 @@ class StaffController extends Controller
     public function store(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'username' => 'required|string'
+            'username' => 'required|string|exists:users,username'
         ]);
-        $user = User::whereUsername($request->get('username'))->orWhere('email', $request->get('username'))->first();
+        $user = User::whereUsername($request->get('username'))->orWhere('email', $request->get('username'))->firstOrFail();
         abort_if(DB::table('sponsor_user')->where('user_id', $user->id)->exists(), 422, 'Joined Sponsor');
         abort_if(DB::table('charity_user')->where('user_id', $user->id)->exists(), 422, 'Non charity users');
         $user->sponsors()->attach(getPermissionsTeamId());
