@@ -14,6 +14,11 @@ class ActivityResource extends JsonResource
 {
     public function toArray($request): array
     {
+        $lotteries = $this->lotteries()->with('prizes')->whereHas('prizes', function ($query) {
+            $query->whereHasMorph('prizeable', Sponsor::class, function (Builder $query) {
+                $query->where('id', '=', getPermissionsTeamId());
+            });
+        })->get();
         return [
             'basic' => [
                 'name' => $this->name,
@@ -28,36 +33,40 @@ class ActivityResource extends JsonResource
                 'specialty' => $this->extends['specialty'],
                 'timeline' => $this->extends['timeline'],
             ],
-            'lotteries' => $this->whereHas('prizes', function (Builder $query) {
-                $query->whereHasMorph('prizeable', Sponsor::class, function (Builder $query) {
-                    $query->where('id', '=', getPermissionsTeamId());
-                });
-            })->transform(function (Lottery $lottery) {
+            'lotteries' => $lotteries->transform(function (Lottery $lottery) {
                 return [
+                    'id' => $lottery->id,
                     'name' => $lottery->name,
+                    'description' => $lottery->description,
                     'begin_time' => $lottery->begin_time,
                     'end_time' => $lottery->end_time,
                     'standard_amount' => $lottery->standard_amount,
                     'type' => $lottery->draw_time ? 'MANUAL' : 'AUTOMATIC',
                     'draw_time' => $lottery->draw_time,
                     'images' => $lottery->images,
-                    'prizes' => $lottery->prizes->transform(function (Prize $prize) {
+                    'prizes' => $lottery->prizes()->whereHasMorph('prizeable', Sponsor::class, function (Builder $query) {
+                        $query->where('id', '=', getPermissionsTeamId());
+                    })->get()->transform(function (Prize $prize) {
                         return [
                             'id' => $prize->id,
                             'name' => $prize->name,
                             'stock' => $prize->num,
                             'price' => floatval($prize->price),
+                            'sponsor' => optional($prize->prizeable)->getMorphClass() != Sponsor::class ? [] : [
+                                'id' => $prize->prizeable->id,
+                                'name' => $prize->prizeable->name,
+                                'logo' => $prize->prizeable->logo,
+                            ],
                             'images' => $prize->images,
                             'description' => $prize->description,
                         ];
                     }),
+
                 ];
             }),
-            'sales' => $this->whereHas('goods', function (Builder $query) {
-                $query->whereHasMorph('goodsable', Sponsor::class, function (Builder $query) {
-                    $query->where('id', '=', getPermissionsTeamId());
-                });
-            })->transform(function (Goods $goods) {
+            'sales' => Goods::whereHasMorph('goodsable', Sponsor::class, function (Builder $query) {
+                $query->where('id', '=', getPermissionsTeamId());
+            })->where(['activity_id' => $this->id])->get()->transform(function (Goods $goods) {
                 return [
                     'name' => $goods->name,
                     'stock' => $goods->stock,
