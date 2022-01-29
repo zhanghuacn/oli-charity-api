@@ -46,7 +46,7 @@ Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister'
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
-Route::get('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
+Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
 
 Route::get('/explore', [HomeController::class, 'explore']);
 Route::get('/search', [HomeController::class, 'search']);
