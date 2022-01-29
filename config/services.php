@@ -51,6 +51,10 @@ return [
     'apple' => [
         'client_id' => env('APPLE_CLIENT_ID'),
         'client_secret' => env('APPLE_CLIENT_SECRET'),
-        'redirect' => env('APPLE_REDIRECT_URI')
+        'redirect' => env('APPLE_REDIRECT_URI'),
     ],
+
+    'android' => [
+        'package_name' => env('ANDROID_PACKAGE_IDENTIFIER', 'org.olicharity.app')
+    ]
 ];

@@ -174,4 +174,10 @@ class AuthController extends Controller
         }
         return Response::fail(__($status));
     }
+
+    public function callbackSignWithApple(Request $request)
+    {
+        $redirect = sprintf('intent://callback?%s#Intent;package=%s;scheme=signinwithapple;end', http_build_query($request->all()), config('services.android.package_name'));
+        return $redirect($redirect);
+    }
 }
