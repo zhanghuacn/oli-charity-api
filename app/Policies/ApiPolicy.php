@@ -27,12 +27,12 @@ class ApiPolicy
 
     public function purchase(User $user, Activity $activity): bool
     {
-        return $activity->my_ticket->activity_id == $activity->id;
+        return optional($activity->my_ticket)->activity_id == $activity->id;
     }
 
     public function staff(User $user, Activity $activity): bool
     {
-        return in_array($activity->my_ticket->type, [Ticket::TYPE_STAFF, Ticket::TYPE_HOST, Ticket::TYPE_CHARITY]);
+        return in_array(optional($activity->my_ticket)->type, [Ticket::TYPE_STAFF, Ticket::TYPE_HOST, Ticket::TYPE_CHARITY]);
     }
 
     public function group(User $user, Group $group): bool
