@@ -68,6 +68,7 @@ class ActivityResource extends JsonResource
                 $query->where('id', '=', getPermissionsTeamId());
             })->where(['activity_id' => $this->id])->get()->transform(function (Goods $goods) {
                 return [
+                    'id' => $goods->id,
                     'name' => $goods->name,
                     'stock' => $goods->stock,
                     'price' => floatval($goods->price),
