@@ -64,8 +64,12 @@ class ActivityController extends Controller
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
         ]);
-        $activity->prizes()->upsert($request->get('prizes'), ['id'], ['name', 'description', 'stock', 'price', 'images']);
-        $activity->goods()->upsert($request->get('sales'), ['id'], ['name', 'description', 'content', 'stock', 'price', 'images']);
+        if (!empty($request->get('prizes'))) {
+            $activity->prizes()->upsert($request->get('prizes'), ['id'], ['name', 'description', 'stock', 'price', 'images']);
+        }
+        if (!empty($request->get('sales'))) {
+            $activity->goods()->upsert($request->get('sales'), ['id'], ['name', 'description', 'content', 'stock', 'price', 'images']);
+        }
         return Response::success();
     }
 }
