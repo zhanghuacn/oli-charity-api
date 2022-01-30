@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Sponsor\ActivityCollection;
 use App\Http\Resources\Sponsor\ActivityResource;
 use App\Models\Activity;
+use App\Models\Goods;
+use App\Models\Prize;
 use App\Models\Sponsor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -65,10 +67,14 @@ class ActivityController extends Controller
             'sales.*.images.*' => 'required|url',
         ]);
         if (!empty($request->get('prizes'))) {
-            $activity->prizes()->upsert($request->get('prizes'), ['id'], ['name', 'description', 'stock', 'price', 'images']);
+            collect($request->get('prizes'))->each(function ($item) {
+                Prize::whereId($item['id'])->update($item);
+            });
         }
         if (!empty($request->get('sales'))) {
-            $activity->goods()->upsert($request->get('sales'), ['id'], ['name', 'description', 'content', 'stock', 'price', 'images']);
+            collect($request->get('sales'))->each(function ($item) {
+                Goods::whereId($item['id'])->update($item);
+            });
         }
         return Response::success();
     }
