@@ -58,7 +58,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'avatar',
         'profile',
     ];
-    public const DEFAULT_AVATAR = '';
     public const STATUS_ACTIVE = 'ACTIVE';
     public const STATUS_INACTIVATED = 'INACTIVATED';
     public const STATUS_FROZEN = 'FROZEN';
@@ -198,11 +197,6 @@ class User extends Authenticatable implements MustVerifyEmail
                 $user->createOrGetStripeCustomer();
             }
         );
-    }
-
-    public function getAvatarAttribute(): string
-    {
-        return $this->attributes['avatar'] ?? self::DEFAULT_AVATAR;
     }
 
     #[ArrayShape(['token_type' => "string", 'token' => "string", 'user' => "[]|array"])]
