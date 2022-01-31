@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\ActivityCollection;
 use App\Http\Resources\Admin\ActivityResource;
 use App\Models\Activity;
+use App\Models\User;
 use App\Services\ActivityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,6 +46,13 @@ class ActivityController extends Controller
         $data = $activity->cache->toArray();
         $data['basic']['status'] = $activity->status;
         $data['basic']['state'] = $activity->state;
+        if (!empty($data['staffs'])) {
+            foreach ($data['staffs'] as &$staff) {
+                $user = User::find($staff['uid']);
+                $staff['name'] = $user->name;
+                $staff['avatar'] = $user->avatar;
+            }
+        }
         return Response::success($data);
     }
 
