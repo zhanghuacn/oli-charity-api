@@ -58,7 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'avatar',
         'profile',
     ];
-    public const DEFAULT_AVATAR = '/img/default-avatar.png';
+    public const DEFAULT_AVATAR = '';
     public const STATUS_ACTIVE = 'ACTIVE';
     public const STATUS_INACTIVATED = 'INACTIVATED';
     public const STATUS_FROZEN = 'FROZEN';
