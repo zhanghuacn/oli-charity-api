@@ -56,7 +56,7 @@ class UcenterController extends Controller
     public function update(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'avatar' => 'sometimes|url',
+            'avatar' => 'sometimes|string',
             'first_name' => 'sometimes|string',
             'middle_name' => 'sometimes|string',
             'last_name' => 'sometimes|string',
