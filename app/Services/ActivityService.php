@@ -143,7 +143,7 @@ class ActivityService
                                 'begin_time' => $item['begin_time'],
                                 'end_time' => $item['end_time'],
                                 'standard_amount' => $item['standard_amount'],
-                                'draw_time' => $item['draw_time'],
+                                'draw_time' => $item['draw_time'] ?? null,
                             ]
                         );
                         $prize_ids = collect($item['prizes'])->whereNotNull('id')->pluck('id');
