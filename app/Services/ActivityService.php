@@ -205,9 +205,9 @@ class ActivityService
                 if (!empty($arr['staffs'])) {
                     $ticket_ids = collect($arr['staffs'])->whereNotNull('id')->pluck('id');
                     if (!empty($ticket_ids)) {
-                        $activity->tickets()->whereNotIn('id', $ticket_ids)->delete();
+                        $activity->tickets()->whereIn('type', [Ticket::TYPE_HOST, Ticket::TYPE_STAFF])->whereNotIn('id', $ticket_ids)->delete();
                     } else {
-                        $activity->tickets()->delete();
+                        $activity->tickets()->whereIn('type', [Ticket::TYPE_HOST, Ticket::TYPE_STAFF])->delete();
                     }
                     collect($arr['staffs'])->each(function ($item) use ($activity) {
                         Ticket::updateOrCreate(
@@ -216,7 +216,7 @@ class ActivityService
                                 'activity_id' => $activity->id,
                             ],
                             [
-                                'charity_id' => getPermissionsTeamId(),
+                                'charity_id' => $activity->charity_id,
                                 'user_id' => $item['uid'],
                                 'type' => $item['type'],
                                 'price' => 0,
