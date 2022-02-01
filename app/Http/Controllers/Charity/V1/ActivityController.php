@@ -146,6 +146,7 @@ class ActivityController extends Controller
         $this->checkSubmit($request);
         abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'Under Review');
         $activity->status = Activity::STATUS_REVIEW;
+        $activity->cache = $request->all();
         $activity->save();
         return Response::success();
     }
