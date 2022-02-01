@@ -69,7 +69,6 @@ class ActivityController extends Controller
             $this->activityService->update($activity, $activity->cache->toArray());
             $activity->is_visible = true;
         }
-        $activity->cache = new ActivityResource($activity);
         $activity->save();
         return Response::success();
     }
