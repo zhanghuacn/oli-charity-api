@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8488c847f1d25473c70b97b5fd5ce86b",
+    "content-hash": "5be26a7726d0ccb90b4738150c21102b",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -2205,6 +2205,49 @@
                 "source": "https://github.com/kra8/laravel-snowflake/tree/v2.0.3"
             },
             "time": "2021-12-14T02:37:15+00:00"
+        },
+        {
+            "name": "ksk88/weighted-lottery-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ksk88/weighted-lottery-php.git",
+                "reference": "ce274808ae4237257b15bad9ff1bace66ef0dc80"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ksk88/weighted-lottery-php/zipball/ce274808ae4237257b15bad9ff1bace66ef0dc80",
+                "reference": "ce274808ae4237257b15bad9ff1bace66ef0dc80",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ksk88\\WeightedLotteryPhp": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "weighted-lottery-php provides a not equality shuffle function. Determine is based on each choice's proportion of the total weight.",
+            "homepage": "https://github.com/ksk88/weighted-lottery-php",
+            "keywords": [
+                "drawing",
+                "gacha",
+                "lottery",
+                "random",
+                "shuffle"
+            ],
+            "support": {
+                "issues": "https://github.com/ksk88/weighted-lottery-php/issues",
+                "source": "https://github.com/ksk88/weighted-lottery-php/tree/master"
+            },
+            "time": "2015-02-11T17:47:01+00:00"
         },
         {
             "name": "laminas/laminas-diactoros",
@@ -13888,7 +13931,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "ksk88/weighted-lottery-php": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

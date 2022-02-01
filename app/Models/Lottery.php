@@ -35,6 +35,7 @@ class Lottery extends Model
         'draw_time',
         'images',
         'extends',
+        'status',
     ];
 
     protected $hidden = [
@@ -50,6 +51,7 @@ class Lottery extends Model
         'price' => 'float',
         'images' => 'array',
         'extends' => 'array',
+        'status' => 'boolean',
     ];
 
     public function charity(): BelongsTo

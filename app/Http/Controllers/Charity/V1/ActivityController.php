@@ -343,7 +343,8 @@ class ActivityController extends Controller
                     'type' => $lottery->draw_time ? Lottery::TYPE_AUTOMATIC : Lottery::TYPE_MANUAL,
                     'image' => collect($lottery->images)->first(),
                     'name' => $lottery->name,
-                    'draw_time' => $lottery->draw_time
+                    'draw_time' => $lottery->draw_time,
+                    'status' => $lottery->status,
                 ];
             }),
             'sales' => $activity->goods->transform(function (Goods $goods) {

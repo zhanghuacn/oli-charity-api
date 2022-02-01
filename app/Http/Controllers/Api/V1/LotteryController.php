@@ -41,7 +41,7 @@ class LotteryController extends Controller
             [
                 'prizes' => $lottery->prizes,
                 'lottery_code' => $activity->my_ticket->lottery_code,
-                'winner' => $lottery->prizes()->where('winners->uid', Auth::id())->first(['id', 'name']),
+                'winner' => $lottery->prizes()->where('winners->id', Auth::id())->first(['id', 'name']),
             ]
         );
         return Response::success($data);

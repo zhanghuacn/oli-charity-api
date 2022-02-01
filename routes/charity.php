@@ -5,6 +5,7 @@ use App\Http\Controllers\Charity\V1\ApplyController;
 use App\Http\Controllers\Charity\V1\AuthController;
 use App\Http\Controllers\Charity\V1\CharityController;
 use App\Http\Controllers\Charity\V1\HomeController;
+use App\Http\Controllers\Charity\V1\LotteryController;
 use App\Http\Controllers\Charity\V1\NewsController;
 use App\Http\Controllers\Charity\V1\PermissionController;
 use App\Http\Controllers\Charity\V1\RoleController;
@@ -59,7 +60,7 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
 
     Route::get('/events/{activity}/seat-config', [ActivityController::class, 'seatConfig']);
     Route::post('/events/{activity}/seat-allocation', [ActivityController::class, 'seatAllocation']);
-    Route::get('/lotteries/{lottery}/draw', [ActivityController::class, 'draw']);
+    Route::post('/lotteries/{lottery}/draw', [LotteryController::class, 'draw']);
 
     Route::get('/sponsors', [SponsorController::class, 'index']);
 

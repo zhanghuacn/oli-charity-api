@@ -20,6 +20,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "jiannei/laravel-response": "^4.0",
         "kra8/laravel-snowflake": "^2.0",
+        "ksk88/weighted-lottery-php": "dev-master",
         "laravel/cashier": "^13.6",
         "laravel/framework": "^8.65",
         "laravel/octane": "^1.1",
