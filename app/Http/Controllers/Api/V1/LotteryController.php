@@ -26,8 +26,8 @@ class LotteryController extends Controller
                 'description' => $item->description,
                 'image' => collect($item->images)->first(),
                 'time' => $item->draw_time,
-                'standard_amount' => $item->standard_amount,
-                'is_standard' => $activity->my_ticket->amount >= $item->standard_amount,
+                'standard_amount' => floatval($item->standard_amount),
+                'is_standard' => floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
             ];
         });
         return Response::success($data);

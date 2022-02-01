@@ -13,13 +13,13 @@ class ActivityCollection extends ResourceCollection
     {
         return $this->collection->map(function ($item) {
             return [
-                'id' => $item->id,
-                'name' => $item->name,
-                'description' => $item->description,
-                'image' => collect($item->images)->first(),
-                'location' => $item->location,
-                'begin_time' => $item->begin_time,
-                'end_time' => $item->end_time,
+                'id' => optional($item)->id,
+                'name' => optional($item)->name,
+                'description' => optional($item)->description,
+                'image' => collect(optional($item)->images)->first(),
+                'location' => optional($item)->location,
+                'begin_time' => optional($item)->begin_time,
+                'end_time' => optional($item)->end_time,
             ];
         });
     }
