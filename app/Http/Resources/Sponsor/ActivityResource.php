@@ -41,7 +41,7 @@ class ActivityResource extends JsonResource
                     'begin_time' => $lottery->begin_time,
                     'end_time' => $lottery->end_time,
                     'standard_amount' => $lottery->standard_amount,
-                    'type' => $lottery->draw_time ? 'MANUAL' : 'AUTOMATIC',
+                    'type' => $lottery->draw_time ? Lottery::TYPE_AUTOMATIC : Lottery::TYPE_MANUAL,
                     'draw_time' => $lottery->draw_time,
                     'images' => $lottery->images,
                     'prizes' => $lottery->prizes()->whereHasMorph('prizeable', Sponsor::class, function (Builder $query) {
