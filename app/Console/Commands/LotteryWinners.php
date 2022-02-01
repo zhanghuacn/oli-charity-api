@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Lottery;
 use App\Models\Prize;
 use App\Models\User;
+use App\Notifications\LotteryPaid;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -58,8 +59,11 @@ class LotteryWinners extends Command
                         foreach ($result as $item) {
                             unset($tickets[$item]);
                         }
-                        $users = User::whereIn('id', $result)->get(['id', 'name', 'avatar'])->toArray();
-                        $prize->update(['winners' => $users]);
+                        $users = User::whereIn('id', $result)->get(['id', 'name', 'avatar']);
+                        $prize->update(['winners' => $users->toArray()]);
+                        foreach ($users as $user) {
+                            $user->notify(new LotteryPaid($prize));
+                        }
                     }
                 });
                 $lottery->update(['status' => true]);

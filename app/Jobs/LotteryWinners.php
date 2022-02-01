@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Lottery;
 use App\Models\Prize;
 use App\Models\User;
+use App\Notifications\LotteryPaid;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -54,8 +55,11 @@ class LotteryWinners implements ShouldQueue
                     foreach ($result as $item) {
                         unset($tickets[$item]);
                     }
-                    $users = User::whereIn('id', $result)->get(['id', 'name', 'avatar'])->toArray();
-                    $prize->update(['winners' => $users]);
+                    $users = User::whereIn('id', $result)->get(['id', 'name', 'avatar']);
+                    $prize->update(['winners' => $users->toArray()]);
+                    foreach ($users as $user) {
+                        $user->notify(new LotteryPaid($prize));
+                    }
                 }
             });
             $this->lottery->update(['status' => true]);
