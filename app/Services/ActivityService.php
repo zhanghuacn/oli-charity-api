@@ -146,13 +146,13 @@ class ActivityService
                                 'draw_time' => $item['draw_time'] ?? null,
                             ]
                         );
-                        $prize_ids = collect($item['prizes'])->whereNotNull('id')->pluck('id');
-                        if (!empty($prize_ids)) {
-                            $lottery->prizes()->whereNotIn('id', $prize_ids)->delete();
-                        } else {
-                            $lottery->prizes()->delete();
-                        }
                         if (!empty($item['prizes'])) {
+                            $prize_ids = collect($item['prizes'])->whereNotNull('id')->pluck('id');
+                            if (!empty($prize_ids)) {
+                                $lottery->prizes()->whereNotIn('id', $prize_ids)->delete();
+                            } else {
+                                $lottery->prizes()->delete();
+                            }
                             collect($item['prizes'])->whereNotNull('name')->each(function ($item) use ($activity, $lottery) {
                                 Prize::updateOrCreate(
                                     [
