@@ -118,7 +118,7 @@ class ActivityService
                     'extends' => [
                         'specialty' => $arr['basic']['specialty'] ?? [],
                         'timeline' => $arr['basic']['timeline'] ?? [],
-                        'is_albums' => $arr['basic']['is_albums'],
+                        'is_albums' => $arr['basic']['is_albums'] ?? false,
                     ],
                     'cache' => $arr
                 ]);

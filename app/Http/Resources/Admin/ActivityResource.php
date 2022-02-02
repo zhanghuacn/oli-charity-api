@@ -24,6 +24,7 @@ class ActivityResource extends JsonResource
                 'price' => floatval($this->price),
                 'stock' => $this->stocks,
                 'is_private' => $this->is_private,
+                'is_albums'=> $this->extends['is_albums'],
                 'images' => $this->images,
                 'specialty' => $this->extends['specialty'],
                 'timeline' => $this->extends['timeline'],
