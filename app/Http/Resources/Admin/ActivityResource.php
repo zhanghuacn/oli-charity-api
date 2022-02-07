@@ -24,7 +24,7 @@ class ActivityResource extends JsonResource
                 'price' => floatval($this->price),
                 'stock' => $this->stocks,
                 'is_private' => $this->is_private,
-                'is_albums'=> $this->extends['is_albums'],
+                'is_albums' => $this->extends['is_albums'],
                 'images' => $this->images,
                 'specialty' => $this->extends['specialty'],
                 'timeline' => $this->extends['timeline'],
@@ -32,6 +32,7 @@ class ActivityResource extends JsonResource
             ],
             'lotteries' => $this->lotteries->transform(function (Lottery $lottery) {
                 return [
+                    'id' => $lottery->id,
                     'name' => $lottery->name,
                     'begin_time' => $lottery->begin_time,
                     'end_time' => $lottery->end_time,
@@ -41,6 +42,7 @@ class ActivityResource extends JsonResource
                     'images' => $lottery->images,
                     'prizes' => $lottery->prizes->transform(function (Prize $prize) {
                         return [
+                            'id' => $prize->id,
                             'name' => $prize->name,
                             'stock' => $prize->num,
                             'price' => floatval($prize->price),
@@ -58,6 +60,7 @@ class ActivityResource extends JsonResource
             }),
             'sales' => $this->goods->transform(function (Goods $goods) {
                 return [
+                    'id' => $goods->id,
                     'name' => $goods->name,
                     'stock' => $goods->stock,
                     'price' => floatval($goods->price),
@@ -74,8 +77,9 @@ class ActivityResource extends JsonResource
             'staffs' => $this->tickets()->with('user')->whereIn('type', [TICKET::TYPE_HOST, Ticket::TYPE_STAFF])->get()
                 ->transform(function (Ticket $ticket) {
                     return [
+                        'id' => $ticket->id,
                         'type' => $ticket->type,
-                        'uid' => $ticket->id,
+                        'uid' => $ticket->user_id,
                         'avatar' => $ticket->user->avatar,
                         'name' => $ticket->user->name,
                     ];

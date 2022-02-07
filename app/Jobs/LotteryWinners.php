@@ -37,26 +37,27 @@ class LotteryWinners implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws \Throwable
      */
     public function handle()
     {
         DB::transaction(function () {
             $tickets = $this->lottery->activity->tickets()->where('amount', '>=', $this->lottery->standard_amount)
                 ->pluck('amount', 'user_id')->toArray();
-            $this->lottery->prizes()->each(function (Prize $prize) use (&$tickets) {
-                if (count($tickets) > 0) {
-                    $money = collect($tickets)->values()->map(function ($item) {
-                        return floatval($item);
-                    });
-                    $ids = array_keys($tickets);
-                    $data = ['money' => $money, 'ids' => $ids, 'n' => min($prize->num, count($ids))];
-                    $response = Http::post('https://4omu1zxuba.execute-api.ap-southeast-2.amazonaws.com/default/lottery', $data);
-                    $result = json_decode($response->body());
-                    foreach ($result as $item) {
-                        unset($tickets[$item]);
-                    }
-                    $users = User::whereIn('id', $result)->get(['id', 'name', 'avatar']);
+            $num = $this->lottery->prizes()->sum('num');
+            $money = collect($tickets)->values()->map(function ($item) {
+                return floatval($item);
+            });
+            $data = ['money' => $money, 'ids' => array_keys($tickets), 'n' => min($num, count(array_keys($tickets)))];
+            $response = Http::post(config('services.custom.lottery_url'), $data);
+            $result = json_decode($response->body());
+            $start = 0;
+            $this->lottery->prizes()->each(function (Prize $prize) use (&$start, $result) {
+                $ids = array_slice($result, $start, $prize->num);
+                if (!empty($ids)) {
+                    $users = User::whereIn('id', $ids)->get(['id', 'name', 'avatar']);
                     $prize->update(['winners' => $users->toArray()]);
+                    $start += $start == 0 ? $prize->num - 1 : $prize->num;
                     foreach ($users as $user) {
                         $user->notify(new LotteryPaid($prize));
                     }

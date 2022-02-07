@@ -85,6 +85,7 @@ class Charity extends Model
         'cache' => 'array',
         'extends' => 'array',
         'is_visible' => 'bool',
+        'extends->total_amount' => 'float',
     ];
 
     protected $attributes = [

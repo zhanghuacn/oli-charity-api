@@ -56,5 +56,9 @@ return [
 
     'android' => [
         'package_name' => env('ANDROID_PACKAGE_IDENTIFIER', 'org.olicharity.app')
-    ]
+    ],
+
+    'custom' => [
+        'lottery_url' => env('LOTTERY_URL', 'https://4omu1zxuba.execute-api.ap-southeast-2.amazonaws.com/default/lottery')
+    ],
 ];

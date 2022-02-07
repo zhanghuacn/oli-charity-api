@@ -91,13 +91,14 @@ class Activity extends Model
     ];
 
     protected $casts = [
+        'price' => 'float',
         'images' => 'array',
         'setting' => 'array',
         'cache' => 'array',
         'extends' => 'array',
         'is_visible' => 'bool',
         'is_private' => 'bool',
-        'extends->is_albums' => 'bool'
+        'extends->is_albums' => 'bool',
     ];
 
     protected $attributes = [

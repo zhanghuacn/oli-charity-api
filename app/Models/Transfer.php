@@ -39,6 +39,7 @@ class Transfer extends Model
     ];
 
     protected $casts = [
+        'amount' => 'float',
         'voucher' => 'array',
         'extends' => 'array',
         'created_at' => 'datetime:Y-m-d H:i:s',

@@ -48,6 +48,7 @@ class Ticket extends Model
     protected $casts = [
         'anonymous' => 'bool',
         'price' => 'float',
+        'amount' => 'float',
         'extends' => 'array',
         'verified_at' => 'datetime:Y-m-d H:i:s',
     ];

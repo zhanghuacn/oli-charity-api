@@ -24,7 +24,7 @@ class LotteryWinners extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'lottery draw';
 
     /**
      * Create a new command instance.
@@ -40,6 +40,7 @@ class LotteryWinners extends Command
      * Execute the console command.
      *
      * @return int
+     * @throws \Throwable
      */
     public function handle()
     {
@@ -47,20 +48,20 @@ class LotteryWinners extends Command
             Lottery::where('status', '<>', true)->where('draw_time', '<=', now())->get()->each(function (Lottery $lottery) {
                 $tickets = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)
                     ->pluck('amount', 'user_id')->toArray();
-                $lottery->prizes()->each(function (Prize $prize) use (&$tickets) {
-                    if (count($tickets) > 0) {
-                        $money = collect($tickets)->values()->map(function ($item) {
-                            return floatval($item);
-                        });
-                        $ids = array_keys($tickets);
-                        $data = ['money' => $money, 'ids' => $ids, 'n' => min($prize->num, count($ids))];
-                        $response = Http::post('https://4omu1zxuba.execute-api.ap-southeast-2.amazonaws.com/default/lottery', $data);
-                        $result = json_decode($response->body());
-                        foreach ($result as $item) {
-                            unset($tickets[$item]);
-                        }
-                        $users = User::whereIn('id', $result)->get(['id', 'name', 'avatar']);
+                $num = $lottery->prizes()->sum('num');
+                $money = collect($tickets)->values()->map(function ($item) {
+                    return floatval($item);
+                });
+                $data = ['money' => $money, 'ids' => array_keys($tickets), 'n' => min($num, count(array_keys($tickets)))];
+                $response = Http::post(config('services.custom.lottery_url'), $data);
+                $result = json_decode($response->body());
+                $start = 0;
+                $lottery->prizes()->each(function (Prize $prize) use (&$start, $result) {
+                    $ids = array_slice($result, $start, $prize->num);
+                    if (!empty($ids)) {
+                        $users = User::whereIn('id', $ids)->get(['id', 'name', 'avatar']);
                         $prize->update(['winners' => $users->toArray()]);
+                        $start += $start == 0 ? $prize->num - 1 : $prize->num;
                         foreach ($users as $user) {
                             $user->notify(new LotteryPaid($prize));
                         }

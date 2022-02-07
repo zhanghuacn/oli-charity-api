@@ -60,6 +60,9 @@ class Order extends Model
 
     protected $casts = [
         'extends' => 'array',
+        'amount' => 'float',
+        'fee_amount' => 'float',
+        'total_amount' => 'float',
     ];
 
     public function charity(): BelongsTo

@@ -88,7 +88,17 @@ class ActivityController extends Controller
     public function seatConfig(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
-        return Response::success(['seat_config' => $activity->settings['seat_config']]);
+        $data = ['seat_config' => $activity->settings['seat_config'], 'tickets' => $activity->tickets()->with('group, user')->get()->transform(function (Ticket $ticket) {
+            return [
+                'id' => $ticket->id,
+                'avatar' => optional($ticket->user)->avatar,
+                'name' => optional($ticket->user)->name,
+                'type' => $ticket->type == Ticket::TYPE_DONOR ? Ticket::TYPE_DONOR : Ticket::TYPE_STAFF,
+                'group_id' => $ticket->group_id,
+                'group_name' => optional($ticket->group)->name,
+            ];
+        })];
+        return Response::success($data);
     }
 
     public function store(Request $request): JsonResponse|JsonResource
