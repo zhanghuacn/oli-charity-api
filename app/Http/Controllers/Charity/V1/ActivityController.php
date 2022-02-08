@@ -99,6 +99,7 @@ class ActivityController extends Controller
                     'last_name' => optional($ticket->user)->last_name,
                     'group_id' => $ticket->group_id,
                     'group_name' => optional($ticket->group)->name,
+                    'seat_num' => $ticket->seat_num,
                 ];
             })];
         return Response::success($data);
