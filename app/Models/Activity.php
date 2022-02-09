@@ -39,7 +39,7 @@ class Activity extends Model
 
     // 默认缓存信息
     public const DEFAULT_SETTINGS = [
-        'seat_config' => [],
+        'seat_config' => null,
     ];
 
     public const DEFAULT_IMAGES = [];
