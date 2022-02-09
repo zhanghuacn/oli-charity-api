@@ -142,7 +142,10 @@ EOF;
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
         $data = Auth::user()->favorites()->withType(Charity::class)
-            ->with('favoriteable')->simplePaginate($request->input('per_page', 15));
+            ->whereHas('favoriteable', function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->simplePaginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
             return $model->favoriteable;
         });
@@ -156,7 +159,10 @@ EOF;
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
         $data = Auth::user()->favorites()->withType(Activity::class)
-            ->with('favoriteable')->simplePaginate($request->input('per_page', 15));
+            ->whereHas('favoriteable', function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->simplePaginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
             return $model->favoriteable;
         });
