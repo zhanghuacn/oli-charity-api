@@ -73,8 +73,8 @@ class UserController extends Controller
                 'amount' => floatval($order->amount),
                 'time' => Carbon::parse($order->payment_time)->toDateString(),
                 'orderable' => [
-                    'id' => $order->orderable->id,
-                    'name' => $order->orderable->name,
+                    'id' => optional($order->orderable)->id,
+                    'name' => optional($order->orderable)->name,
                     'type' => $order->type,
                 ],
             ];
