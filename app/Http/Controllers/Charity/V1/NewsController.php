@@ -29,7 +29,8 @@ class NewsController extends Controller
     {
         $request->validate([
             'title' => 'required|string',
-            'thumb' => 'required|string',
+            'thumb' => 'sometimes|string',
+            'banner' => 'sometimes|string',
             'keyword' => 'sometimes|string',
             'source' => 'sometimes|string',
             'description' => 'sometimes|string',
