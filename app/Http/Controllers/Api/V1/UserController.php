@@ -68,13 +68,14 @@ class UserController extends Controller
         ]);
         $orders = Order::filter($request->all())->simplePaginate($request->input('per_page', 10));
         $orders->getCollection()->transform(function (Order $order) {
+            $orderable = $order->orderable()->withTrashed()->first();
             return [
                 'id' => $order->order_sn,
                 'amount' => floatval($order->amount),
                 'time' => Carbon::parse($order->payment_time)->toDateString(),
                 'orderable' => [
-                    'id' => optional($order->orderable)->id,
-                    'name' => optional($order->orderable)->name,
+                    'id' => $orderable->id,
+                    'name' => $orderable->name,
                     'type' => $order->type,
                 ],
             ];
