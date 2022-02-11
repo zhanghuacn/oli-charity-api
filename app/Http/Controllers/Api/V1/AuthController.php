@@ -123,7 +123,8 @@ class AuthController extends Controller
             'birthday' => Carbon::parse($user->birthday)->toDateString(),
             'is_public_records' => $user->extends['records'],
             'is_public_portfolio' => $user->extends['portfolio'],
-            'type' => $user->charities_count ? 'CHARITY' : ($user->sponsors_count ? 'SPONSOR' : 'USER')
+            'type' => $user->charities()->exists() ? 'CHARITY' : ($user->sponsors()->exists() ? 'SPONSOR' : 'USER'),
+            'type_name' => $user->charities()->exists() ? $user->charities()->first()->name : ($user->sponsors()->exists() ? $user->sponsors()->first()->name : ''),
         ];
         return $data;
     }
