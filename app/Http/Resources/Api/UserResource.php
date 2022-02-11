@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Models\Order;
 use App\Models\User;
 use Auth;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -19,7 +20,8 @@ class UserResource extends JsonResource
             'portfolio' => $this->settings['portfolio'],
             'records' => $this->settings['records'],
             'events' => $this->tickets()->count(),
-            'donations' => $this->orders()->count(),
+            'donations' => $this->orders()->where(['payment_status' => Order::STATUS_PAID])->count(),
+            'donation_amount' => floatval($this->orders()->where(['payment_status' => Order::STATUS_PAID])->sum('amount') ?? 0),
             'members' => $this->followers()->count(),
             'is_follow' => Auth::check() && Auth::user()->isFollowing(User::find($this->id)),
         ];
