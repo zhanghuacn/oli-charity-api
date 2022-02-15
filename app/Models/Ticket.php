@@ -41,6 +41,7 @@ class Ticket extends Model
         'price',
         'amount',
         'anonymous',
+        'seat_num',
         'verified_at',
         'extends',
     ];
@@ -150,7 +151,13 @@ class Ticket extends Model
     {
         static::saving(
             function (Ticket $ticket) {
-                $ticket->code = $ticket->code ?? Str::uuid();
+                do {
+                    $code = str_pad(mt_rand(0, 99999999), 8, '0', STR_PAD_BOTH);
+                    if (Ticket::where(['activity_id' => $ticket->activity_id, 'lottery_code' => $code])->doesntExist()) {
+                        $ticket->code = $ticket->code ?? $code;
+                        break;
+                    }
+                } while (true);
             }
         );
     }

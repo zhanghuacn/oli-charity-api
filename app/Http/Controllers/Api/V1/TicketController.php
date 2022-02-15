@@ -101,6 +101,7 @@ class TicketController extends Controller
                     'avatar' => $item->user->avatar,
                     'profile' => $item->user->profile,
                     'lottery_code' => $item->lottery_code,
+                    'seat_num' => $item->seat_num,
                     'transfer' => $item->transfers->transform(function (Transfer $transfer) {
                         return [
                             'id' => $transfer->id,
