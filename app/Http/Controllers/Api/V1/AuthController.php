@@ -14,9 +14,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Mail\Message;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Jiannei\Response\Laravel\Support\Facades\Response;
@@ -35,7 +38,6 @@ class AuthController extends Controller
             'password' => ['required', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
         $user = User::create($request->all());
-        Event::dispatch(new Registered($user));
         return Response::success($this->getLoginInfo($user));
     }
 
@@ -132,53 +134,44 @@ class AuthController extends Controller
     public function forgotPassword(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|email|exists:users,email',
         ]);
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        if ($status == Password::RESET_LINK_SENT) {
-            return Response::success([
-                'status' => __($status)
-            ]);
+        $code = rand(100000, 999999);
+        $email = $request->get('email');
+        $key = 'email:verify:code:' . $request->get('email');//redis key
+        Cache::put($key, $code, now()->addMinutes());
+        Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
+            $message->to($email);
+            $message->subject('Oli Charity Mailbox verification');
+        });
+        if (Mail::failures()) {
+            return Response::fail('fail in send');
         }
-        return Response::fail(trans($status), 500, [
-            'email' => [trans($status)],
-        ]);
+        return Response::success();
     }
 
     public function reset(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
+            'code' => 'required|string',
+            'email' => 'required|email|exists:users,email',
             'password' => ['required', 'confirmed', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
-
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->get('password')),
-                    'remember_token' => Str::random(60),
-                ])->save();
-
-                $user->tokens()->delete();
-
-                event(new PasswordReset($user));
-            }
-        );
-        if ($status == Password::PASSWORD_RESET) {
-            return Response::success('Password reset successfully');
+        $email = $request->input('email');
+        $code = $request->input('code');
+        $key = 'email:verify:code:' . $email;
+        $value = Cache::get($key);
+        if ($value && $value == $code) {
+            $user = User::whereEmail($email)->firstOrFail();
+            $user->forceFill([
+                'password' => Hash::make($request->get('password')),
+            ])->save();
+            $user->tokens()->delete();
+            event(new PasswordReset($user));
+            Cache::delete($key);
+            return Response::success();
+        } else {
+            return Response::fail('Verification code error');
         }
-        return Response::fail(__($status));
-    }
-
-    public function callbackSignWithApple(Request $request)
-    {
-        $redirect = sprintf('intent://callback?%s#Intent;package=%s;scheme=signinwithapple;end', http_build_query($request->all()), config('services.android.package_name'));
-        return redirect($redirect);
     }
 }
