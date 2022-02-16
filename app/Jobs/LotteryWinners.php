@@ -9,10 +9,12 @@ use App\Notifications\LotteryPaid;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Log\Logger;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class LotteryWinners implements ShouldQueue
 {
@@ -49,8 +51,10 @@ class LotteryWinners implements ShouldQueue
                 return floatval($item);
             });
             $data = ['money' => $money, 'ids' => array_keys($tickets), 'n' => min($num, count(array_keys($tickets)))];
+            Log::info(sprintf('请求参数：%s', json_encode($data)));
             $response = Http::post(config('services.custom.lottery_url'), $data);
             $result = json_decode($response->body());
+            Log::info(sprintf('响应参数：%s', $response->body()));
             $start = 0;
             $this->lottery->prizes()->each(function (Prize $prize) use (&$start, $result) {
                 $ids = array_slice($result, $start, $prize->num);
