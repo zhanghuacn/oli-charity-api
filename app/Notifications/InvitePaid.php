@@ -34,9 +34,8 @@ class InvitePaid extends Notification implements ShouldQueue
 //            'deny_token' => $this->invite->deny_token,
 //        ];
         return [
-            'activity_id' => 1,
-            'title' => '123',
-            'content' => '321',
+            'title' => 'Event team invitation',
+            'content' => sprintf('%s invites you to join %s team', $this->invite->inviter->name, $this->invite->team->name),
         ];
     }
 }

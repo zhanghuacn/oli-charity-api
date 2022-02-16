@@ -17,6 +17,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Cashier\Billable;
 use Laravel\Passport\HasApiTokens;
@@ -179,7 +180,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         static::saving(
             function (User $user) {
-                $user->name = $user->name ?? $user->username;
+                $user->name = $user->name ?? Str::random(8);
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
 
                 if (Hash::needsRehash($user->password)) {

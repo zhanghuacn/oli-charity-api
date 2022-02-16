@@ -34,9 +34,8 @@ class ApplyPaid extends Notification implements ShouldQueue
     public function toDatabase($notifiable): array
     {
         return [
-            'activity_id' => 1,
-            'title' => '123',
-            'content' => '321',
+            'title' => 'Event Application Passed',
+            'content' => 'Your application to participate in event has passed, please pay attention in time',
         ];
     }
 }
