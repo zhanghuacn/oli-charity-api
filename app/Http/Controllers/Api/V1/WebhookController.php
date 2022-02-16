@@ -92,6 +92,7 @@ class WebhookController extends CashierController
             'extends->participates' => bcadd(intval($order->activity->extends['participates']) ?? 0, 1),
             'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
         ]);
+        $order->activity()->decrement('stocks');
         $order->charity()->update([
             'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
         ]);

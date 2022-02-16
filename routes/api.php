@@ -86,6 +86,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
 
     Route::post('/events/{activity}/actions/apply', [ActivityController::class, 'apply']);
     Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);
+    Route::post('/events/{activity}/actions/free-collection', [TicketController::class, 'collection']);
     Route::post('/events/{activity}/actions/scan', [TicketController::class, 'scan']);
     Route::get('/events/{activity}/my-tickets', [TicketController::class, 'myTickets']);
     Route::post('/events/{activity}/ticket-status', [TicketController::class, 'state']);

@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use function abort_if;
@@ -30,16 +31,38 @@ class TicketController extends Controller
     public function buyTicket(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-apply', $activity);
-        abort_if(!empty($activity->my_ticket), 422, 'Tickets purchased');
         abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
+        abort_if(!empty($activity->my_ticket), 422, 'Tickets purchased');
         abort_if(empty($activity->charity->stripe_account_id), 422, 'Unbound payment platform account');
-        abort_if($activity->stocks <= $activity->extends['participates'], 422, 'Tickets have been sold out');
+        abort_if($activity->stocks <= 0, 422, 'Tickets have been sold out');
         $order = $this->orderService->tickets(Auth::user(), $activity);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,
             'client_secret' => $order->extends['client_secret']
         ]);
+    }
+
+    public function collection(Activity $activity): JsonResponse|JsonResource
+    {
+        Gate::authorize('check-apply', $activity);
+        abort_if($activity->price != 0, 403, 'Permission denied');
+        abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
+        abort_if(!empty($activity->my_ticket), 422, 'Tickets Repeat Claim');
+        abort_if($activity->stocks <= 0, 422, 'Tickets have been sold out');
+        DB::transaction(function () use ($activity) {
+            $tickets = new Ticket([
+                'charity_id' => $activity->charity_id,
+                'activity_id' => $activity->id,
+                'user_id' => Auth::id(),
+                'type' => Ticket::TYPE_DONOR,
+                'price' => $activity->price,
+            ]);
+            $tickets->save();
+            $activity->update(['extends->participates' => bcadd(intval($activity->extends['participates']) ?? 0, 1)]);
+            $activity->decrement('stocks');
+        });
+        return Response::success();
     }
 
     public function anonymous(Activity $activity, Request $request): JsonResponse|JsonResource
