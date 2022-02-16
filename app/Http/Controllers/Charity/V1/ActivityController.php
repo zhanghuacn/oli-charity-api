@@ -118,7 +118,11 @@ class ActivityController extends Controller
     public function show(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
-        return Response::success(new ActivityResource($activity));
+        if ($activity->is_visible) {
+            return Response::success(new ActivityResource($activity));
+        } else {
+            return Response::success($activity->cache);
+        }
     }
 
     public function details(Activity $activity): JsonResponse|JsonResource
@@ -136,11 +140,7 @@ class ActivityController extends Controller
         Gate::authorize('check-charity-source', $activity);
         abort_if($activity->status == Activity::STATUS_REVIEW, 403, 'Permission denied');
         $this->checkUpdate($request);
-        if (!$activity->is_visible) {
-            $this->activityService->update($activity, $request->all());
-        } else {
-            $activity->update(['cache' => $request->all()]);
-        }
+        $activity->update(['cache' => $request->all()]);
         return Response::success([
             'id' => $activity->id,
             'status' => $activity->status,
