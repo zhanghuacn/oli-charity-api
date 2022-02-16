@@ -25,7 +25,7 @@ class ActivityFilter extends ModelFilter
     {
         return match ($filter) {
             'CURRENT' => $this->where('begin_time', '<=', Carbon::now())->where('end_time', '>=', Carbon::now()),
-            'NOT_CURRENT' => $this->where('begin_time', '>', Carbon::now())->where('end_time', '<', Carbon::now()),
+            'NOT_CURRENT' => $this->where('begin_time', '>', Carbon::now())->orWhere('end_time', '<', Carbon::now()),
             'UPCOMING' => $this->where('begin_time', '>', Carbon::now()),
             'ACTIVE' => $this->where('end_time', '>=', Carbon::now()),
             'PAST' => $this->where('end_time', '<', Carbon::now()),
