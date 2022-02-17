@@ -19,7 +19,7 @@ class ActivityCollection extends ResourceCollection
                 'description' => $item->description,
                 'location' => $item->location,
                 'begin_time' => $item->begin_time,
-                'ent_time' => $item->end_time,
+                'end_time' => $item->end_time,
                 'is_private' => $item->is_private,
             ];
         });
