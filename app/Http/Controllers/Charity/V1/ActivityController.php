@@ -39,7 +39,7 @@ class ActivityController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $activities = Activity::withCount(['applies', 'tickets'])->filter($request->all())->simplePaginate($request->input('per_page', 15));
+        $activities = Activity::withCount(['applies', 'tickets'])->filter($request->all())->paginate($request->input('per_page', 15));
         return Response::success(new ActivityCollection($activities));
     }
 
@@ -51,15 +51,14 @@ class ActivityController extends Controller
 
     public function tickets(Request $request, Activity $activity): JsonResponse|JsonResource
     {
-//        Gate::authorize('check-charity-source', $activity);
+        Gate::authorize('check-charity-source', $activity);
         $request->validate([
             'code' => 'sometimes|string｜nullable',
             'sort' => 'sometimes|string|in:ASC,DESC',
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = $activity->tickets()->filter($request->all())->with(['user:id,name,avatar,profile', 'group:id,name'])
-            ->simplePaginate($request->input('per_page', 15));
+        $data = $activity->tickets()->filter($request->all())->with(['user','group'])->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function (Ticket $ticket) {
             return [
                 'id' => $ticket->id,

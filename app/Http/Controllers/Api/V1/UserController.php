@@ -66,7 +66,7 @@ class UserController extends Controller
             'user_id' => Auth::id(),
             'payment_status' => Order::STATUS_PAID,
         ]);
-        $orders = Order::filter($request->all())->simplePaginate($request->input('per_page', 10));
+        $orders = Order::filter($request->all())->paginate($request->input('per_page', 10));
         $orders->getCollection()->transform(function (Order $order) {
             $orderable = $order->orderable()->withTrashed()->first();
             return [

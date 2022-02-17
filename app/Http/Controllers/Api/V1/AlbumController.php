@@ -26,7 +26,7 @@ class AlbumController extends Controller
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
         $request->merge(['activity_id' => $activity->id]);
-        $paginate = $activity->albums()->where(['is_visible' => true])->orderBy('id', $request->get('sort'))->simplePaginate($request->input('per_page', 10));
+        $paginate = $activity->albums()->where(['is_visible' => true])->orderBy('id', $request->get('sort'))->paginate($request->input('per_page', 10));
         return Response::success(new AlbumCollection($paginate));
     }
 

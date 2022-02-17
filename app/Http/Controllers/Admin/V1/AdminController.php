@@ -25,7 +25,7 @@ class AdminController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $admins = Admin::filter($request->all())->with('roles')->simplePaginate($request->input('per_page', 15));
+        $admins = Admin::filter($request->all())->with('roles')->paginate($request->input('per_page', 15));
         return Response::success(new AdminCollection($admins));
     }
 

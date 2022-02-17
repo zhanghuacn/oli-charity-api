@@ -26,11 +26,13 @@ class LotteryController extends Controller
         DB::transaction(function () use ($lottery) {
             $tickets = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)
                 ->pluck('amount', 'user_id')->toArray();
+            Log::info('tickets:', ['ticket' => $tickets]);
             $money = collect($tickets)->values();
             $ids = array_keys($tickets);
             $n = min($lottery->prizes()->sum('num'), count(array_keys($tickets)));
-            abort_if(empty($money) || empty($ids) || empty($n), 500, 'Abnormal lottery conditions');
             $data = ['money' => $money, 'ids' => $ids, 'n' => $n];
+            Log::info('data:', ['data' => $data]);
+            abort_if(empty($money) || empty($ids) || empty($n), 500, 'Abnormal lottery conditions');
             $body = Http::post(config('services.custom.lottery_url'), $data)->body();
             $result = json_decode($body, true);
             abort_if(!is_array($result), 500, 'Lottery algorithm exception');

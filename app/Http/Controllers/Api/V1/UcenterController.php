@@ -49,7 +49,7 @@ class UcenterController extends Controller
             );
         })->when($request->has('event_id'), function (Builder $query) use ($request) {
             $query->where('data->activity_id', '=', $request->get('event_id'));
-        })->simplePaginate($request->input('per_page', 15));
+        })->paginate($request->input('per_page', 15));
         return Response::success(new NotificationCollection($data));
     }
 
@@ -103,7 +103,7 @@ class UcenterController extends Controller
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
         $request->merge(['user_id' => Auth::id()]);
-        $activities = Activity::filter($request->all())->simplePaginate($request->input('per_page', 15));
+        $activities = Activity::filter($request->all())->paginate($request->input('per_page', 15));
         return Response::success(new ActivityCollection($activities));
     }
 
@@ -145,7 +145,7 @@ EOF;
             ->whereHas('favoriteable', function ($query) {
                 $query->whereNull('deleted_at');
             })
-            ->simplePaginate($request->input('per_page', 15));
+            ->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
             return $model->favoriteable;
         });
@@ -162,7 +162,7 @@ EOF;
             ->whereHas('favoriteable', function ($query) {
                 $query->whereNull('deleted_at');
             })
-            ->simplePaginate($request->input('per_page', 15));
+            ->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
             return $model->favoriteable;
         });
@@ -175,7 +175,7 @@ EOF;
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = Auth::user()->followings()->simplePaginate($request->input('per_page', 15));
+        $data = Auth::user()->followings()->paginate($request->input('per_page', 15));
         return Response::success(new UserCollection($data));
     }
 

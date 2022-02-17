@@ -23,7 +23,7 @@ class RoleController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $roles = Role::filter($request->all())->with('permissions')->simplePaginate($request->input('per_page', 15));
+        $roles = Role::filter($request->all())->with('permissions')->paginate($request->input('per_page', 15));
         $roles->getCollection()->transform(function (Role $role) {
             return [
                 'id' => $role->id,

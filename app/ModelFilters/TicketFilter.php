@@ -30,6 +30,11 @@ class TicketFilter extends ModelFilter
         return $this->where('code', '=', $code);
     }
 
+    public function activityId($value): TicketFilter
+    {
+        return $this->where('activity_id', '=', $value);
+    }
+
     public function name($name): Builder|TicketFilter
     {
         return $this->whereHas('user', function (Builder $query) use ($name) {

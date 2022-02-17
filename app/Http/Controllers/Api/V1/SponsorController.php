@@ -24,7 +24,7 @@ class SponsorController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $paginate = Sponsor::filter($request->all())->simplePaginate($request->input('per_page', 15));
+        $paginate = Sponsor::filter($request->all())->paginate($request->input('per_page', 15));
         return Response::success(new SponsorCollection($paginate));
     }
 

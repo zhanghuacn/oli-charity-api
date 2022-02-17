@@ -18,7 +18,7 @@ class PermissionController extends Controller
 
     public function index(Request $request): JsonResponse|JsonResource
     {
-        $permissions = Permission::filter($request->all())->simplePaginate($request->input('per_page', 15));
+        $permissions = Permission::filter($request->all())->paginate($request->input('per_page', 15));
         return Response::success($permissions);
     }
 

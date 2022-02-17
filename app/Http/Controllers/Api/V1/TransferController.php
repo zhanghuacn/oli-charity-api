@@ -33,7 +33,7 @@ class TransferController extends Controller
             'ticket_id' => $ticket->id,
             'user_id' => $ticket->user_id,
         ]);
-        $data = Transfer::filter($request->all())->simplePaginate($request->input('per_page', 10));
+        $data = Transfer::filter($request->all())->paginate($request->input('per_page', 10));
         return Response::success(new TransferCollection($data));
     }
 

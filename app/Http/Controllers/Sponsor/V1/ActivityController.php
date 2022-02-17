@@ -36,7 +36,7 @@ class ActivityController extends Controller
                 $query->whereHasMorph('goodsable', Sponsor::class, function (Builder $query) {
                     $query->where('id', '=', getPermissionsTeamId());
                 });
-            })->simplePaginate($request->input('per_page', 15));
+            })->paginate($request->input('per_page', 15));
         return Response::success(new ActivityCollection($activities));
     }
 

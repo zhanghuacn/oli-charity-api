@@ -27,7 +27,7 @@ class StaffController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = Sponsor::findOrFail(getPermissionsTeamId())->staffs()->simplePaginate($request->input('per_page', 15));
+        $data = Sponsor::findOrFail(getPermissionsTeamId())->staffs()->paginate($request->input('per_page', 15));
         return Response::success(new StaffCollection($data));
     }
 

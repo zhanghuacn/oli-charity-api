@@ -21,7 +21,7 @@ class HistoryController extends Controller
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
         $request->merge(['charity_id' => getPermissionsTeamId()]);
-        $data = Order::filter($request->all())->with('user')->simplePaginate($request->input('per_page', 15));
+        $data = Order::filter($request->all())->with('user')->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function ($model) {
             return [
                 'order_sn' => $model->order_sn,
