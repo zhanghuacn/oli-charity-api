@@ -49,8 +49,8 @@ class ActivityController extends Controller
         if (!empty($data['staffs'])) {
             foreach ($data['staffs'] as &$staff) {
                 $user = User::find($staff['uid']);
-                $staff['name'] = $user->name;
-                $staff['avatar'] = $user->avatar;
+                $staff['name'] = optional($user)->name;
+                $staff['avatar'] = optional($user)->avatar;
             }
         }
         return Response::success($data);

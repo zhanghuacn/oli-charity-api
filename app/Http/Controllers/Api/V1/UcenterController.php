@@ -56,14 +56,14 @@ class UcenterController extends Controller
     public function update(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'avatar' => 'sometimes|string',
-            'first_name' => 'sometimes|string',
-            'middle_name' => 'sometimes|string',
-            'last_name' => 'sometimes|string',
-            'birthday' => 'sometimes|date',
-            'name' => 'sometimes|string',
-            'profile' => 'sometimes|string',
-            'backdrop' => 'sometimes|url',
+            'avatar' => 'sometimes|string|nullable',
+            'first_name' => 'sometimes|string|nullable',
+            'middle_name' => 'sometimes|string|nullable',
+            'last_name' => 'sometimes|string|nullable',
+            'birthday' => 'sometimes|date|nullable',
+            'name' => 'sometimes|string|nullable',
+            'profile' => 'sometimes|string|nullable',
+            'backdrop' => 'sometimes|url|nullable',
         ]);
         $user = Auth::user();
         $user->update($request->only(['avatar', 'backdrop', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));
@@ -98,7 +98,7 @@ class UcenterController extends Controller
     public function activities(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'filter' => 'sometimes|in:CURRENT,UPCOMING,PAST',
+            'filter' => 'sometimes|in:CURRENT,UPCOMING,PAST,NOT_CURRENT',
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);

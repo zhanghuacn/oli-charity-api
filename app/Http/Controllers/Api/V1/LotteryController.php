@@ -30,6 +30,7 @@ class LotteryController extends Controller
                 'time' => $item->draw_time,
                 'standard_amount' => floatval($item->standard_amount),
                 'is_standard' => floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
+                'lottery_code' => $activity->my_ticket->lottery_code
             ];
         });
         return Response::success($data);
