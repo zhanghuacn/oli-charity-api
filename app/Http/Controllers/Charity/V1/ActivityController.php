@@ -9,6 +9,8 @@ use App\Models\Activity;
 use App\Models\Goods;
 use App\Models\Lottery;
 use App\Models\Order;
+use App\Models\Prize;
+use App\Models\Sponsor;
 use App\Models\Ticket;
 use App\Services\ActivityService;
 use Illuminate\Http\JsonResponse;
@@ -360,6 +362,22 @@ class ActivityController extends Controller
                     'name' => $lottery->name,
                     'draw_time' => $lottery->draw_time,
                     'status' => $lottery->status,
+                    'prizes' => $lottery->prizes->transform(function (Prize $prize) {
+                        return [
+                            'id' => $prize->id,
+                            'name' => $prize->name,
+                            'stock' => $prize->num,
+                            'price' => floatval($prize->price),
+                            'sponsor' => optional($prize->prizeable)->getMorphClass() != Sponsor::class ? [] : [
+                                'id' => $prize->prizeable->id,
+                                'name' => $prize->prizeable->name,
+                                'logo' => $prize->prizeable->logo,
+                            ],
+                            'images' => $prize->images,
+                            'description' => $prize->description,
+                            'winners' => $prize->winners,
+                        ];
+                    }),
                 ];
             }),
             'sales' => $activity->goods->transform(function (Goods $goods) {
@@ -370,6 +388,13 @@ class ActivityController extends Controller
                     'image' => collect($goods->images)->first(),
                     'sale_num' => $goods->extends['sale_num'],
                     'income' => $goods->extends['sale_income'],
+                    'order' => $goods->orders()->where(['payment_status' => Order::STATUS_PAID])->with('user')->get()->transform(function ($item) {
+                        return [
+                            'id' => optional($item->user)->id,
+                            'name' => optional($item->user)->name,
+                            'avatar' => optional($item->user)->avatar,
+                        ];
+                    }),
                 ];
             }),
             'statistics' => [

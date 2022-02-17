@@ -4,6 +4,7 @@ namespace App\Http\Resources\Charity;
 
 use App\Models\Goods;
 use App\Models\Lottery;
+use App\Models\Order;
 use App\Models\Prize;
 use App\Models\Sponsor;
 use App\Models\Ticket;
@@ -28,7 +29,7 @@ class ActivityResource extends JsonResource
                 'images' => $this->images,
                 'specialty' => $this->extends['specialty'],
                 'timeline' => $this->extends['timeline'],
-                'is_albums'=> $this->extends['is_albums'] ?? false,
+                'is_albums' => $this->extends['is_albums'] ?? false,
                 'status' => $this->status,
             ],
             'lotteries' => $this->lotteries->transform(function (Lottery $lottery) {
@@ -40,6 +41,7 @@ class ActivityResource extends JsonResource
                     'end_time' => $lottery->end_time,
                     'standard_amount' => $lottery->standard_amount,
                     'type' => $lottery->draw_time ? Lottery::TYPE_AUTOMATIC : Lottery::TYPE_MANUAL,
+                    'status' => $lottery->status,
                     'draw_time' => $lottery->draw_time,
                     'images' => $lottery->images,
                     'prizes' => $lottery->prizes->transform(function (Prize $prize) {
@@ -58,7 +60,6 @@ class ActivityResource extends JsonResource
                             'winners' => $prize->winners,
                         ];
                     }),
-
                 ];
             }),
             'sales' => $this->goods->transform(function (Goods $goods) {
@@ -75,6 +76,13 @@ class ActivityResource extends JsonResource
                     'images' => $goods->images,
                     'description' => $goods->description,
                     'content' => $goods->content,
+                    'order' => $goods->orders()->where(['payment_status' => Order::STATUS_PAID])->with('user')->get()->transform(function ($item) {
+                        return [
+                            'id' => optional($item->user)->id,
+                            'name' => optional($item->user)->name,
+                            'avatar' => optional($item->user)->avatar,
+                        ];
+                    }),
                 ];
             }),
             'staffs' => $this->tickets()->with('user')->whereIn('type', [TICKET::TYPE_HOST, Ticket::TYPE_STAFF])->get()
