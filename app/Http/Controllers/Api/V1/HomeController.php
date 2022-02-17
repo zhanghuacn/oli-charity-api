@@ -68,11 +68,11 @@ class HomeController extends Controller
             }
         }
         return Response::success([
-            'charities' => new CharityCollection(collect($data['charities'])),
-            'events' => new ActivityCollection(collect($data['activities'])),
-            'news' => new NewsCollection(collect($data['news'])),
-            'peoples' => new UserCollection(collect($data['users'])),
-            'sponsors' => new SponsorCollection(collect($data['sponsors'])),
+            'charities' => new CharityCollection(collect($data['charities'])->whereNull('deleted_at')->all()),
+            'events' => new ActivityCollection(collect($data['activities'])->whereNull('deleted_at')->all()),
+            'news' => new NewsCollection(collect($data['news'])->whereNull('deleted_at')->all()),
+            'peoples' => new UserCollection(collect($data['users'])->whereNull('deleted_at')->all()),
+            'sponsors' => new SponsorCollection(collect($data['sponsors'])->whereNull('deleted_at')->all()),
         ]);
     }
 }
