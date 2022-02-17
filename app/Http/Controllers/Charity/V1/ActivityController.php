@@ -59,7 +59,8 @@ class ActivityController extends Controller
                     'uid' => $ticket->user->id,
                     'avatar' => $ticket->user->avatar,
                     'name' => $ticket->user->name,
-                    'group' => $ticket->group
+                    'group' => $ticket->group,
+                    'ticket' => $ticket->code,
                 ];
             });
         return Response::success($tickets);
