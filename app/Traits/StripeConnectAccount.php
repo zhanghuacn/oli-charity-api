@@ -59,6 +59,7 @@ trait StripeConnectAccount
 
         // Wipe account id reference from model.
         $this->stripe_account_id = null;
+        $this->is_visible = false;
         $this->save();
 
         return $account;
@@ -79,6 +80,7 @@ trait StripeConnectAccount
         $account = $this->stripe()->accounts->create($options, $this->stripeAccountOptions());
         // Save the id.
         $this->stripe_account_id = $account->id;
+        $this->is_visible = true;
         $this->save();
 
         return $account;

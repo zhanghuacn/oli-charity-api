@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Goods;
 use App\Models\Order;
 use App\Models\Ticket;
 use Carbon\Carbon;
@@ -50,6 +51,8 @@ class WebhookController extends CashierController
                         $this->handleCharity($order);
                         break;
                     case Order::TYPE_BAZAAR:
+                        $this->handleBazaar($order);
+                        break;
                     case Order::TYPE_ACTIVITY:
                         $this->handleCommon($order);
                         break;
@@ -96,6 +99,17 @@ class WebhookController extends CashierController
         $order->charity()->update([
             'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
         ]);
+    }
+
+    private static function handleBazaar(Order $order): void
+    {
+        $order->activity()->update([
+            'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
+        ]);
+        $order->charity()->update([
+            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
+        ]);
+        $order->orderable()->decrement('stock');
     }
 
     private static function handleCommon(Order $order): void
