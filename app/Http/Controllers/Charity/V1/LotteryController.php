@@ -7,6 +7,7 @@ use App\Jobs\LotteryWinners;
 use App\Models\Activity;
 use App\Models\Lottery;
 use App\Models\Prize;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\LotteryPaid;
 use App\Policies\AdminPolicy;
@@ -24,7 +25,7 @@ class LotteryController extends Controller
     {
         abort_if($lottery->status, 422, 'Please do not repeat the lottery');
         DB::transaction(function () use ($lottery) {
-            $result = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount);
+            $result = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)->where(['type' => Ticket::TYPE_DONOR]);
             abort_if($result->doesntExist(), 500, 'Too few participants in the lottery');
             $tickets = $result->pluck('amount', 'user_id')->toArray();
             Log::info('tickets:' . json_encode($tickets));

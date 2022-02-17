@@ -4,11 +4,13 @@ namespace App\Console\Commands;
 
 use App\Models\Lottery;
 use App\Models\Prize;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\LotteryPaid;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class LotteryWinners extends Command
 {
@@ -37,17 +39,17 @@ class LotteryWinners extends Command
     }
 
     /**
-     * Execute the console command.
-     *
-     * @return int
+     * @return void
      * @throws \Throwable
      */
     public function handle()
     {
         DB::transaction(function () {
             Lottery::where('status', '<>', true)->where('draw_time', '<=', now())->get()->each(function (Lottery $lottery) {
-                $tickets = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)
-                    ->pluck('amount', 'user_id')->toArray();
+                $result = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)->where(['type' => Ticket::TYPE_DONOR]);
+                abort_if($result->doesntExist(), 500, 'Too few participants in the lottery');
+                $tickets = $result->pluck('amount', 'user_id')->toArray();
+                Log::info('tickets:' . json_encode($tickets));
                 $money = collect($tickets)->values();
                 $ids = array_keys($tickets);
                 $n = min($lottery->prizes()->sum('num'), count(array_keys($tickets)));

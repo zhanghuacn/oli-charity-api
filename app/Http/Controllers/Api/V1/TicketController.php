@@ -115,7 +115,7 @@ class TicketController extends Controller
             'name' => 'sometimes|string',
             'sort' => 'sometimes|in:ASC,DESC',
         ]);
-        $data = $activity->tickets()->with(['user', 'transfers'])->filter($request->all())->get()
+        $data = $activity->tickets()->where(['type' => Ticket::TYPE_DONOR])->with(['user', 'transfers'])->filter($request->all())->get()
             ->transform(function ($item) {
                 return [
                     'id' => $item->user->id,
