@@ -26,25 +26,25 @@ class LotteryController extends Controller
         DB::transaction(function () use ($lottery) {
             $tickets = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)
                 ->pluck('amount', 'user_id')->toArray();
-            $num = $lottery->prizes()->sum('num');
-            $money = collect($tickets)->values()->map(function ($item) {
-                return floatval($item);
-            });
-            $data = ['money' => $money, 'ids' => array_keys($tickets), 'n' => min($num, count(array_keys($tickets)))];
-            Log::info(sprintf('请求参数：%s', json_encode($data)));
-            $response = Http::post(config('services.custom.lottery_url'), $data);
-            $result = json_decode($response->body());
+            $money = collect($tickets)->values();
+            $ids = array_keys($tickets);
+            $n = min($lottery->prizes()->sum('num'), count(array_keys($tickets)));
+            abort_if(empty($money) || empty($ids) || empty($n), 500, 'Abnormal lottery conditions');
+            $data = ['money' => $money, 'ids' => $ids, 'n' => $n];
+            $body = Http::post(config('services.custom.lottery_url'), $data)->body();
+            $result = json_decode($body, true);
+            abort_if(!is_array($result), 500, 'Lottery algorithm exception');
             $start = 0;
             $lottery->prizes()->each(function (Prize $prize) use (&$start, $result) {
-                $ids = array_slice($result, $start, $prize->num);
+                $ids = collect($result)->slice($start, $prize->num);
                 if (!empty($ids)) {
                     $users = User::whereIn('id', $ids)->get(['id', 'name', 'avatar']);
                     $prize->update(['winners' => $users->toArray()]);
-                    $start += $start == 0 ? 1 : $prize->num;
                     foreach ($users as $user) {
                         $user->notify(new LotteryPaid($prize));
                     }
                 }
+                $start += $prize->num;
             });
             $lottery->update(['status' => true]);
         });
