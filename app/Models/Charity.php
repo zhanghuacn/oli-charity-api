@@ -151,6 +151,6 @@ class Charity extends Model
 
     public function shouldBeSearchable(): bool
     {
-        return $this->status == self::STATUS_PASSED;
+        return $this->status == self::STATUS_PASSED && empty($this->deleted_at);
     }
 }

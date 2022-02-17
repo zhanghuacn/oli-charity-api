@@ -243,6 +243,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function shouldBeSearchable(): bool
     {
-        return $this->is_visible && $this->status == self::STATUS_ACTIVE;
+        return $this->is_visible && $this->status == self::STATUS_ACTIVE && empty($this->deleted_at);
     }
 }

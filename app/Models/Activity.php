@@ -193,6 +193,6 @@ class Activity extends Model
 
     public function shouldBeSearchable(): bool
     {
-        return $this->is_visible == true;
+        return $this->is_visible == true && empty($this->deleted_at);
     }
 }

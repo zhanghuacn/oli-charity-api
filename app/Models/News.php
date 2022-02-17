@@ -50,6 +50,6 @@ class News extends Model
 
     public function shouldBeSearchable(): bool
     {
-        return $this->published_at != null;
+        return $this->published_at != null && empty($this->deleted_at);
     }
 }
