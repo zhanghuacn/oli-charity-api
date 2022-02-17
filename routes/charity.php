@@ -4,6 +4,7 @@ use App\Http\Controllers\Charity\V1\ActivityController;
 use App\Http\Controllers\Charity\V1\ApplyController;
 use App\Http\Controllers\Charity\V1\AuthController;
 use App\Http\Controllers\Charity\V1\CharityController;
+use App\Http\Controllers\Charity\V1\HistoryController;
 use App\Http\Controllers\Charity\V1\HomeController;
 use App\Http\Controllers\Charity\V1\LotteryController;
 use App\Http\Controllers\Charity\V1\NewsController;
@@ -77,4 +78,6 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
     Route::post('/stripe/board', [StripeController::class, 'board']);
     Route::post('/stripe/return', [StripeController::class, 'return']);
     Route::post('/stripe/refresh', [StripeController::class, 'refresh']);
+
+    Route::get('/history', [HistoryController::class, 'index']);
 });

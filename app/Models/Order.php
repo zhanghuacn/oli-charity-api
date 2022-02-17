@@ -63,6 +63,8 @@ class Order extends Model
         'amount' => 'float',
         'fee_amount' => 'float',
         'total_amount' => 'float',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'payment_time' => 'datetime:Y-m-d H:i:s',
     ];
 
     public function charity(): BelongsTo

@@ -20,6 +20,11 @@ class OrderFilter extends ModelFilter
         return $this->where('charity_id', '=', $id);
     }
 
+    public function type($type): OrderFilter
+    {
+        return $this->where('$type', '=', $type);
+    }
+
     public function activity($id): OrderFilter
     {
         return $this->where('activity_id', '=', $id);

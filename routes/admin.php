@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\V1\NewsController;
 use App\Http\Controllers\Admin\V1\PermissionController;
 use App\Http\Controllers\Admin\V1\RoleController;
 use App\Http\Controllers\Admin\V1\SponsorController;
+use App\Http\Controllers\Admin\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,4 +45,6 @@ Route::middleware(['auth:admin', 'scopes:place-admin', 'admin'])->group(function
     Route::get('/events/{activity}', [ActivityController::class, 'show']);
     Route::get('/events/{activity}/audit-details', [ActivityController::class, 'details']);
     Route::post('/events/{activity}/audit', [ActivityController::class, 'audit']);
+
+    Route::get('/users', [UserController::class, 'index']);
 });
