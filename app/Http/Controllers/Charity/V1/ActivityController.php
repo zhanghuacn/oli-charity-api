@@ -49,21 +49,28 @@ class ActivityController extends Controller
         return Response::success($this->getDetails($activity));
     }
 
-    public function tickets(Activity $activity): JsonResponse|JsonResource
+    public function tickets(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
-        $tickets = $activity->tickets()->with(['user:id,name,avatar,profile', 'group:id,name'])->get()
-            ->transform(function (Ticket $ticket) {
-                return [
-                    'id' => $ticket->id,
-                    'uid' => $ticket->user->id,
-                    'avatar' => $ticket->user->avatar,
-                    'name' => $ticket->user->name,
-                    'group' => $ticket->group,
-                    'ticket' => $ticket->code,
-                ];
-            });
-        return Response::success($tickets);
+        $request->validate([
+            'code' => 'sometimes|string｜nullable',
+            'sort' => 'sometimes|string|in:ASC,DESC',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
+        $data = $activity->tickets()->filter($request->all())->with(['user:id,name,avatar,profile', 'group:id,name'])->simplePaginate();
+        $data->getCollection()->transform(function (Ticket $ticket) {
+            return [
+                'id' => $ticket->id,
+                'uid' => $ticket->user->id,
+                'avatar' => $ticket->user->avatar,
+                'name' => $ticket->user->name,
+                'group' => optional($ticket->group)->name,
+                'ticket' => $ticket->code,
+                'amount' => $ticket->amount,
+            ];
+        });
+        return Response::success($data);
     }
 
     public function seatAllocation(Request $request, Activity $activity): JsonResponse|JsonResource

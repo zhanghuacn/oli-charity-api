@@ -25,6 +25,11 @@ class TicketFilter extends ModelFilter
         return $this->where('type', '=', $type);
     }
 
+    public function code($code): TicketFilter
+    {
+        return $this->where('code', '=', $code);
+    }
+
     public function name($name): Builder|TicketFilter
     {
         return $this->whereHas('user', function (Builder $query) use ($name) {
