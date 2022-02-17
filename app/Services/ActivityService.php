@@ -23,7 +23,7 @@ class ActivityService
                     'charity_id' => getPermissionsTeamId(),
                     'name' => $arr['basic']['name'],
                     'description' => $arr['basic']['description'],
-                    'content' => $arr['basic']['content'],
+//                    'content' => $arr['basic']['content'],
                     'location' => $arr['basic']['location'],
                     'begin_time' => $arr['basic']['begin_time'],
                     'end_time' => $arr['basic']['end_time'],
@@ -106,7 +106,7 @@ class ActivityService
                 $activity->update([
                     'name' => $arr['basic']['name'],
                     'description' => $arr['basic']['description'],
-                    'content' => $arr['basic']['content'],
+//                    'content' => $arr['basic']['content'],
                     'location' => $arr['basic']['location'],
                     'begin_time' => $arr['basic']['begin_time'],
                     'end_time' => $arr['basic']['end_time'],
