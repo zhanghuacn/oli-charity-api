@@ -5,6 +5,7 @@ namespace App\ModelFilters;
 use Carbon\Carbon;
 use EloquentFilter\ModelFilter;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ActivityFilter extends ModelFilter
 {
@@ -25,7 +26,13 @@ class ActivityFilter extends ModelFilter
     {
         return match ($filter) {
             'CURRENT' => $this->where('begin_time', '<=', Carbon::now())->where('end_time', '>=', Carbon::now()),
-            'NOT_CURRENT' => $this->where('begin_time', '>', Carbon::now())->orWhere('end_time', '<', Carbon::now()),
+            'NOT_CURRENT' => Auth::check() ? $this->whereNotExists(
+                function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tickets')
+                        ->whereRaw('tickets.activity_id = activities.id AND tickets.user_id = ' . Auth::id() . '  AND activities.begin_time <= now() AND activities.end_time >= now()');
+                }
+            ) : null,
             'UPCOMING' => $this->where('begin_time', '>', Carbon::now()),
             'ACTIVE' => $this->where('end_time', '>=', Carbon::now()),
             'PAST' => $this->where('end_time', '<', Carbon::now()),
