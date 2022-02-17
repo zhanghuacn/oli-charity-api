@@ -133,7 +133,7 @@ class ActivityService
                             [
                                 'id' => $item['id'] ?? null,
                                 'activity_id' => $activity->id,
-                                'charity_id' => getPermissionsTeamId(),
+                                'charity_id' => $activity->charity_id,
                             ],
                             [
                                 'name' => $item['name'],
@@ -157,7 +157,7 @@ class ActivityService
                                     [
                                         'id' => $item['id'] ?? null,
                                         'activity_id' => $activity->id,
-                                        'charity_id' => getPermissionsTeamId(),
+                                        'charity_id' => $activity->charity_id,
                                         'lottery_id' => $lottery->id,
                                     ],
                                     [
@@ -167,7 +167,7 @@ class ActivityService
                                         'price' => $item['price'],
                                         'images' => $item['images'],
                                         'prizeable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
-                                        'prizeable_id' => empty($item['sponsor']) ? getPermissionsTeamId() : $item['sponsor']['id'],
+                                        'prizeable_id' => empty($item['sponsor']) ? $activity->charity_id : $item['sponsor']['id'],
                                     ]
                                 );
                             });
@@ -186,7 +186,7 @@ class ActivityService
                             [
                                 'id' => $item['id'] ?? null,
                                 'activity_id' => $activity->id,
-                                'charity_id' => getPermissionsTeamId(),
+                                'charity_id' => $activity->charity_id,
                             ],
                             [
                                 'name' => $item['name'],
@@ -196,7 +196,7 @@ class ActivityService
                                 'stock' => $item['stock'],
                                 'images' => $item['images'],
                                 'goodsable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
-                                'goodsable_id' => empty($item['sponsor']) ? getPermissionsTeamId() : $item['sponsor']['id'],
+                                'goodsable_id' => empty($item['sponsor']) ? $activity->charity_id : $item['sponsor']['id'],
                             ]
                         );
                     });

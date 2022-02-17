@@ -55,6 +55,7 @@ class ActivityResource extends JsonResource
                             ],
                             'images' => $prize->images,
                             'description' => $prize->description,
+                            'winners' => $prize->winners,
                         ];
                     }),
 
