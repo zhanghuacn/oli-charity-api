@@ -22,7 +22,7 @@ class LotteryController extends Controller
 {
     public function draw(Lottery $lottery): JsonResponse|JsonResource
     {
-//        abort_if($lottery->status, 422, 'Please do not repeat the lottery');
+        abort_if($lottery->status, 422, 'Please do not repeat the lottery');
         DB::transaction(function () use ($lottery) {
             $result = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount);
             abort_if($result->doesntExist(), 500, 'Too few participants in the lottery');
