@@ -40,7 +40,7 @@ class ApplyController extends Controller
         $apply->reviewer = Auth::id();
         $apply->reviewed_at = now();
         $apply->save();
-        $apply->user()->notify(new ApplyPaid());
+        $apply->user->notify(new ApplyPaid());
         return Response::success();
     }
 }
