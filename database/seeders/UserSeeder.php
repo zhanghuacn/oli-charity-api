@@ -12,6 +12,6 @@ class UserSeeder extends Seeder
     {
         User::factory()
             ->has(Ticket::factory()->count(1))
-            ->count(200g)->create();
+            ->count(200)->create();
     }
 }
