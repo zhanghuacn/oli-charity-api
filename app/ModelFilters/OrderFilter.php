@@ -22,7 +22,7 @@ class OrderFilter extends ModelFilter
 
     public function type($type): OrderFilter
     {
-        return $this->where('$type', '=', $type);
+        return $this->where('type', '=', $type);
     }
 
     public function activity($id): OrderFilter
