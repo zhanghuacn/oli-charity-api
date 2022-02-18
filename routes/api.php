@@ -59,6 +59,7 @@ Route::get('/charities/{charity}', [CharityController::class, 'show']);
 Route::get('/charities/{charity}/news', [CharityController::class, 'news']);
 Route::get('/charities/{charity}/events', [CharityController::class, 'activities']);
 Route::get('/charities/{charity}/historical-donation', [CharityController::class, 'chart']);
+Route::get('/charities/{charity}/source', [CharityController::class, 'source']);
 
 Route::get('/sponsors', [SponsorController::class, 'index']);
 Route::get('/sponsors/{sponsor}', [SponsorController::class, 'show']);

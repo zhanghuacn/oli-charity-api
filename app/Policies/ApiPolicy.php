@@ -32,7 +32,7 @@ class ApiPolicy
 
     public function staff(User $user, Activity $activity): bool
     {
-        return in_array(optional($activity->my_ticket)->type, [Ticket::TYPE_STAFF, Ticket::TYPE_HOST, Ticket::TYPE_CHARITY]);
+        return in_array(optional($activity->my_ticket)->type, [Ticket::TYPE_STAFF, Ticket::TYPE_HOST]);
     }
 
     public function group(User $user, Group $group): bool

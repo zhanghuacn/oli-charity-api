@@ -91,6 +91,17 @@ class CharityController extends Controller
         return Response::success($data);
     }
 
+    public function source(Charity $charity): JsonResponse|JsonResource
+    {
+        $data = Order::filter([
+            'charity_id' => $charity->id,
+            'payment_status' => Order::STATUS_PAID,
+        ])->selectRaw('type, sum(amount) as total_amount')
+            ->groupBy('type')->get()->toArray();
+
+        return Response::success($data);
+    }
+
     public function favorite(Charity $charity): JsonResponse|JsonResource
     {
         if (!Auth()->user()->hasFavorited($charity)) {
@@ -119,7 +130,7 @@ class CharityController extends Controller
                 'title' => $news->title,
                 'image' => $news->thumb,
                 'description' => $news->description,
-                'time'=> $news->published_at
+                'time' => $news->published_at
             ];
         }));
     }
