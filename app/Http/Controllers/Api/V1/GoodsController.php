@@ -56,7 +56,7 @@ class GoodsController extends Controller
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
         abort_if(Carbon::parse($activity->end_time)->lt(now()), 422, 'Event ended');
         abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404, 'Goods is not found');
-        abort_if($goods->stock <= 0, 422, 'Goods sell out');
+        abort_if($goods->stock <= 0, 422, 'Goods sold out');
         $request->validate([
             'method' => 'required|in:STRIPE',
         ]);

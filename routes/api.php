@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BazaarController;
 use App\Http\Controllers\Api\V1\CharityController;
 use App\Http\Controllers\Api\V1\GoodsController;
 use App\Http\Controllers\Api\V1\GroupController;
@@ -43,7 +44,7 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/social-login', [AuthController::class, 'socialite']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
-Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:1,1');;
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:1,1');
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
@@ -137,6 +138,10 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::get('/events/{activity}/albums', [AlbumController::class, 'index']);
     Route::post('/events/{activity}/albums', [AlbumController::class, 'store']);
     Route::delete('/events/{activity}/albums/{album}', [AlbumController::class, 'destroy']);
+
+    Route::get('/bazaars', [BazaarController::class, 'index']);
+    Route::get('/events/{activity}/warehouse', [BazaarController::class, 'warehouse']);
+    Route::post('/bazaars/{bazaar}/affirm', [BazaarController::class, 'affirm']);
 });
 
 

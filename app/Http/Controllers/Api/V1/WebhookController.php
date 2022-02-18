@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Bazaar;
 use App\Models\Goods;
 use App\Models\Order;
 use App\Models\Ticket;
@@ -110,6 +111,14 @@ class WebhookController extends CashierController
             'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
         ]);
         $order->orderable()->decrement('stock');
+        Bazaar::create([
+            'charity_id' => $order->charity_id,
+            'activity_id' => $order->activity_id,
+            'order_id' => $order->id,
+            'goods_id' => $order->orderable->id,
+            'user_id' => $order->user_id,
+            'price' => $order->orderable->price,
+        ]);
     }
 
     private static function handleActivity(Order $order): void
