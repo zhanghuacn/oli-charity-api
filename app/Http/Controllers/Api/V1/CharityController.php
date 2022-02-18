@@ -7,10 +7,12 @@ use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\CharityCollection;
 use App\Http\Resources\Api\CharityResource;
 use App\Http\Resources\Api\NewsCollection;
+use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\News;
 use App\Models\Order;
 use App\Services\OrderService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -88,6 +90,19 @@ class CharityController extends Controller
         for ($i = 1; $i <= 12; $i++) {
             $data['received'][] = $received[str_pad($i, 2, '0', STR_PAD_LEFT)] ?? 0;
         }
+        return Response::success($data);
+    }
+
+    public function history(Charity $charity): JsonResponse|JsonResource
+    {
+        $data = $charity->activities->transform(function (Activity $activity) {
+            return [
+                'event_id' => $activity->id,
+                'name' => $activity->name,
+                'date' => Carbon::parse($activity->begin_time)->toDateString(),
+                'amount' => floatval($activity->extends['total_amount']) ?? 0,
+            ];
+        });
         return Response::success($data);
     }
 
