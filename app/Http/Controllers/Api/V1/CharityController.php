@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use function abort;
 use function abort_if;
@@ -98,7 +99,7 @@ class CharityController extends Controller
         $data = $charity->activities->transform(function (Activity $activity) {
             return [
                 'event_id' => $activity->id,
-                'name' => $activity->name,
+                'name' => Str::random(10),
                 'date' => Carbon::parse($activity->begin_time)->toDateString(),
                 'amount' => floatval($activity->extends['total_amount']) ?? 0,
             ];

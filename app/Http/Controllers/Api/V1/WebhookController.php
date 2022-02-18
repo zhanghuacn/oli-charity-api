@@ -54,7 +54,7 @@ class WebhookController extends CashierController
                         $this->handleBazaar($order);
                         break;
                     case Order::TYPE_ACTIVITY:
-                        $this->handleCommon($order);
+                        $this->handleActivity($order);
                         break;
                     default:
                 }
@@ -95,10 +95,11 @@ class WebhookController extends CashierController
             'extends->participates' => bcadd(intval($order->activity->extends['participates']) ?? 0, 1),
             'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
         ]);
-        $order->activity()->decrement('stocks');
         $order->charity()->update([
             'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
         ]);
+        $order->activity->decrement('stocks');
+        $order->activity->refresh();
     }
 
     private static function handleBazaar(Order $order): void
@@ -109,10 +110,11 @@ class WebhookController extends CashierController
         $order->charity()->update([
             'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
         ]);
-        $order->orderable()->decrement('stock');
+        $order->orderable->decrement('stock');
+        $order->orderable->refresh();
     }
 
-    private static function handleCommon(Order $order): void
+    private static function handleActivity(Order $order): void
     {
         $order->activity()->update([
             'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
@@ -120,9 +122,7 @@ class WebhookController extends CashierController
         $order->charity()->update([
             'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
         ]);
-        if ($order->type == Order::TYPE_ACTIVITY) {
-            $order->activity->tickets()->where(['user_id' => $order->user_id])->increment('amount', $order->amount);
-        }
+        Ticket::where(['activity_id' => $order->activity_id, 'user_id' => $order->user_id])->increment('amount', $order->amount);
     }
 
     private static function handleCharity(Order $order): void
