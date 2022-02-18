@@ -34,6 +34,7 @@ class ActivityResource extends JsonResource
                 return [
                     'id' => $lottery->id,
                     'name' => $lottery->name,
+                    'description' => $lottery->description,
                     'begin_time' => $lottery->begin_time,
                     'end_time' => $lottery->end_time,
                     'standard_amount' => $lottery->standard_amount,

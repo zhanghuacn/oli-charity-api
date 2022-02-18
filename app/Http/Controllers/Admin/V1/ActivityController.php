@@ -68,8 +68,8 @@ class ActivityController extends Controller
         if ($activity->status == Activity::STATUS_PASSED) {
             $this->activityService->update($activity, $activity->cache->toArray());
             $activity->is_visible = true;
+            $activity->cache = (new ActivityResource($activity))->toArray($request);
         }
-        $activity->cache = (new ActivityResource($activity))->toArray($request);
         $activity->save();
         return Response::success();
     }
