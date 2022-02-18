@@ -15,6 +15,7 @@ class GoodsResource extends JsonResource
             'description' => $this->description,
             'content' => $this->content,
             'price' => floatval($this->price),
+            'sold_out' => $this->stock <= 0,
             'sponsor' => [
                 'id' => optional($this->goodsable)->id,
                 'name' => optional($this->goodsable)->name,
