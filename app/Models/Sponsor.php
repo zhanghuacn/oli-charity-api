@@ -30,6 +30,7 @@ class Sponsor extends Model
 
     public const GUARD_NAME = 'sponsor';
     public const STATUS_WAIT = 'WAIT';
+    public const STATUS_REVIEW = 'REVIEW';
     public const STATUS_PASSED = 'PASSED';
     public const STATUS_REFUSE = 'REFUSE';
 

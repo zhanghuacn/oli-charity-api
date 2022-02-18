@@ -37,7 +37,7 @@ class ActivityResource extends JsonResource
                     'description' => $lottery->description,
                     'begin_time' => $lottery->begin_time,
                     'end_time' => $lottery->end_time,
-                    'standard_amount' => $lottery->standard_amount,
+                    'standard_amount' => floatval($lottery->standard_amount),
                     'type' => $lottery->draw_time ? Lottery::TYPE_AUTOMATIC : Lottery::TYPE_MANUAL,
                     'draw_time' => $lottery->draw_time,
                     'images' => $lottery->images,

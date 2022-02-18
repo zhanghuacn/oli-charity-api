@@ -51,6 +51,7 @@ class AuthController extends Controller
         try {
             $user = User::findOrFail($signature['user_id'], ['id', 'name', 'avatar', 'profile']);
             DB::transaction(function () use ($user, $request) {
+                $request->merge(['status' => Sponsor::STATUS_REVIEW]);
                 $sponsor = Sponsor::create($request->except('token'));
                 $sponsor->staffs()->attach($user->id);
                 setPermissionsTeamId($sponsor->id);
