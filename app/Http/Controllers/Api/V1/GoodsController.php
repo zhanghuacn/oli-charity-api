@@ -59,7 +59,7 @@ class GoodsController extends Controller
         $request->validate([
             'method' => 'required|in:STRIPE',
         ]);
-        $order = $this->orderService->bazaar(Auth::user(), $activity->charity, $goods);
+        $order = $this->orderService->bazaar(Auth::user(), $activity, $goods);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,

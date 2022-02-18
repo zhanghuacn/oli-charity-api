@@ -24,21 +24,22 @@ class OrderService
         Stripe::setApiKey(Config::get('cashier.secret'));
     }
 
-    public function bazaar(User $user, Charity $charity, Goods $goods): Order
+    public function bazaar(User $user, Activity $activity, Goods $goods): Order
     {
         try {
-            return DB::transaction(function () use ($charity, $user, $goods) {
+            return DB::transaction(function () use ($activity, $user, $goods) {
                 $payment_intent = PaymentIntent::create([
                     'payment_method_types' => ['card'],
                     'amount' => $goods->price * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'application_fee_amount' => 0,
                     'receipt_email' => $user->email,
-                ], ['stripe_account' => $charity->stripe_account_id]);
+                ], ['stripe_account' => $activity->charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_BAZAAR,
-                    'charity_id' => $charity->id,
+                    'charity_id' => $activity->charity->id,
+                    'activity_id' => $activity->id,
                     'currency' => Str::lower(Config::get('cashier.currency')),
                     'amount' => $goods->price,
                     'fee_amount' => 0,
