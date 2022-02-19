@@ -17,6 +17,7 @@ class WarehouseCollection extends ResourceCollection
                 'id' => optional($item->goods)->id,
                 'name' => optional($item->goods)->name,
                 'image' => collect(optional($item->goods)->images)->first(),
+                'price' => $item->price,
                 'description' => optional($item->goods)->description,
                 'user_id' => optional($item->goods)->id,
                 'username' => optional($item->user)->username,

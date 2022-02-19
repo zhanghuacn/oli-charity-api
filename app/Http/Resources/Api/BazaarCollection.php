@@ -17,6 +17,7 @@ class BazaarCollection extends ResourceCollection
                 'id' => optional($item->goods)->id,
                 'name' => optional($item->goods)->name,
                 'image' => collect(optional($item->goods)->images)->first(),
+                'price' => $item->price,
                 'description' => optional($item->goods)->description,
                 'is_receive' => $item->is_receive,
                 'created_at' => Carbon::parse($item->created_at)->format('Y-m-d H:i:s'),

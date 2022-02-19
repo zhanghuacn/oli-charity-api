@@ -28,7 +28,8 @@ class Bazaar extends Model
     ];
 
     protected $casts = [
-        'is_receive' => 'bool'
+        'price' => 'float',
+        'is_receive' => 'bool',
     ];
 
     protected $hidden = [
