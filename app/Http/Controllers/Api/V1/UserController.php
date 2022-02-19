@@ -62,6 +62,13 @@ class UserController extends Controller
 
     public function history(Request $request): JsonResponse|JsonResource
     {
+        $request->validate([
+            'begin_time' => 'sometimes|date',
+            'end_time' => 'sometimes|date|after:begin_time',
+            'sort' => 'sometimes|string|in:ASC,DESC',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
         $request->merge([
             'user_id' => Auth::id(),
             'payment_status' => Order::STATUS_PAID,
