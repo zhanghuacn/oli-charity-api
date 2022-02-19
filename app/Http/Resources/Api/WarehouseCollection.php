@@ -14,7 +14,8 @@ class WarehouseCollection extends ResourceCollection
     {
         return $this->collection->map(function ($item) {
             return [
-                'id' => optional($item->goods)->id,
+                'id' => $item->id,
+                'goods_id' => optional($item->goods)->id,
                 'name' => optional($item->goods)->name,
                 'image' => collect(optional($item->goods)->images)->first(),
                 'price' => $item->price,
