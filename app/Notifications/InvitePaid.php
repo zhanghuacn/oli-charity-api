@@ -11,7 +11,7 @@ class InvitePaid extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    private GroupInvite $invite;
+    protected $invite;
 
     public function __construct(GroupInvite $invite)
     {
@@ -25,17 +25,10 @@ class InvitePaid extends Notification implements ShouldQueue
 
     public function toDatabase($notifiable): array
     {
-//        return [
-//            'inviter_id' => $this->invite->inviter->id,
-//            'inviter_name' => $this->invite->inviter->name,
-//            'inviter_avatar' => $this->invite->inviter->avatar,
-//            'team_name' => $this->invite->team->name,
-//            'accept_token' => $this->invite->accept_token,
-//            'deny_token' => $this->invite->deny_token,
-//        ];
         return [
-            'title' => 'Event team invitation',
-            'content' => sprintf('%s invites you to join %s team', $this->invite->inviter->name, $this->invite->team->name),
+            'title' => $this->invite->group->activity->name . ' event team invitation',
+            'content' => sprintf('%s invites you to join %s team', $this->invite->inviter->name, $this->invite->group->name),
+            'activity_id' => $this->invite->group->id
         ];
     }
 }

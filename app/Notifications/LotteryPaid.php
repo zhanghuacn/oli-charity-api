@@ -26,8 +26,9 @@ class LotteryPaid extends Notification implements ShouldQueue
     public function toDatabase($notifiable): array
     {
         return [
-            'title' => 'Winning the event',
+            'title' => 'Winning the ' . $this->prize->activity->name . ' event',
             'content' => 'Congratulations on winning the prize：' . $this->prize->name,
+            'activity_id' => $this->prize->activity_id,
         ];
     }
 }

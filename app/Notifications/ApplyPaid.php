@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Activity;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -10,14 +11,16 @@ class ApplyPaid extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    protected $activity;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Activity $activity)
     {
-        //
+        $this->activity = $activity;
     }
 
     /**
@@ -34,8 +37,9 @@ class ApplyPaid extends Notification implements ShouldQueue
     public function toDatabase($notifiable): array
     {
         return [
-            'title' => 'Event Application Passed',
+            'title' => $this->activity->name . ' event Application Passed',
             'content' => 'Your application to participate in event has passed, please pay attention in time',
+            'activity_id' => $this->activity->id,
         ];
     }
 }
