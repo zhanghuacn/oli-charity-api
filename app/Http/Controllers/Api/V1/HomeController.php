@@ -11,12 +11,15 @@ use App\Http\Resources\Api\UserCollection;
 use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\News;
+use App\Models\Order;
 use App\Models\Sponsor;
 use App\Models\User;
 use App\Search\Search;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Cache;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use function collect;
 
@@ -24,12 +27,19 @@ class HomeController extends Controller
 {
     public function explore(): JsonResponse|JsonResource
     {
-        $data = [
-            'events' => new ActivityCollection(Activity::whereIsVisible(true)->where('end_time', '>=', now())->limit(10)->get()),
-            'peoples' => new UserCollection(User::limit(10)->get()),
-            'news' => new NewsCollection(News::limit(10)->get()),
-            'charities' => new CharityCollection(Charity::whereIsVisible(true)->limit(10)->get()),
-        ];
+        $data = Cache::remember('explore', 300, function () {
+            $events = visits(Activity::class)->top(10, [['is_visible', '=', true], ['end_time', '>=', now()]])
+                ?? Activity::whereIsVisible(true)->where('end_time', '>=', now())->orderBy('begin_time')->limit(10)->get();
+            $peoples = User::orderByAmount()->limit(10)->get();
+            $news = visits(News::class)->top(10);
+            $charities = visits(Charity::class)->top(10);
+            return [
+                'events' => new ActivityCollection($events),
+                'peoples' => new UserCollection($peoples),
+                'news' => new NewsCollection($news),
+                'charities' => new CharityCollection($charities),
+            ];
+        });
         return Response::success($data);
     }
 

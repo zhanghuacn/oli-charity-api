@@ -17,6 +17,7 @@ class UserController extends Controller
 {
     public function show(User $user): JsonResponse|JsonResource
     {
+        visits($user)->increment();
         return Response::success(new UserResource($user));
     }
 

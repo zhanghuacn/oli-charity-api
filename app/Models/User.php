@@ -11,6 +11,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -176,6 +177,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->sponsors()->value('id');
     }
 
+    public function scopeOrderByAmount($query, $direction = 'desc')
+    {
+        return $query->orderBy(
+            Order::selectRaw('SUM(amount) as total')
+                ->whereColumn('user_id', 'users.id')
+                ->where('payment_status', Order::STATUS_PAID)
+                ->orderBy('total', $direction)
+                ->limit(1),
+            $direction
+        );
+    }
+
     protected static function booted()
     {
         static::saving(
@@ -244,5 +257,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function shouldBeSearchable(): bool
     {
         return $this->is_visible && $this->status == self::STATUS_ACTIVE && empty($this->deleted_at);
+    }
+
+    public function visits(): Relation
+    {
+        return visits($this)->relation();
     }
 }
