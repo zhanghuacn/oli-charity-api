@@ -155,13 +155,13 @@ class ActivityController extends Controller
         Gate::authorize('check-ticket', $activity);
         $ranks = $activity->tickets()->selectRaw('user_id, amount, (RANK() OVER(ORDER BY amount DESC)) as ranks')->get()
             ->firstWhere('user_id', '=', Auth::id());
-        $orders = $activity->orders()->where(['user_id' => Auth::id(), 'type' => Order::TYPE_ACTIVITY])
+        $orders = $activity->orders()->where(['user_id' => Auth::id(), 'type' => Order::TYPE_ACTIVITY, 'payment_status' => Order::STATUS_PAID])
             ->orderByDesc('payment_time')->get(['payment_type', 'amount', 'payment_time', 'payment_status'])
             ->transform(function ($item) {
                 return [
                     'type' => $item->payment_type,
-                    'amount' => $item->amount,
-                    'time' => $item->payment_time,
+                    'amount' => floatval($item->amount),
+                    'time' => Carbon::parse($item->payment_time)->format('Y-m-d H:i:s'),
                     'status' => $item->payment_status,
                 ];
             });

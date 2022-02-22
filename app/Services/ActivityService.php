@@ -217,6 +217,7 @@ class ActivityService
                             [
                                 'charity_id' => $activity->charity_id,
                                 'user_id' => $item['uid'],
+                                'verified_at' => now(),
                                 'type' => $item['type'],
                                 'price' => 0,
                             ]
