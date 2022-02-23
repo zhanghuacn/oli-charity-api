@@ -24,16 +24,16 @@ class LotteryController extends Controller
     public function index(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        if (Auth::user()->sync == false) {
-            $body = Http::asForm()->post(config('services.custom.oli_register_url'), [
-                'email' => Auth::user()->email,
-                'url' => config('app.url'),
-            ])->body();
-            $result = json_decode($body, true);
-            if ($result['status'] == 1 && $result['data']['ischecklogin'] == true) {
-                Auth::user()->update(['sync' => true]);
-            }
-        }
+//        if (Auth::user()->sync == false) {
+//            $body = Http::asForm()->post(config('services.custom.oli_register_url'), [
+//                'email' => Auth::user()->email,
+//                'url' => config('app.url'),
+//            ])->body();
+//            $result = json_decode($body, true);
+//            if ($result['status'] == 1 && $result['data']['ischecklogin'] == true) {
+//                Auth::user()->update(['sync' => true]);
+//            }
+//        }
         $data = $activity->lotteries()->get()->map(function ($item) use ($activity) {
             return [
                 'id' => $item->id,
