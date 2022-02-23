@@ -121,6 +121,8 @@ class ActivityService
                             });
                         }
                     });
+                } else {
+                    $activity->lotteries()->delete();
                 }
                 if (!empty($arr['sales'])) {
                     $goods_ids = collect($arr['sales'])->whereNotNull('id')->pluck('id');
