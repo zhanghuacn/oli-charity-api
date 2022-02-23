@@ -17,7 +17,7 @@ class NewsSeeder extends Seeder
             'title' => Str::random(10),
             'description' => Str::random(30),
             'content' => Str::random(500),
-            'published_at' => Carbon::tz(config('app.timezone'))->now()->addDays(3),
+            'published_at' => Carbon::now()->tz(config('app.timezone'))->addDays(3),
         ]);
         $news->newsable()->associate(Charity::find(1));
         $news->save();

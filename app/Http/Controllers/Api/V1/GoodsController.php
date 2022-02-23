@@ -54,7 +54,7 @@ class GoodsController extends Controller
     public function order(Activity $activity, Goods $goods, Request $request): JsonResponse|JsonResource
     {
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
-        abort_if(Carbon::parse($activity->end_time)->tz(config('app.timezone'))->lt(Carbon::tz(config('app.timezone'))->now()->tz(config('app.timezone'))), 422, 'Event ended');
+        abort_if(Carbon::parse($activity->end_time)->tz(config('app.timezone'))->lt(Carbon::now()->tz(config('app.timezone'))->tz(config('app.timezone'))), 422, 'Event ended');
         abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404, 'Goods is not found');
         abort_if($goods->stock <= 0, 422, 'Goods sold out');
         $request->validate([

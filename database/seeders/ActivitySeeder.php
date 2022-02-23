@@ -20,8 +20,8 @@ class ActivitySeeder extends Seeder
             'description' => Str::random(40),
             'content' => Str::random(100),
             'location' => 'beijing',
-            'begin_time' => Carbon::tz(config('app.timezone'))->now(),
-            'end_time' => Carbon::tz(config('app.timezone'))->now()->addDays(10),
+            'begin_time' => Carbon::now()->tz(config('app.timezone')),
+            'end_time' => Carbon::now()->tz(config('app.timezone'))->addDays(10),
             'price' => 100,
             'stocks' => 100,
         ]);

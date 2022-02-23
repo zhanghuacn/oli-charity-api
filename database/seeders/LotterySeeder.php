@@ -23,10 +23,10 @@ class LotterySeeder extends Seeder
             'activity_id' => 1,
             'name' => Str::random(10),
             'description' => Str::random(30),
-            'begin_time' => Carbon::tz(config('app.timezone'))->now(),
-            'end_time' => Carbon::tz(config('app.timezone'))->now()->addDays(2),
+            'begin_time' => Carbon::now()->tz(config('app.timezone')),
+            'end_time' => Carbon::now()->tz(config('app.timezone'))->addDays(2),
             'standard_amount' => 100,
-            'draw_time' => Carbon::tz(config('app.timezone'))->now()->addDays(3),
+            'draw_time' => Carbon::now()->tz(config('app.timezone'))->addDays(3),
         ]);
     }
 }

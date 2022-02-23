@@ -81,7 +81,7 @@ class AuthController extends Controller
                 'username' => $socialite->email,
                 'name' => $socialite->name,
                 'avatar' => $socialite->avatar,
-                'email_verified_at' => Carbon::tz(config('app.timezone'))->now(),
+                'email_verified_at' => Carbon::now()->tz(config('app.timezone')),
                 'extends->' . $provider => $socialite->id,
             ]);
         }
@@ -139,7 +139,7 @@ class AuthController extends Controller
         $code = rand(100000, 999999);
         $email = $request->get('email');
         $key = 'email:register:code:' . $request->get('email');//redis key
-        Cache::put($key, $code, Carbon::tz(config('app.timezone'))->now()->addMinutes());
+        Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes());
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
             $message->subject('Oli Charity Mailbox verification');
@@ -158,7 +158,7 @@ class AuthController extends Controller
         $code = rand(100000, 999999);
         $email = $request->get('email');
         $key = 'email:forgot:code:' . $request->get('email');//redis key
-        Cache::put($key, $code, Carbon::tz(config('app.timezone'))->now()->addMinutes());
+        Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes());
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
             $message->subject('Oli Charity Mailbox verification');

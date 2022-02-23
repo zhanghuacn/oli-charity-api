@@ -46,7 +46,7 @@ class LotteryWinners extends Command
     public function handle()
     {
         DB::transaction(function () {
-            Lottery::where(['status' => false])->where('draw_time', '<=', Carbon::tz(config('app.timezone'))->now())->get()->each(function (Lottery $lottery) {
+            Lottery::where(['status' => false])->where('draw_time', '<=', Carbon::now()->tz(config('app.timezone')))->get()->each(function (Lottery $lottery) {
                 $result = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)->where(['type' => Ticket::TYPE_DONOR]);
                 if ($result->exists()) {
                     $tickets = $result->pluck('amount', 'user_id')->toArray();

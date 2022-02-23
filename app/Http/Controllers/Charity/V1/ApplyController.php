@@ -11,6 +11,7 @@ use App\Notifications\LotteryPaid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
@@ -38,7 +39,7 @@ class ApplyController extends Controller
         $apply->status = $request->get('status');
         $apply->remark = $request->get('remark');
         $apply->reviewer = Auth::id();
-        $apply->reviewed_at = Carbon::tz(config('app.timezone'))->now();
+        $apply->reviewed_at = Carbon::now()->tz(config('app.timezone'));
         $apply->save();
         $apply->user->notify(new ApplyPaid($activity));
         return Response::success();

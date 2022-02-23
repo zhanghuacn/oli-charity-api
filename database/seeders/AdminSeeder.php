@@ -23,7 +23,7 @@ class AdminSeeder extends Seeder
             'name' => '超级管理员',
             'password' => 'admin',
             'last_ip' => '127.0.0.1',
-            'last_active_at' => Carbon::tz(config('app.timezone'))->now(),
+            'last_active_at' => Carbon::now()->tz(config('app.timezone')),
         ]);
     }
 }

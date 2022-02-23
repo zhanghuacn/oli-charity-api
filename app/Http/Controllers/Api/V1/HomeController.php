@@ -29,8 +29,8 @@ class HomeController extends Controller
     public function explore(): JsonResponse|JsonResource
     {
         $data = Cache::remember('explore', 300, function () {
-            $events = visits(Activity::class)->top(10, [['is_visible', '=', true], ['end_time', '>=', Carbon::tz(config('app.timezone'))->now()]])
-                ?? Activity::whereIsVisible(true)->where('end_time', '>=', Carbon::tz(config('app.timezone'))->now())->orderBy('begin_time')->limit(10)->get();
+            $events = visits(Activity::class)->top(10, [['is_visible', '=', true], ['end_time', '>=', Carbon::now()->tz(config('app.timezone'))]])
+                ?? Activity::whereIsVisible(true)->where('end_time', '>=', Carbon::now()->tz(config('app.timezone')))->orderBy('begin_time')->limit(10)->get();
             $peoples = User::orderByAmount()->limit(10)->get();
             $news = visits(News::class)->top(10);
             $charities = visits(Charity::class)->top(10);

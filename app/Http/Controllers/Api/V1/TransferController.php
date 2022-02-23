@@ -65,7 +65,7 @@ class TransferController extends Controller
                 $transfer->amount = $request->get('amount') ?? 0;
                 $transfer->status = $request->get('status');
                 $transfer->remark = $request->get('remakr');
-                $transfer->verified_at = Carbon::tz(config('app.timezone'))->Carbon::tz(config('app.timezone'))->now();
+                $transfer->verified_at = Carbon::now()->tz(config('app.timezone'));
                 $transfer->save();
 
                 $order = Order::wherePaymentNo($transfer->code)->firstOrFail();
@@ -73,7 +73,7 @@ class TransferController extends Controller
                 $order->amount = $transfer->amount;
                 $order->fee_amount = 0;
                 $order->total_amount = $transfer->amount;
-                $order->payment_time = Carbon::tz(config('app.timezone'))->now();
+                $order->payment_time = Carbon::now()->tz(config('app.timezone'));
                 $order->save();
 
                 $transfer->ticket()->increment('amount', $transfer->amount);

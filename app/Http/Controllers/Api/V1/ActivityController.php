@@ -179,7 +179,7 @@ class ActivityController extends Controller
             'amount' => 'required|numeric|min:1|not_in:0',
         ]);
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
-        abort_if(Carbon::parse($activity->end_time)->tz(config('app.timezone'))->lt(Carbon::tz(config('app.timezone'))->now()), 422, 'Event ended');
+        abort_if(Carbon::parse($activity->end_time)->tz(config('app.timezone'))->lt(Carbon::now()->tz(config('app.timezone'))), 422, 'Event ended');
         $order = $this->orderService->activity(Auth::user(), $activity, $request->get('amount'));
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,

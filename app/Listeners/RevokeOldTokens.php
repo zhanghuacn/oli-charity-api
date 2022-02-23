@@ -32,7 +32,7 @@ class RevokeOldTokens
             ->where('user_id', $event->userId)
             ->where('client_id', $event->clientId)
             ->where('revoked', 0)
-            ->where('expires_at', '<=', Carbon::tz(config('app.timezone'))->now()->toDateTimeString())
+            ->where('expires_at', '<=', Carbon::now()->tz(config('app.timezone'))->toDateTimeString())
             ->delete();
     }
 }
