@@ -41,7 +41,7 @@ class WebhookController extends CashierController
                 Log::info('stripe_payment_intent_succeeded:', $data);
                 $order = Order::where(['payment_no' => $data['id']])->firstOrFail();
                 $order->payment_status = Order::STATUS_PAID;
-                $order->payment_time = Carbon::now();
+                $order->payment_time = Carbon::tz(config('app.timezone'))->now();
                 $order->save();
 
                 switch ($order->type) {
@@ -84,14 +84,24 @@ class WebhookController extends CashierController
 
     public function handleTickets(Order $order): void
     {
-        $tickets = new Ticket([
+        $ticket = new Ticket([
             'charity_id' => $order->charity_id,
             'activity_id' => $order->activity_id,
             'user_id' => $order->user_id,
             'type' => Ticket::TYPE_DONOR,
             'price' => floatval($order->amount),
         ]);
-        $tickets->save();
+        if (!$order->activity->is_verification) {
+            do {
+                $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
+                if (Ticket::where(['activity_id' => $ticket->activity_id, 'lottery_code' => $code])->doesntExist()) {
+                    $ticket->lottery_code = $code;
+                    $ticket->verified_at = Carbon::tz(config('app.timezone'))->now();
+                    break;
+                }
+            } while (true);
+        }
+        $ticket->save();
         $order->activity()->update([
             'extends->participates' => bcadd(intval($order->activity->extends['participates']) ?? 0, 1),
             'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)

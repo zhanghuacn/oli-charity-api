@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\ModelFilter;
+use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -108,5 +109,10 @@ class Sponsor extends Model
     public function shouldBeSearchable(): bool
     {
         return $this->status == self::STATUS_PASSED && empty($this->deleted_at);
+    }
+
+    public function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

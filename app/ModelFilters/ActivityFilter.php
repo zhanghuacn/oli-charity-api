@@ -25,7 +25,7 @@ class ActivityFilter extends ModelFilter
     public function filter($filter): ?ActivityFilter
     {
         return match ($filter) {
-            'CURRENT' => $this->where('begin_time', '<=', Carbon::now())->where('end_time', '>=', Carbon::now()),
+            'CURRENT' => $this->where('begin_time', '<=', Carbon::tz(config('app.timezone'))->now())->where('end_time', '>=', Carbon::tz(config('app.timezone'))->now()),
             'NOT_CURRENT' => Auth::check() ? $this->whereNotExists(
                 function ($query) {
                     $query->select(DB::raw(1))
@@ -33,9 +33,9 @@ class ActivityFilter extends ModelFilter
                         ->whereRaw('tickets.activity_id = activities.id AND tickets.user_id = ' . Auth::id() . '  AND activities.begin_time <= now() AND activities.end_time >= now()');
                 }
             ) : null,
-            'UPCOMING' => $this->where('begin_time', '>', Carbon::now()),
-            'ACTIVE' => $this->where('end_time', '>=', Carbon::now()),
-            'PAST' => $this->where('end_time', '<', Carbon::now()),
+            'UPCOMING' => $this->where('begin_time', '>', Carbon::tz(config('app.timezone'))->now()),
+            'ACTIVE' => $this->where('end_time', '>=', Carbon::tz(config('app.timezone'))->now()),
+            'PAST' => $this->where('end_time', '<', Carbon::tz(config('app.timezone'))->now()),
             default => abort(400, 'Incorrect query criteria parameters.'),
         };
     }

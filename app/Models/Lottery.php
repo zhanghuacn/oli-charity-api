@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
 use App\Traits\ModelFilter;
+use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -76,5 +77,10 @@ class Lottery extends Model
         static::deleting(function (Lottery $lottery) {
             $lottery->prizes()->delete();
         });
+    }
+
+    public function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

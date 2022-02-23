@@ -6,6 +6,7 @@ use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
 use App\Traits\ModelFilter;
+use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -262,5 +263,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function visits(): Relation
     {
         return visits($this)->relation();
+    }
+
+    public function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

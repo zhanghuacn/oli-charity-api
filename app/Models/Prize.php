@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
 use App\Traits\ModelFilter;
+use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -89,11 +90,6 @@ class Prize extends Model
         return $this->belongsTo(Lottery::class);
     }
 
-//    public function goods(): BelongsTo
-//    {
-//        return $this->belongsTo(Goods::class);
-//    }
-
     public function setWinnersAttribute(array $winners)
     {
         $this->attributes['winners'] = json_encode($winners);
@@ -108,5 +104,10 @@ class Prize extends Model
     {
         return array_replace_recursive(defined('static::DEFAULT_WINNERS') ?
             constant('static::DEFAULT_WINNERS') : [], json_decode($this->attributes['winners'] ?? '{}', true) ?? []);
+    }
+
+    public function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

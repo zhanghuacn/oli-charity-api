@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\ModelFilter;
+use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -20,4 +21,9 @@ class Permission extends \Spatie\Permission\Models\Permission
     protected $hidden = [
 
     ];
+
+    public function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

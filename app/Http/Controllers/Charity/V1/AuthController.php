@@ -49,7 +49,7 @@ class AuthController extends Controller
         $this->checkRegister($request);
         $signature = json_decode(Crypt::decryptString($request->get('token')), true);
         abort_if($signature['type'] != Charity::class, 422, 'Invalid token.');
-        abort_if(Carbon::parse($signature['expires'])->lt(now()), 422, 'The token has expired.');
+        abort_if(Carbon::parse($signature['expires'])->lt(Carbon::tz(config('app.timezone'))->now()), 422, 'The token has expired.');
         try {
             $user = User::findOrFail($signature['user_id'], ['id', 'name', 'avatar', 'profile']);
             DB::transaction(function () use ($user, $request, $signature) {

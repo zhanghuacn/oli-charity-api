@@ -70,7 +70,7 @@ class UcenterController extends Controller
         $user->refresh();
         return Response::success([
             'id' => $user->id,
-            'birthday' => Carbon::parse($user->birthday)->toDateString(),
+            'birthday' => Carbon::parse($user->birthday)->tz(config('app.timezone'))->toDateString(),
             'gender' => $user->gender,
             'last_name' => $user->last_name,
             'middle_name' => $user->middle_name,
@@ -120,7 +120,7 @@ EOF;
         $total = Order::where(['user_id' => Auth::id(), 'payment_status' => Order::STATUS_PAID])->sum('total_amount');
         $data = [];
         for ($i = 0; $i <= 11; $i++) {
-            $month = now()->subMonths($i)->format('Y-m');
+            $month = Carbon::tz(config('app.timezone'))->now()->subMonths($i)->format('Y-m');
             $data[$month] = floatval($received[$month] ?? 0);
         }
         ksort($data);
@@ -185,7 +185,7 @@ EOF;
         abort_if(DB::table('sponsor_user')->where('user_id', Auth::id())->exists(), 422, 'Non charity users');
         $data = [
             'type' => Charity::class,
-            'expires' => now()->addDays(),
+            'expires' => Carbon::tz(config('app.timezone'))->now()->addDays(),
             'user_id' => Auth::id(),
         ];
         return Response::success([
@@ -199,7 +199,7 @@ EOF;
         abort_if(DB::table('charity_user')->where('user_id', Auth::id())->exists(), 422, 'Non charity users');
         $data = [
             'type' => Sponsor::class,
-            'expires' => now()->addDays(),
+            'expires' => Carbon::tz(config('app.timezone'))->now()->addDays(),
             'user_id' => Auth::id(),
         ];
         return Response::success([

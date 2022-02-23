@@ -100,7 +100,7 @@ class CharityController extends Controller
             return [
                 'event_id' => $activity->id,
                 'name' => Str::random(10),
-                'date' => Carbon::parse($activity->begin_time)->toDateString(),
+                'date' => Carbon::parse($activity->begin_time)->tz(config('app.timezone'))->toDateString(),
                 'amount' => floatval($activity->extends['total_amount']) ?? 0,
             ];
         });

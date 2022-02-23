@@ -36,6 +36,7 @@ class NewsController extends Controller
         ]);
         $news = new News($request->all());
         Auth::user()->news()->save($news);
+        visits($news)->increment();
         return Response::success($news);
     }
 

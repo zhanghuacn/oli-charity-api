@@ -10,8 +10,6 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        User::factory()
-            ->has(Ticket::factory()->count(1))
-            ->count(200)->create();
+        User::factory()->count(5)->create();
     }
 }

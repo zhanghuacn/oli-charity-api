@@ -17,7 +17,7 @@ class RoleCollection extends ResourceCollection
                 'id' => $item->id,
                 'name' => $item->name,
                 'permissions' => $item->permissions->pluck('name'),
-                'created_at' => Carbon::parse($item->created_at)->format('Y-m-d H:i:s'),
+                'created_at' => Carbon::parse($item->created_at)->tz(config('app.timezone'))->format('Y-m-d H:i:s'),
             ];
         });
     }

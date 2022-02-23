@@ -39,6 +39,7 @@ class NewsController extends Controller
             'sort' => 'sometimes|numeric|min:0',
         ]);
         $news = Charity::find(getPermissionsTeamId())->news()->save(new News($request->all()));
+        visits($news)->increment();
         return Response::success($news);
     }
 

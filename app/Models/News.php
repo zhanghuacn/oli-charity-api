@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\ModelFilter;
+use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,5 +52,10 @@ class News extends Model
     public function shouldBeSearchable(): bool
     {
         return $this->published_at != null && empty($this->deleted_at);
+    }
+
+    public function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

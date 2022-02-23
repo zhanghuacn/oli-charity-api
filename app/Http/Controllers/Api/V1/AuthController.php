@@ -81,7 +81,7 @@ class AuthController extends Controller
                 'username' => $socialite->email,
                 'name' => $socialite->name,
                 'avatar' => $socialite->avatar,
-                'email_verified_at' => now(),
+                'email_verified_at' => Carbon::tz(config('app.timezone'))->now(),
                 'extends->' . $provider => $socialite->id,
             ]);
         }
@@ -122,13 +122,32 @@ class AuthController extends Controller
             'middle_name' => $user->middle_name,
             'last_name' => $user->last_name,
             'gender' => $user->gender,
-            'birthday' => Carbon::parse($user->birthday)->toDateString(),
+            'birthday' => Carbon::parse($user->birthday)->tz(config('app.timezone'))->toDateString(),
             'is_public_records' => $user->extends['records'],
             'is_public_portfolio' => $user->extends['portfolio'],
             'type' => $user->charities()->exists() ? 'CHARITY' : ($user->sponsors()->exists() ? 'SPONSOR' : 'USER'),
             'type_name' => $user->charities()->exists() ? $user->charities()->first()->name : ($user->sponsors()->exists() ? $user->sponsors()->first()->name : ''),
         ];
         return $data;
+    }
+
+    public function sendRegisterCodeEmail(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'email' => 'required|email|!exists:users,email',
+        ]);
+        $code = rand(100000, 999999);
+        $email = $request->get('email');
+        $key = 'email:register:code:' . $request->get('email');//redis key
+        Cache::put($key, $code, Carbon::tz(config('app.timezone'))->now()->addMinutes());
+        Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
+            $message->to($email);
+            $message->subject('Oli Charity Mailbox verification');
+        });
+        if (Mail::failures()) {
+            return Response::fail('fail in send');
+        }
+        return Response::success();
     }
 
     public function forgotPassword(Request $request): JsonResponse|JsonResource
@@ -138,8 +157,8 @@ class AuthController extends Controller
         ]);
         $code = rand(100000, 999999);
         $email = $request->get('email');
-        $key = 'email:verify:code:' . $request->get('email');//redis key
-        Cache::put($key, $code, now()->addMinutes());
+        $key = 'email:forgot:code:' . $request->get('email');//redis key
+        Cache::put($key, $code, Carbon::tz(config('app.timezone'))->now()->addMinutes());
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
             $message->subject('Oli Charity Mailbox verification');
@@ -159,7 +178,7 @@ class AuthController extends Controller
         ]);
         $email = $request->input('email');
         $code = $request->input('code');
-        $key = 'email:verify:code:' . $email;
+        $key = 'email:forgot:code:' . $email;
         $value = Cache::get($key);
         if ($value && $value == $code) {
             $user = User::whereEmail($email)->firstOrFail();

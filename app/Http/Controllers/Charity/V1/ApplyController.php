@@ -38,7 +38,7 @@ class ApplyController extends Controller
         $apply->status = $request->get('status');
         $apply->remark = $request->get('remark');
         $apply->reviewer = Auth::id();
-        $apply->reviewed_at = now();
+        $apply->reviewed_at = Carbon::tz(config('app.timezone'))->now();
         $apply->save();
         $apply->user->notify(new ApplyPaid($activity));
         return Response::success();

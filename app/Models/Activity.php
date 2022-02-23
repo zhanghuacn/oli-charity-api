@@ -7,6 +7,7 @@ use App\Traits\HasExtendsProperty;
 use App\Traits\HasImagesProperty;
 use App\Traits\HasSettingsProperty;
 use App\Traits\ModelFilter;
+use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -66,6 +67,7 @@ class Activity extends Model
         'stocks',
         'is_visible',
         'is_private',
+        'is_verification',
         'images',
         'settings',
         'settings->seat_config',
@@ -98,6 +100,7 @@ class Activity extends Model
         'extends' => 'array',
         'is_visible' => 'bool',
         'is_private' => 'bool',
+        'is_verification' => 'bool',
         'extends->is_albums' => 'bool',
     ];
 
@@ -194,5 +197,10 @@ class Activity extends Model
     public function shouldBeSearchable(): bool
     {
         return $this->is_visible == true && empty($this->deleted_at);
+    }
+
+    public function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }
