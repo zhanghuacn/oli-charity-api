@@ -3,7 +3,6 @@ name: oli-chartiy-api
 environments:
     production:
         domain:
-          - api.olicharity.org
           - api.imagine2080.com.au
         database: oli-charity
         octane: true
@@ -22,7 +21,7 @@ environments:
     staging:
         domain:
           - dev-api.olicharity.org
-          - dev-api.imagine2080.com.au
+          - api.imagine2080.com.au
         database: oli-charity
         octane: true
         octane-database-session-persist: true

@@ -18,6 +18,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
@@ -198,7 +199,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
 
                 if (Hash::needsRehash($user->password)) {
-                    $user->password = bcrypt($user->password);
+                    $user->password = Crypt::encryptString($user->password);
                 }
 
                 if ($user->isDirty('status') && $user->status === self::STATUS_FROZEN) {

@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -40,8 +41,8 @@ class ProcessRegOliView implements ShouldQueue
     {
         $data = [
             'email' => $this->user->email,
-            'password' => $this->user->password,
             'username' => $this->user->username,
+            'password' => Crypt::decryptString($this->user->password),
             'url' => config('app.url'),
         ];
         Log::info(sprintf('请求参数：%s', json_encode($data)));

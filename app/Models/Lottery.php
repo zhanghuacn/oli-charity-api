@@ -25,6 +25,10 @@ class Lottery extends Model
     public const TYPE_AUTOMATIC = 'AUTOMATIC';
     public const TYPE_MANUAL = 'MANUAL';
 
+    public const DEFAULT_EXTENDS = [
+        'standard_oli_register' => false,
+    ];
+
     protected $fillable = [
         'charity_id',
         'activity_id',
@@ -36,6 +40,7 @@ class Lottery extends Model
         'draw_time',
         'images',
         'extends',
+        'extends->standard_oli_register',
         'status',
     ];
 
