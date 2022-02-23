@@ -8,24 +8,17 @@ use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Mail\Message;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password as Pwd;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Validation\Rules\Password as Pwd;
 use function abort;
 use function abort_if;
 
@@ -189,7 +182,7 @@ class AuthController extends Controller
             'token' => 'required|string',
         ]);
         abort_if($request->get('token') != md5($request->get('email')), 422, 'Parameter request error');
-        User::whereEmail($request->get('email'))->update(['extends->oliview' => true]);
+        User::whereEmail($request->get('email'))->update(['sync' => true]);
         return Response::success();
     }
 }

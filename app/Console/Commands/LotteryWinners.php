@@ -50,7 +50,7 @@ class LotteryWinners extends Command
                 $result = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
                 if ($lottery->extends['standard_oli_register'] == true) {
                     $result->whereHas('user', function ($query) {
-                        $query->where('extends->oliview', '=', true);
+                        $query->where('sync', '=', true);
                     });
                 }
                 if ($result->exists()) {
