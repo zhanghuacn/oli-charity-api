@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\Charity\V1;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\LotteryWinners;
-use App\Models\Activity;
 use App\Models\Lottery;
 use App\Models\Prize;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\LotteryPaid;
-use App\Policies\AdminPolicy;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -26,7 +23,12 @@ class LotteryController extends Controller
         abort_if($lottery->status, 422, 'Please do not repeat the lottery');
         abort_if(!Carbon::now()->tz(config('app.timezone'))->between($lottery->begin_time, $lottery->end_time), 403, 'Please draw during the lucky draw');
         DB::transaction(function () use ($lottery) {
-            $result = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)->where(['type' => Ticket::TYPE_DONOR]);
+            $result = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
+            if ($lottery->extends['standard_oli_register'] == true) {
+                $result->whereHas('user', function ($query) {
+                    $query->where('extends->oliview', true);
+                });
+            }
             abort_if($result->doesntExist(), 500, 'Too few participants in the lottery');
             $tickets = $result->pluck('amount', 'user_id')->toArray();
             Log::info('tickets:' . json_encode($tickets));

@@ -47,7 +47,12 @@ class LotteryWinners extends Command
     {
         DB::transaction(function () {
             Lottery::where(['status' => false])->where('draw_time', '<=', Carbon::now()->tz(config('app.timezone')))->get()->each(function (Lottery $lottery) {
-                $result = $lottery->activity->tickets()->where('amount', '>=', $lottery->standard_amount)->where(['type' => Ticket::TYPE_DONOR]);
+                $result = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
+                if ($lottery->extends['standard_oli_register'] == true) {
+                    $result->whereHas('user', function ($query) {
+                        $query->where('extends->oliview', '=', true);
+                    });
+                }
                 if ($result->exists()) {
                     $tickets = $result->pluck('amount', 'user_id')->toArray();
                     Log::info('tickets:' . json_encode($tickets));

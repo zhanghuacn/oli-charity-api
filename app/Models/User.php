@@ -77,7 +77,7 @@ class User extends Authenticatable implements MustVerifyEmail
         self::SOCIALITE_FACEBOOK => '',
         self::SOCIALITE_TWITTER => '',
         self::SOCIALITE_APPLE => '',
-        self::SOCIALITE_OLIVIEW => '',
+        self::SOCIALITE_OLIVIEW => false,
     ];
     // 默认设置信息
     public const DEFAULT_SETTINGS = [

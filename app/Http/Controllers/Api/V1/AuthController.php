@@ -42,7 +42,7 @@ class AuthController extends Controller
         $key = 'email:register:code:' . $request->get('email');
         abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         $user = User::create($request->all());
-        ProcessRegOliView::dispatch($user);
+        ProcessRegOliView::dispatch($request->all());
         return Response::success($this->getLoginInfo($user));
     }
 
@@ -184,6 +184,12 @@ class AuthController extends Controller
 
     public function callbackSignWithOliView(Request $request): JsonResponse|JsonResource
     {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'token' => 'required|string',
+        ]);
+        abort_if($request->get('token') != md5($request->get('email')), 422, 'Parameter request error');
+        User::whereEmail($request->get('email'))->update(['extends->oliview' => true]);
         return Response::success();
     }
 }

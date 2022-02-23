@@ -3,13 +3,12 @@
 namespace App\Jobs;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -20,14 +19,14 @@ class ProcessRegOliView implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    protected $user;
+    protected array $user;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(array $user)
     {
         $this->user = $user;
     }
@@ -39,15 +38,18 @@ class ProcessRegOliView implements ShouldQueue
      */
     public function handle()
     {
-        $response = Http::asForm()->post(config('services.custom.oli_register_url'). '/login/isEmailExist', ['email' => $this->user->email]);
-        $result = json_decode($response->body());
         $data = [
-            'email' => $this->user->email,
-            'username' => $this->user->name,
-            'password' => Crypt::decryptString($this->user->password),
+            'email' => $this->user['email'],
+            'username' => '匿名',
+            'password' => $this->user['password'],
             'url' => config('app.url'),
         ];
-        $response = Http::asForm()->post(config('services.custom.oli_register_url'), $data);
-        Log::info(sprintf('响应参数：%s', $response->body()));
+        Log::info(sprintf('请求参数：%s', json_encode($data)));
+        $body = Http::asForm()->post(config('services.custom.oli_register_url'), $data)->body();
+        Log::info(sprintf('响应参数：%s', $body));
+        $result = json_decode($body, true);
+        if ($result['status'] == 1 && $result['data']['ischecklogin'] == true) {
+            User::whereEmail($this->user['email'])->update([User::SOCIALITE_OLIVIEW => true]);
+        }
     }
 }
