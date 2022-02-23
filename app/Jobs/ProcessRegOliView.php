@@ -49,7 +49,7 @@ class ProcessRegOliView implements ShouldQueue
         Log::info(sprintf('响应参数：%s', $body));
         $result = json_decode($body, true);
         if ($result['status'] == 1 && $result['data']['ischecklogin'] == true) {
-            User::whereEmail($this->user['email'])->update([User::SOCIALITE_OLIVIEW => true]);
+            User::whereEmail($this->user['email'])->update(['extends->oliview' => true]);
         }
     }
 }
