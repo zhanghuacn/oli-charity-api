@@ -30,6 +30,7 @@ class ActivityResource extends JsonResource
                 'specialty' => $this->extends['specialty'],
                 'timeline' => $this->extends['timeline'],
                 'is_albums' => $this->extends['is_albums'] ?? false,
+                'is_verification' => $this->is_verification,
                 'status' => $this->status,
             ],
             'lotteries' => $this->lotteries->transform(function (Lottery $lottery) {

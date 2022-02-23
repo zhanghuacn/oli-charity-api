@@ -30,6 +30,7 @@ class ActivityService
                     'price' => $arr['basic']['price'],
                     'stocks' => $arr['basic']['stock'],
                     'is_private' => $arr['basic']['is_private'],
+                    'is_verification' => $arr['basic']['is_verification'],
                     'images' => $arr['basic']['images'],
                     'extends' => [
                         'specialty' => $arr['basic']['specialty'] ?? [],
@@ -113,6 +114,7 @@ class ActivityService
                     'price' => $arr['basic']['price'],
                     'stocks' => $arr['basic']['stock'],
                     'is_private' => $arr['basic']['is_private'],
+                    'is_verification' => $arr['basic']['is_verification'],
                     'images' => $arr['basic']['images'],
                     'extends' => [
                         'specialty' => $arr['basic']['specialty'] ?? [],

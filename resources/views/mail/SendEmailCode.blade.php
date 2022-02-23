@@ -17,7 +17,7 @@
     <div>Hello！</div>
     <br/>
     <div>Thank you for using oli charity. You are in the process of {{ $operation  }}. Please enter the verification
-        code <span style="color: red">{{ $code }}</span>（valid within 3 minutes）in the verification code input box to
+        code <span style="color: red">{{ $code }}</span>（valid within 15 minutes）in the verification code input box to
         complete the verification。
     </div>
     <div>If it is not your own operation, please ignore this email. Please understand the inconvenience caused to you!

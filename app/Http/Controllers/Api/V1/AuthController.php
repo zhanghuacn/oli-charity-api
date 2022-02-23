@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessRegOliView;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -35,9 +36,13 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
+            'code' => 'required|numeric',
             'password' => ['required', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
+        $key = 'email:register:code:' . $request->get('email');
+        abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         $user = User::create($request->all());
+        ProcessRegOliView::dispatch($user);
         return Response::success($this->getLoginInfo($user));
     }
 
@@ -91,24 +96,6 @@ class AuthController extends Controller
         return Response::success($this->getLoginInfo($user));
     }
 
-    public function verifyEmail(Request $request): Redirector|string|RedirectResponse|Application
-    {
-        $user = User::find($request->route('id'));
-        if ($user->hasVerifiedEmail()) {
-            return redirect(config('app.url') . '/auth/email-succeded?msg=Mailbox verified');
-        }
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
-        return redirect(config('app.url') . '/auth/email-succeded');
-    }
-
-    public function resend(Request $request): JsonResponse|JsonResource
-    {
-        $request->user()->sendEmailVerificationNotification();
-        return Response::success();
-    }
-
     private function getLoginInfo(User $user): array
     {
         $data = $user->createPlaceToken('api', ['place-app']);
@@ -134,15 +121,16 @@ class AuthController extends Controller
     public function sendRegisterCodeEmail(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'email' => 'required|email|!exists:users,email',
+            'email' => 'required|email',
         ]);
+        abort_if(User::whereEmail($request->get('email'))->exists(), 422, 'Email registered');
         $code = rand(100000, 999999);
         $email = $request->get('email');
         $key = 'email:register:code:' . $request->get('email');//redis key
-        Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes());
+        Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
-            $message->subject('Oli Charity Mailbox verification');
+            $message->subject('Oli Charity Email verification');
         });
         if (Mail::failures()) {
             return Response::fail('fail in send');
@@ -150,7 +138,7 @@ class AuthController extends Controller
         return Response::success();
     }
 
-    public function forgotPassword(Request $request): JsonResponse|JsonResource
+    public function sendForgotCodeEmail(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
@@ -158,10 +146,10 @@ class AuthController extends Controller
         $code = rand(100000, 999999);
         $email = $request->get('email');
         $key = 'email:forgot:code:' . $request->get('email');//redis key
-        Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes());
+        Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
-            $message->subject('Oli Charity Mailbox verification');
+            $message->subject('Oli Charity Email verification');
         });
         if (Mail::failures()) {
             return Response::fail('fail in send');

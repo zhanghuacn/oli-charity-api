@@ -44,7 +44,8 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/social-login', [AuthController::class, 'socialite']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
-Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:1,1');
+Route::post('/auth/send-register-code', [AuthController::class, 'sendRegisterCodeEmail'])->middleware('throttle:1,1');
+Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEmail'])->middleware('throttle:1,1');
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
