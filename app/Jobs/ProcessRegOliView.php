@@ -39,14 +39,15 @@ class ProcessRegOliView implements ShouldQueue
      */
     public function handle()
     {
+        $response = Http::asForm()->post(config('services.custom.oli_register_url'). '/login/isEmailExist', ['email' => $this->user->email]);
+        $result = json_decode($response->body());
         $data = [
             'email' => $this->user->email,
             'username' => $this->user->name,
             'password' => Crypt::decryptString($this->user->password),
             'url' => config('app.url'),
         ];
-        Log::info(sprintf('请求参数：%s', json_encode($data)));
-        $response = Http::post(config('services.custom.oli_register_url'), $data);
+        $response = Http::asForm()->post(config('services.custom.oli_register_url'), $data);
         Log::info(sprintf('响应参数：%s', $response->body()));
     }
 }

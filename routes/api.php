@@ -49,6 +49,7 @@ Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEma
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
+Route::post('/callbacks/sign_in_with_oliview', [AuthController::class, 'callbackSignWithOliView']);
 
 Route::get('/explore', [HomeController::class, 'explore']);
 Route::get('/search', [HomeController::class, 'search']);

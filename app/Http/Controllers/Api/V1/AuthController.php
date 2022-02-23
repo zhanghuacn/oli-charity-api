@@ -182,7 +182,7 @@ class AuthController extends Controller
         }
     }
 
-    public function oliViewRegisterCallBack(Request $request): JsonResponse|JsonResource
+    public function callbackSignWithOliView(Request $request): JsonResponse|JsonResource
     {
         return Response::success();
     }
