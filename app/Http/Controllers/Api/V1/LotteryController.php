@@ -42,7 +42,7 @@ class LotteryController extends Controller
                 'image' => collect($item->images)->first(),
                 'time' => $item->draw_time,
                 'standard_amount' => floatval($item->standard_amount),
-                'standard_oli_register' => $item->extend['standard_oli_register'] ?? false,
+                'standard_oli_register' => $item->extends['standard_oli_register'] ?? false,
                 'is_standard_oli_register' => Auth::user()->sync ?? false,
                 'is_standard' => floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
                 'lottery_code' => $activity->my_ticket->lottery_code
