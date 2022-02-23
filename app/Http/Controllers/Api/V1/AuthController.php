@@ -35,7 +35,6 @@ class AuthController extends Controller
         $key = 'email:register:code:' . $request->get('email');
         abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         $user = User::create($request->all());
-        $user->update(['email_verified_at' => now()->tz(config('app.timezone'))]);
         ProcessRegOliView::dispatch($request->all());
         return Response::success($this->getLoginInfo($user));
     }
