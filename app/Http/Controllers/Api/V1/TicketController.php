@@ -71,7 +71,6 @@ class TicketController extends Controller
             $ticket->save();
             $activity->update(['extends->participates' => bcadd(intval($activity->extends['participates']) ?? 0, 1)]);
             $activity->decrement('stocks');
-
         });
         return Response::success();
     }
