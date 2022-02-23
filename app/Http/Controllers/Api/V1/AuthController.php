@@ -32,8 +32,8 @@ class AuthController extends Controller
             'code' => 'required|numeric',
             'password' => ['required', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
-//        $key = 'email:register:code:' . $request->get('email');
-//        abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        $key = 'email:register:code:' . $request->get('email');
+        abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         $user = User::create($request->all());
         ProcessRegOliView::dispatch($request->all());
         return Response::success($this->getLoginInfo($user));
@@ -123,7 +123,7 @@ class AuthController extends Controller
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
-            $message->subject('imagine 2080 Email verification');
+            $message->subject('Imagine 2080 Email verification');
         });
         if (Mail::failures()) {
             return Response::fail('fail in send');
@@ -142,7 +142,7 @@ class AuthController extends Controller
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
-            $message->subject('imagine 2080 Email verification');
+            $message->subject('Imagine 2080 Email verification');
         });
         if (Mail::failures()) {
             return Response::fail('fail in send');
