@@ -51,16 +51,26 @@ class TicketController extends Controller
         abort_if(!empty($activity->my_ticket), 422, 'Tickets Repeat Claim');
         abort_if($activity->stocks <= 0, 422, 'Tickets have been sold out');
         DB::transaction(function () use ($activity) {
-            $tickets = new Ticket([
+            $ticket = new Ticket([
                 'charity_id' => $activity->charity_id,
                 'activity_id' => $activity->id,
                 'user_id' => Auth::id(),
                 'type' => Ticket::TYPE_DONOR,
                 'price' => $activity->price,
             ]);
-            $tickets->save();
+            $ticket->save();
             $activity->update(['extends->participates' => bcadd(intval($activity->extends['participates']) ?? 0, 1)]);
             $activity->decrement('stocks');
+            if (!$activity->is_verification) {
+                do {
+                    $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
+                    if (Ticket::where(['activity_id' => $activity->id, 'lottery_code' => $code])->doesntExist()) {
+                        $ticket->lottery_code = $code;
+                        $ticket->verified_at = Carbon::now()->tz(config('app.timezone'));
+                        break;
+                    }
+                } while (true);
+            }
         });
         return Response::success();
     }
