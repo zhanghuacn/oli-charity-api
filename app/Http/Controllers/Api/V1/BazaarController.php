@@ -44,7 +44,7 @@ class BazaarController extends Controller
     public function affirm(Request $request, Bazaar $bazaar): JsonResponse|JsonResource
     {
         $request->validate([
-            'remark' => 'sometimes|string|nullable',
+            'remark' => 'nullable|string',
         ]);
         abort_if($bazaar->is_receive, 422, 'Please do not repeat the confirmation');
         $bazaar->is_receive = true;

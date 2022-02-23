@@ -130,7 +130,7 @@ class AuthController extends Controller
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
-            $message->subject('Oli Charity Email verification');
+            $message->subject('imagine 2080 Email verification');
         });
         if (Mail::failures()) {
             return Response::fail('fail in send');
@@ -149,7 +149,7 @@ class AuthController extends Controller
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
-            $message->subject('Oli Charity Email verification');
+            $message->subject('imagine 2080 Email verification');
         });
         if (Mail::failures()) {
             return Response::fail('fail in send');
@@ -180,5 +180,10 @@ class AuthController extends Controller
         } else {
             return Response::fail('Verification code error');
         }
+    }
+
+    public function oliViewRegisterCallBack(Request $request): JsonResponse|JsonResource
+    {
+        return Response::success();
     }
 }

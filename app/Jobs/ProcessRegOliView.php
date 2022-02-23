@@ -41,7 +41,7 @@ class ProcessRegOliView implements ShouldQueue
     {
         $data = [
             'email' => $this->user->email,
-            'username' => $this->user->username,
+            'username' => $this->user->name,
             'password' => Crypt::decryptString($this->user->password),
             'url' => config('app.url'),
         ];

@@ -39,61 +39,6 @@ class ActivityService
                     ],
                     'cache' => $arr
                 ]);
-//                if (!empty($arr['lotteries'])) {
-//                    collect($arr['lotteries'])->map(function ($item) use ($activity) {
-//                        Lottery::create([
-//                            'activity_id' => $activity->id,
-//                            'charity_id' => getPermissionsTeamId(),
-//                            'name' => $item['name'],
-//                            'description' => $item['description'] ?? '',
-//                            'images' => $item['images'] ?? [],
-//                            'begin_time' => $item['begin_time'],
-//                            'end_time' => $item['end_time'],
-//                            'standard_amount' => $item['standard_amount'],
-//                            'draw_time' => $item['draw_time'],
-//                        ])->prizes()->saveMany(
-//                            collect($item['prizes'])->map(function ($value) use ($activity) {
-//                                return new Prize([
-//                                    'activity_id' => $activity->id,
-//                                    'charity_id' => getPermissionsTeamId(),
-//                                    'name' => $value['name'],
-//                                    'description' => $value['description'] ?? '',
-//                                    'num' => $value['stock'],
-//                                    'price' => $value['price'],
-//                                    'images' => $value['images'] ?? [],
-//                                    'prizeable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
-//                                    'prizeable_id' => empty($item['sponsor']) ? getPermissionsTeamId() : $item['sponsor']['id'],
-//                                ]);
-//                            })
-//                        );
-//                    });
-//                }
-//                if (!empty($arr['sales'])) {
-//                    $activity->goods()->saveMany(collect($arr['sales'])->map(function ($item) use ($activity) {
-//                        return new Goods([
-//                            'activity_id' => $activity->id,
-//                            'charity_id' => getPermissionsTeamId(),
-//                            'name' => $item['name'],
-//                            'description' => $item['description'] ?? '',
-//                            'content' => $item['content'] ?? '',
-//                            'price' => $item['price'],
-//                            'stock' => $item['stock'],
-//                            'images' => $item['images'] ?? [],
-//                            'goodsable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
-//                            'goodsable_id' => empty($item['sponsor']) ? getPermissionsTeamId() : $item['sponsor']['id'],
-//                        ]);
-//                    }));
-//                }
-//                if (!empty($arr['staffs'])) {
-//                    $activity->tickets()->saveMany(collect($arr['staffs'])->map(function ($item) use ($activity) {
-//                        return new Ticket([
-//                            'charity_id' => getPermissionsTeamId(),
-//                            'user_id' => $item['uid'],
-//                            'type' => $item['type'],
-//                            'price' => 0,
-//                        ]);
-//                    }));
-//                }
             });
         } catch (Throwable $e) {
             abort(500, $e->getMessage());
@@ -143,6 +88,7 @@ class ActivityService
                                 'images' => $item['images'],
                                 'begin_time' => $item['begin_time'],
                                 'end_time' => $item['end_time'],
+                                'extends->standard_oli_register' => $item['standard_oli_register'] ?? false,
                                 'standard_amount' => $item['standard_amount'],
                                 'draw_time' => $item['draw_time'] ?? null,
                             ]

@@ -56,14 +56,14 @@ class UcenterController extends Controller
     public function update(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'avatar' => 'sometimes|string|nullable',
-            'first_name' => 'sometimes|string|nullable',
-            'middle_name' => 'sometimes|string|nullable',
-            'last_name' => 'sometimes|string|nullable',
-            'birthday' => 'sometimes|date|nullable',
-            'name' => 'sometimes|string|nullable',
-            'profile' => 'sometimes|string|nullable',
-            'backdrop' => 'sometimes|url|nullable',
+            'avatar' => 'nullable|string',
+            'first_name' => 'nullable|string',
+            'middle_name' => 'nullable|string',
+            'last_name' => 'nullable|string',
+            'birthday' => 'nullable|date',
+            'name' => 'nullable|string',
+            'profile' => 'nullable|string',
+            'backdrop' => 'nullable|url',
         ]);
         $user = Auth::user();
         $user->update($request->only(['avatar', 'backdrop', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));

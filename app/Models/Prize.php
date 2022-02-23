@@ -42,6 +42,7 @@ class Prize extends Model
         'images',
         'description',
         'num',
+        'price',
         'winners',
         'draw_time',
         'status',
