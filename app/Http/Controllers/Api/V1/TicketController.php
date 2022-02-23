@@ -58,9 +58,6 @@ class TicketController extends Controller
                 'type' => Ticket::TYPE_DONOR,
                 'price' => $activity->price,
             ]);
-            $ticket->save();
-            $activity->update(['extends->participates' => bcadd(intval($activity->extends['participates']) ?? 0, 1)]);
-            $activity->decrement('stocks');
             if (!$activity->is_verification) {
                 do {
                     $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
@@ -71,6 +68,10 @@ class TicketController extends Controller
                     }
                 } while (true);
             }
+            $ticket->save();
+            $activity->update(['extends->participates' => bcadd(intval($activity->extends['participates']) ?? 0, 1)]);
+            $activity->decrement('stocks');
+
         });
         return Response::success();
     }

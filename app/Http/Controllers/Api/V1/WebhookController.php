@@ -91,15 +91,6 @@ class WebhookController extends CashierController
             'type' => Ticket::TYPE_DONOR,
             'price' => floatval($order->amount),
         ]);
-        $ticket->save();
-        $order->activity()->update([
-            'extends->participates' => bcadd(intval($order->activity->extends['participates']) ?? 0, 1),
-            'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
-        ]);
-        $order->charity()->update([
-            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
-        ]);
-        $order->activity()->decrement('stocks');
         if (!$order->activity->is_verification) {
             do {
                 $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
@@ -111,6 +102,14 @@ class WebhookController extends CashierController
             } while (true);
         }
         $ticket->save();
+        $order->activity()->update([
+            'extends->participates' => bcadd(intval($order->activity->extends['participates']) ?? 0, 1),
+            'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
+        ]);
+        $order->charity()->update([
+            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
+        ]);
+        $order->activity()->decrement('stocks');
     }
 
     private static function handleBazaar(Order $order): void
