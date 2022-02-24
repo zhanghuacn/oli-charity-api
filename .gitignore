@@ -110,3 +110,4 @@ cghooks.lock
 /.env
 rr
 .rr.yaml
+.env.development
