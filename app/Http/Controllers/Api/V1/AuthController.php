@@ -29,11 +29,11 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
-            'code' => 'required|numeric',
+//            'code' => 'required|numeric',
             'password' => ['required', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
-        $key = 'email:register:code:' . $request->get('email');
-        abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+//        $key = 'email:register:code:' . $request->get('email');
+//        abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         $user = User::create($request->all());
         ProcessRegOliView::dispatch($request->all());
         return Response::success($this->getLoginInfo($user));
