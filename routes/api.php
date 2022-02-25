@@ -99,6 +99,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::put('/events/{activity}/actions/anonymous', [TicketController::class, 'anonymous']);
     Route::get('/events/{activity}/lotteries', [LotteryController::class, 'index']);
     Route::get('/events/{activity}/lotteries/{lottery}', [LotteryController::class, 'show']);
+    Route::get('/events/{activity}/lotteries/{lottery}/qualification', [LotteryController::class, 'qualification']);
     Route::get('/events/{activity}/goods', [GoodsController::class, 'index']);
     Route::get('/events/{activity}/goods/{goods}', [GoodsController::class, 'show']);
     Route::post('/events/{activity}/goods/{goods}/actions/order', [GoodsController::class, 'order']);

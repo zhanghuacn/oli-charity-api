@@ -24,16 +24,6 @@ class LotteryController extends Controller
     public function index(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-//        if (Auth::user()->sync == false) {
-//            $body = Http::asForm()->post(config('services.custom.oli_register_url'), [
-//                'email' => Auth::user()->email,
-//                'url' => config('app.url'),
-//            ])->body();
-//            $result = json_decode($body, true);
-//            if ($result['status'] == 1 && $result['data']['ischecklogin'] == true) {
-//                Auth::user()->update(['sync' => true]);
-//            }
-//        }
         $data = $activity->lotteries()->get()->map(function ($item) use ($activity) {
             return [
                 'id' => $item->id,
@@ -48,6 +38,24 @@ class LotteryController extends Controller
                 'lottery_code' => $activity->my_ticket->lottery_code
             ];
         });
+        return Response::success($data);
+    }
+
+    public function qualification(Activity $activity, Lottery $lottery): JsonResponse|JsonResource
+    {
+        Gate::authorize('check-ticket', $activity);
+        $data = [
+            'id' => $lottery->id,
+            'name' => $lottery->name,
+            'description' => $lottery->description,
+            'image' => collect($lottery->images)->first(),
+            'time' => $lottery->draw_time,
+            'standard_amount' => floatval($lottery->standard_amount),
+            'standard_oli_register' => $lottery->extends['standard_oli_register'] ?? false,
+            'is_standard_oli_register' => Auth::user()->sync ?? false,
+            'is_standard' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount),
+            'lottery_code' => optional($activity->my_ticket)->lottery_code
+        ];
         return Response::success($data);
     }
 
