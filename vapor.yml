@@ -12,6 +12,7 @@ environments:
         memory: 512
         cli-memory: 512
         runtime: 'php-8.1:al2'
+        queue-timeout: 300
         build:
           - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
           - 'php artisan event:cache'
@@ -30,6 +31,7 @@ environments:
         memory: 512
         cli-memory: 512
         runtime: 'php-8.1:al2'
+        queue-timeout: 300
         build:
             - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
             - 'php artisan event:cache'

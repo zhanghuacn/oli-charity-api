@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Charity\ActivityCollection;
 use App\Http\Resources\Charity\ActivityResource;
 use App\Models\Activity;
+use App\Models\Album;
 use App\Models\Goods;
 use App\Models\Lottery;
 use App\Models\Order;
@@ -16,6 +17,7 @@ use App\Services\ActivityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
@@ -58,7 +60,7 @@ class ActivityController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = $activity->tickets()->filter($request->all())->with(['user','group'])->paginate($request->input('per_page', 15));
+        $data = $activity->tickets()->filter($request->all())->with(['user', 'group'])->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function (Ticket $ticket) {
             return [
                 'id' => $ticket->id,
@@ -172,6 +174,37 @@ class ActivityController extends Controller
         $activity->status = Activity::STATUS_REVIEW;
         $activity->cache = $request->all();
         $activity->save();
+        return Response::success();
+    }
+
+    public function albumsIndex(Request $request, Activity $activity)
+    {
+        $request->validate([
+            'sort' => 'sometimes|string|in:ASC,DESC',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
+        $data = $activity->albums()->filter($request->all())->select(['id', 'path'])->paginate($request->input('per_page', 15));
+        return Response::success($data);
+    }
+
+    public function albumStore(Request $request, Activity $activity): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'paths' => 'required|array',
+            'paths.*' => 'sometimes|url',
+        ]);
+        $models = [];
+        foreach ($request->get('paths') as $item) {
+            $models[] = new Album(['path' => $item, 'user_id' => Auth::id()]);
+        }
+        $activity->albums()->saveMany($models);
+        return Response::success();
+    }
+
+    public function albumsDelete(Request $request, Activity $activity, Album $album)
+    {
+        $activity->albums()->where(['id' => $album->id])->delete();
         return Response::success();
     }
 

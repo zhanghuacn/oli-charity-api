@@ -59,6 +59,10 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
 
     Route::get('/events/{activity}/tickets', [ActivityController::class, 'tickets']);
 
+    Route::get('/events/{activity}/albums', [ActivityController::class, 'albumsIndex']);
+    Route::post('/events/{activity}/albums/upload', [ActivityController::class, 'albumStore']);
+    Route::delete('/events/{activity}/albums/{album}', [ActivityController::class, 'albumsDelete']);
+
     Route::get('/events/{activity}/seat-config', [ActivityController::class, 'seatConfig']);
     Route::post('/events/{activity}/seat-allocation', [ActivityController::class, 'seatAllocation']);
     Route::post('/lotteries/{lottery}/draw', [LotteryController::class, 'draw']);
