@@ -30,6 +30,8 @@ class AuthController extends Controller
         ]);
         $user = User::has('sponsors')->where('username', $request['username'])
             ->orWhere('email', $request['username'])->first();
+        $charity = Sponsor::findOrFail($user->getTeamIdFromSponsor());
+        abort_if($charity->status != Sponsor::STATUS_PASSED, 403, 'Permission denied');
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
