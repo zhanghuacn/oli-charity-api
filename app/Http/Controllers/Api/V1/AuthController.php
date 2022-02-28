@@ -60,7 +60,11 @@ class AuthController extends Controller
             'code' => 'required|digits:6',
         ]);
         $key = 'phone:login:code:' . $request->get('phone');
-        abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        if (config('app.env') == 'production') {
+            abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        } else {
+            abort_if($request->get('code') != '666666', '422', "Verification code error");
+        }
         $user = User::where(['phone' => $request->get('phone')])->first();
         if (!$user) {
             $user = User::create([
@@ -165,7 +169,7 @@ class AuthController extends Controller
             $sms->publish([
                 'Message' => sprintf('【%s】You are logging in for verification. The verification code is %s.
                  Do not disclose the verification code to others. This verification code is valid for 15 minutes.', config('app.name'), $code),
-                'PhoneNumber' => '+610452443292',
+                'PhoneNumber' => '+' . $phone,
                 'MessageAttributes' => [
                     'AWS.SNS.SMS.SMSType' => [
                         'DataType' => 'String',
