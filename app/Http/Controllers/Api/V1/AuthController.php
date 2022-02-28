@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcessRegOliView;
 use App\Models\User;
 use AWS;
+use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Events\PasswordReset;
@@ -15,6 +16,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as Pwd;
@@ -165,8 +167,11 @@ class AuthController extends Controller
             $phone = $request->get('phone');
             $key = 'phone:login:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
-            $sms = AWS::createClient('sns');
-            $sms->publish([
+            $client = new SnsClient([
+                'region' => config('aws.region'),
+                'version' => config('aws.version'),
+            ]);
+            $result = $client->publish([
                 'Message' => sprintf('【%s】You are logging in for verification. The verification code is %s.
                  Do not disclose the verification code to others. This verification code is valid for 15 minutes.', config('app.name'), $code),
                 'PhoneNumber' => '+' . $phone,
@@ -177,6 +182,7 @@ class AuthController extends Controller
                     ]
                 ],
             ]);
+            Log::info($result);
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
