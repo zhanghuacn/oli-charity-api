@@ -56,12 +56,19 @@ class AuthController extends Controller
     public function loginByPhone(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|string',
+            'phone' => 'required|phone:AU',
             'code' => 'required|digits:6',
         ]);
         $key = 'phone:login:code:' . $request->get('phone');
         abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
-        $user = User::where('phone', $request['username'])->first();
+        $user = User::where(['phone' => $request->get('phone')])->first();
+        if (!$user) {
+            $user = User::create([
+                'username' => $request->get('phone'),
+                'phone' => $request->get('phone'),
+                'password' => Str::random(8),
+            ]);
+        }
         return Response::success($this->getLoginInfo($user));
     }
 
@@ -146,28 +153,29 @@ class AuthController extends Controller
 
     public function sendLoginCodePhone(Request $request): JsonResponse|JsonResource
     {
-//        $request->validate([
-//            'phone' => 'required|string',
-//        ]);
-//        try {
-//            $code = rand(100000, 999999);
-//            $phone = $request->get('phone');
-//            $key = 'phone:login:code:' . $phone;
-//            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
-//            $sms = AWS::createClient('sns');
-//            $sms->publish([
-//                'Message' => 'Hello, This is just a test Message',
-//                'PhoneNumber' => $phone,
-//                'MessageAttributes' => [
-//                    'AWS.SNS.SMS.SMSType' => [
-//                        'DataType' => 'String',
-//                        'StringValue' => 'Transactional',
-//                    ]
-//                ],
-//            ]);
-//        } catch (Exception $e) {
-//            abort(500, $e->getMessage());
-//        }
+        $request->validate([
+            'phone' => 'required|phone:AU',
+        ]);
+        try {
+            $code = rand(100000, 999999);
+            $phone = $request->get('phone');
+            $key = 'phone:login:code:' . $phone;
+            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
+            $sms = AWS::createClient('sns');
+            $sms->publish([
+                'Message' => sprintf('【%s】You are logging in for verification. The verification code is %s.
+                 Do not disclose the verification code to others. This verification code is valid for 15 minutes.', config('app.name'), $code),
+                'PhoneNumber' => '+610452443292',
+                'MessageAttributes' => [
+                    'AWS.SNS.SMS.SMSType' => [
+                        'DataType' => 'String',
+                        'StringValue' => 'Transactional',
+                    ]
+                ],
+            ]);
+        } catch (Exception $e) {
+            abort(500, $e->getMessage());
+        }
         return Response::success();
     }
 
