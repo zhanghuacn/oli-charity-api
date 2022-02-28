@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessRegOliView;
 use App\Models\User;
+use AWS;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Events\PasswordReset;
@@ -49,6 +50,18 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
+        return Response::success($this->getLoginInfo($user));
+    }
+
+    public function loginByPhone(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'phone' => 'required|string',
+            'code' => 'required|digits:6',
+        ]);
+        $key = 'phone:login:code:' . $request->get('phone');
+        abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        $user = User::where('phone', $request['username'])->first();
         return Response::success($this->getLoginInfo($user));
     }
 
@@ -119,7 +132,7 @@ class AuthController extends Controller
         abort_if(User::whereEmail($request->get('email'))->exists(), 422, 'Email registered');
         $code = rand(100000, 999999);
         $email = $request->get('email');
-        $key = 'email:register:code:' . $request->get('email');//redis key
+        $key = 'email:register:code:' . $email;//redis key
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendEmailCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
@@ -128,6 +141,33 @@ class AuthController extends Controller
         if (Mail::failures()) {
             return Response::fail('fail in send');
         }
+        return Response::success();
+    }
+
+    public function sendLoginCodePhone(Request $request): JsonResponse|JsonResource
+    {
+//        $request->validate([
+//            'phone' => 'required|string',
+//        ]);
+//        try {
+//            $code = rand(100000, 999999);
+//            $phone = $request->get('phone');
+//            $key = 'phone:login:code:' . $phone;
+//            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
+//            $sms = AWS::createClient('sns');
+//            $sms->publish([
+//                'Message' => 'Hello, This is just a test Message',
+//                'PhoneNumber' => $phone,
+//                'MessageAttributes' => [
+//                    'AWS.SNS.SMS.SMSType' => [
+//                        'DataType' => 'String',
+//                        'StringValue' => 'Transactional',
+//                    ]
+//                ],
+//            ]);
+//        } catch (Exception $e) {
+//            abort(500, $e->getMessage());
+//        }
         return Response::success();
     }
 

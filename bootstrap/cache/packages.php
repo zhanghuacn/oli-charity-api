@@ -6,6 +6,17 @@
       0 => 'Algolia\\ScoutExtended\\ScoutExtendedServiceProvider',
     ),
   ),
+  'aws/aws-sdk-php-laravel' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Aws\\Laravel\\AwsServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'AWS' => 'Aws\\Laravel\\AwsFacade',
+    ),
+  ),
   'awssat/laravel-visits' => 
   array (
     'providers' => 

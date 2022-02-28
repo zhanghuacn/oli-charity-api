@@ -48,6 +48,9 @@ Route::post('/auth/send-register-code', [AuthController::class, 'sendRegisterCod
 Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEmail']);
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
+Route::post('/auth/login/using-phone', [AuthController::class, 'loginByPhone']);
+Route::post('/auth/login/send-login-code', [AuthController::class, 'sendLoginCodePhone']);
+
 Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
 Route::post('/callbacks/sign_in_with_oliview', [AuthController::class, 'callbackSignWithOliView']);
 

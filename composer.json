@@ -13,6 +13,7 @@
         "ext-pdo": "*",
         "algolia/scout-extended": "^1.20",
         "aws/aws-sdk-php": "^3.208",
+        "aws/aws-sdk-php-laravel": "^3.6",
         "awssat/laravel-visits": "^3.0",
         "brainmaestro/composer-git-hooks": "^2.8",
         "friendsofphp/php-cs-fixer": "^3.3",
