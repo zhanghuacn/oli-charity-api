@@ -154,7 +154,7 @@ class AuthController extends Controller
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendRegisterCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
-            $message->subject('Imagine 2080 registration verification code');
+            $message->subject('Imagine 2080 Email Verification');
         });
         if (Mail::failures()) {
             return Response::fail('fail in send');
@@ -204,7 +204,7 @@ class AuthController extends Controller
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
         Mail::send('mail.SendForgetCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
-            $message->subject('Imagine 2080 retrieve password verification code');
+            $message->subject('Imagine 2080 Email Verification');
         });
         if (Mail::failures()) {
             return Response::fail('fail in send');
