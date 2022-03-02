@@ -177,6 +177,7 @@ return [
         App\Providers\VaporUiServiceProvider::class,
         EloquentFilter\ServiceProvider::class,
         Aws\Laravel\AwsServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -232,6 +233,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'AWS' => Aws\Laravel\AwsFacade::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+
     ],
 
 ];

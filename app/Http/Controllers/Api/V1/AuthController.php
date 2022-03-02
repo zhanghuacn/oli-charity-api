@@ -32,11 +32,15 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
-//            'code' => 'required|numeric',
+            'code' => 'required|digits:6',
             'password' => ['required', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
-//        $key = 'email:register:code:' . $request->get('email');
-//        abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        $key = 'email:register:code:' . $request->get('email');
+        if (config('app.env') == 'production') {
+            abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        } else {
+            abort_if($request->get('code') != '888888', '422', "Verification code error");
+        }
         $user = User::create($request->all());
         ProcessRegOliView::dispatch($request->all());
         return Response::success($this->getLoginInfo($user));
@@ -172,8 +176,7 @@ class AuthController extends Controller
                 'version' => config('aws.version'),
             ]);
             $result = $client->publish([
-                'Message' => sprintf('【%s】You are logging in for verification. The verification code is %s.
-                 Do not disclose the verification code to others. This verification code is valid for 15 minutes.', config('app.name'), $code),
+                'Message' => sprintf('【%s】You are logging in for verification. The verification code is %s. Do not disclose the verification code to others. This verification code is valid for 15 minutes.', config('app.name'), $code),
                 'PhoneNumber' => '+' . $phone,
                 'MessageAttributes' => [
                     'AWS.SNS.SMS.SMSType' => [

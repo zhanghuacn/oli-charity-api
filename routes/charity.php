@@ -13,6 +13,7 @@ use App\Http\Controllers\Charity\V1\RoleController;
 use App\Http\Controllers\Charity\V1\SponsorController;
 use App\Http\Controllers\Charity\V1\StaffController;
 use App\Http\Controllers\Charity\V1\StripeController;
+use App\Http\Controllers\Charity\V1\TicketController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -66,6 +67,9 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
     Route::get('/events/{activity}/seat-config', [ActivityController::class, 'seatConfig']);
     Route::post('/events/{activity}/seat-allocation', [ActivityController::class, 'seatAllocation']);
     Route::post('/lotteries/{lottery}/draw', [LotteryController::class, 'draw']);
+
+    Route::get('/events/{activity}/tickets/export', [TicketController::class, 'export']);
+    Route::post('/events/{activity}/tickets/import', [TicketController::class, 'import']);
 
     Route::get('/sponsors', [SponsorController::class, 'index']);
 
