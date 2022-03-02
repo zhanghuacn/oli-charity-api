@@ -160,6 +160,17 @@
       'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
     ),
   ),
+  'mavinoo/laravel-batch' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Mavinoo\\Batch\\BatchServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Batch' => 'Mavinoo\\Batch\\BatchFacade',
+    ),
+  ),
   'nesbot/carbon' => 
   array (
     'providers' => 

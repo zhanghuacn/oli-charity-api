@@ -181,6 +181,11 @@ class Activity extends Model
         return $this->morphMany(Album::class, 'albumable');
     }
 
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class);
+    }
+
     protected static function booted()
     {
         static::saving(

@@ -51,7 +51,7 @@ class Group extends Model
 
     public function tickets(): BelongsToMany
     {
-        return $this->belongsToMany(Ticket::class, 'group_ticket');
+        return $this->belongsToMany(Ticket::class);
     }
 
     public function owner(): BelongsTo

@@ -110,7 +110,7 @@ class GroupController extends Controller
                 'description' => 'sometimes|string',
                 'num' => 'sometimes|numeric|min:1|not_in:0'
             ]);
-            $team = Group::create(array_merge(
+            $group = Group::create(array_merge(
                 $request->only(['name', 'description', 'num']),
                 [
                     'charity_id' => $activity->charity_id,
@@ -118,10 +118,9 @@ class GroupController extends Controller
                     'owner_id' => Auth::id(),
                 ]
             ));
-            $ticket->group_id = $team->id;
+            $ticket->group_id = $group->id;
             $ticket->save();
-            $team->tickets()->attach($ticket->id);
-            return $team;
+            return $group;
         });
 
         return Response::success($team);

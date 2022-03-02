@@ -79,6 +79,7 @@ class AuthController extends Controller
                 'password' => Str::random(8),
             ]);
         }
+        Cache::delete($key);
         return Response::success($this->getLoginInfo($user));
     }
 
@@ -219,21 +220,20 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
         $email = $request->input('email');
-        $code = $request->input('code');
         $key = 'email:forgot:code:' . $email;
-        $value = Cache::get($key);
-        if ($value && $value == $code) {
-            $user = User::whereEmail($email)->firstOrFail();
-            $user->forceFill([
-                'password' => Hash::make($request->get('password')),
-            ])->save();
-            $user->tokens()->delete();
-            event(new PasswordReset($user));
-            Cache::delete($key);
-            return Response::success();
+        if (config('app.env') == 'production') {
+            abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
-            return Response::fail('Verification code error');
+            abort_if($request->get('code') != '888888', '422', "Verification code error");
         }
+        $user = User::whereEmail($email)->firstOrFail();
+        $user->forceFill([
+            'password' => Hash::make($request->get('password')),
+        ])->save();
+        $user->tokens()->delete();
+        event(new PasswordReset($user));
+        Cache::delete($key);
+        return Response::success();
     }
 
     public function callbackSignWithOliView(Request $request): JsonResponse|JsonResource
