@@ -19,7 +19,7 @@ class TicketController extends Controller
     public function export(Activity $activity): BinaryFileResponse
     {
         Gate::authorize('check-charity-source', $activity);
-        return Excel::download(new TicketExport($activity), 'tickets.xlsx', [
+        return Excel::download(new TicketExport($activity), 'tickets.xlsx', \Maatwebsite\Excel\Excel::XLSX, [
             'X-Vapor-Base64-Encode' => 'True'
         ]);
     }
