@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Api;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class GiftResource extends JsonResource
 {
@@ -14,6 +15,7 @@ class GiftResource extends JsonResource
             'images' => $this->images,
             'description' => $this->description,
             'content' => $this->content,
+            'is_like' => $this->isLikedBy(Auth::user()),
             'sponsor' => [
                 'id' => optional($this->giftable)->id,
                 'name' => optional($this->giftable)->name,
