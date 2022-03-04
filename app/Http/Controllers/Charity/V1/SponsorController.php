@@ -16,7 +16,7 @@ class SponsorController extends Controller
         $request->validate([
             'keyword' => 'sometimes|string',
         ]);
-        $sponsors = Sponsor::filter($request->all())->limit(10)->get(['id', 'name', 'logo']);
+        $sponsors = Sponsor::filter($request->all())->where(['status' => Sponsor::STATUS_PASSED])->limit(10)->get(['id', 'name', 'logo']);
         return Response::success($sponsors);
     }
 }
