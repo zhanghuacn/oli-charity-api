@@ -7,11 +7,11 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\TrimStrings;
+use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\UseAdminGuard;
 use App\Http\Middleware\UseCharityGuard;
 use App\Http\Middleware\UseSponsorGuard;
-use App\Http\Middleware\TrimStrings;
-use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
 use Fruitcake\Cors\HandleCors;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
@@ -26,10 +26,8 @@ use Illuminate\Http\Middleware\SetCacheHeaders;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
-use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Jiannei\Response\Laravel\Http\Middleware\Etag;
 use Laravel\Passport\Http\Middleware\CheckForAnyScope;
 use Laravel\Passport\Http\Middleware\CheckScopes;
 
@@ -44,8 +42,8 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         // \App\Http\Middleware\TrustHosts::class,
-        TrustProxies::class,
         HandleCors::class,
+        TrustProxies::class,
         PreventRequestsDuringMaintenance::class,
         ValidatePostSize::class,
         TrimStrings::class,
