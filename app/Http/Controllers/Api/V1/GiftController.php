@@ -26,6 +26,7 @@ class GiftController extends Controller
                 'name' => $item->name,
                 'image' => collect($item->images)->first(),
                 'description' => $item->description,
+                'is_like' => $item->isLikedBy(Auth::user()),
                 'sponsor' => [
                     'id' => optional($item->giftable)->id,
                     'name' => optional($item->giftable)->name,
