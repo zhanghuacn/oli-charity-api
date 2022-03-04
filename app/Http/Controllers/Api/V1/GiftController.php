@@ -47,7 +47,7 @@ class GiftController extends Controller
     {
         Gate::authorize('check-ticket', $activity);
         $request->validate([
-            'phone' => 'sometimes|phone:AU',
+            'phone' => 'sometimes|phone:AU|unique:users,phone',
             'code' => 'sometimes|digits:6',
         ]);
         abort_if(Auth::user()->phone == null && $request->get('phone') == null, 422, 'Please verify your phone');
