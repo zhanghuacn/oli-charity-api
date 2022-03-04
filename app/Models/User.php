@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Jobs\ProcessRegOliView;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
 use App\Traits\ModelFilter;
+use Cache;
 use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -26,6 +28,7 @@ use Laravel\Passport\HasApiTokens;
 use Laravel\Scout\Searchable;
 use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
+use Overtrue\LaravelLike\Traits\Liker;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -43,6 +46,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use Searchable;
     use Filterable;
     use ModelFilter;
+    use Liker;
     use SoftDeletes;
 
     public const GENDER_UNKNOWN = 'UNKNOWN';
@@ -200,6 +204,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
 
                 if (Hash::needsRehash($user->password)) {
+                    Cache::put(sprintf('USER:%s:PASSWORD', $user->username), $user->password);
                     $user->password = bcrypt($user->password);
                 }
 
@@ -212,6 +217,7 @@ class User extends Authenticatable implements MustVerifyEmail
         static::created(
             function (User $user) {
                 $user->createOrGetStripeCustomer();
+                $user->createOliViewAccount($user);
             }
         );
     }
@@ -223,6 +229,15 @@ class User extends Authenticatable implements MustVerifyEmail
             'token_type' => 'Bearer',
             'token' => $this->createToken($name, $scopes)->accessToken,
         ];
+    }
+
+    public function createOliViewAccount($user): void
+    {
+        ProcessRegOliView::dispatch([
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'password' => Cache::get(sprintf('USER:%s:PASSWORD', $user->username), '888888')
+        ]);
     }
 
     public function refreshLastActiveAt(): static

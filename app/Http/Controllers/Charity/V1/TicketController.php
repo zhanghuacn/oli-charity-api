@@ -26,6 +26,7 @@ class TicketController extends Controller
 
     public function import(Request $request, Activity $activity): JsonResponse|JsonResource
     {
+        Gate::authorize('check-charity-source', $activity);
         $request->validate([
             'file' => 'required|file|mimes:xlsx'
         ]);

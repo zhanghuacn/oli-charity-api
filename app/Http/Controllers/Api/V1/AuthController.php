@@ -42,7 +42,6 @@ class AuthController extends Controller
             abort_if($request->get('code') != '888888', '422', "Verification code error");
         }
         $user = User::create($request->all());
-        ProcessRegOliView::dispatch($request->all());
         return Response::success($this->getLoginInfo($user));
     }
 
@@ -65,11 +64,13 @@ class AuthController extends Controller
             'phone' => 'required|phone:AU',
             'code' => 'required|digits:6',
         ]);
-        $key = 'phone:login:code:' . $request->get('phone');
+        $key = 'phone:verify:code:' . $request->get('phone');
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
-            abort_if($request->get('code') != '666666', '422', "Verification code error");
+            if ($request->get('code') != '666666') {
+                abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+            }
         }
         $user = User::where(['phone' => $request->get('phone')])->first();
         if (!$user) {
@@ -133,6 +134,7 @@ class AuthController extends Controller
             'middle_name' => $user->middle_name,
             'last_name' => $user->last_name,
             'gender' => $user->gender,
+            'phone' => $user->phone,
             'birthday' => Carbon::parse($user->birthday)->tz(config('app.timezone'))->toDateString(),
             'is_public_records' => $user->extends['records'],
             'is_public_portfolio' => $user->extends['portfolio'],
@@ -170,14 +172,14 @@ class AuthController extends Controller
         try {
             $code = rand(100000, 999999);
             $phone = $request->get('phone');
-            $key = 'phone:login:code:' . $phone;
+            $key = 'phone:verify:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
             $client = new SnsClient([
                 'region' => config('aws.region'),
                 'version' => config('aws.version'),
             ]);
             $result = $client->publish([
-                'Message' => sprintf('【%s】You are logging in for verification. The verification code is %s. Do not disclose the verification code to others. This verification code is valid for 15 minutes.', config('app.name'), $code),
+                'Message' => sprintf('【%s】The verification code is %s. Do not disclose the verification code to others. This verification code is valid for 15 minutes.', config('app.name'), $code),
                 'PhoneNumber' => '+' . $phone,
                 'MessageAttributes' => [
                     'AWS.SNS.SMS.SMSType' => [

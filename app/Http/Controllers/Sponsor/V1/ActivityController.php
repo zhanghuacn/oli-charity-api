@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Sponsor\ActivityCollection;
 use App\Http\Resources\Sponsor\ActivityResource;
 use App\Models\Activity;
+use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Prize;
 use App\Models\Sponsor;
@@ -34,6 +35,11 @@ class ActivityController extends Controller
             })
             ->orWhereHas('goods', function (Builder $query) {
                 $query->whereHasMorph('goodsable', Sponsor::class, function (Builder $query) {
+                    $query->where('id', '=', getPermissionsTeamId());
+                });
+            })
+            ->orWhereHas('gifts', function (Builder $query) {
+                $query->whereHasMorph('giftable', Sponsor::class, function (Builder $query) {
                     $query->where('id', '=', getPermissionsTeamId());
                 });
             })->paginate($request->input('per_page', 15));
@@ -65,15 +71,27 @@ class ActivityController extends Controller
             'sales.*.price' => 'required|numeric|min:0|not_in:0',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'gifts' => 'sometimes|array',
+            'gifts.*.id' => 'required|exists:gifts,id,giftable_type,' . Sponsor::class,
+            'gifts.*.name' => 'required|string',
+            'gifts.*.description' => 'sometimes|string',
+            'gifts.*.content' => 'sometimes|string',
+            'gifts.*.images' => 'required|array',
+            'gifts.*.images.*' => 'required|url',
         ]);
         if (!empty($request->get('prizes'))) {
             collect($request->get('prizes'))->each(function ($item) {
-                Prize::whereId($item['id'])->update($item);
+                Prize::whereId(['id' => $item['id'], 'prizeable_type' => Sponsor::class, 'prizeable_id' => getPermissionsTeamId()])->update($item);
             });
         }
         if (!empty($request->get('sales'))) {
             collect($request->get('sales'))->each(function ($item) {
-                Goods::whereId($item['id'])->update($item);
+                Goods::whereId(['id' => $item['id'], 'goodsable_type' => Sponsor::class, 'goodsable_id' => getPermissionsTeamId()])->update($item);
+            });
+        }
+        if (!empty($request->get('gifts'))) {
+            collect($request->get('gifts'))->each(function ($item) {
+                Gift::where(['id' => $item['id'], 'giftable_type' => Sponsor::class, 'giftable_id' => getPermissionsTeamId()])->update($item);
             });
         }
         return Response::success();

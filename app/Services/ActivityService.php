@@ -4,12 +4,12 @@ namespace App\Services;
 
 use App\Models\Activity;
 use App\Models\Charity;
+use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
 use App\Models\Prize;
 use App\Models\Sponsor;
 use App\Models\Ticket;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -151,6 +151,31 @@ class ActivityService
                         );
                     });
                 }
+                if (!empty($arr['gifts'])) {
+                    $gift_ids = collect($arr['gifts'])->whereNotNull('id')->pluck('id');
+                    if (!empty($gift_ids)) {
+                        $activity->gifts()->whereNotIn('id', $gift_ids)->delete();
+                    } else {
+                        $activity->gifts()->delete();
+                    }
+                    collect($arr['gifts'])->each(function ($item) use ($activity) {
+                        Gift::updateOrCreate(
+                            [
+                                'id' => $item['id'] ?? null,
+                                'activity_id' => $activity->id,
+                                'charity_id' => $activity->charity_id,
+                            ],
+                            [
+                                'name' => $item['name'],
+                                'description' => $item['description'],
+                                'content' => $item['content'] ?? '',
+                                'images' => $item['images'],
+                                'giftable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
+                                'giftable_id' => empty($item['sponsor']) ? $activity->charity_id : $item['sponsor']['id'],
+                            ]
+                        );
+                    });
+                }
                 if (!empty($arr['staffs'])) {
                     $ticket_ids = collect($arr['staffs'])->whereNotNull('id')->pluck('id');
                     if (!empty($ticket_ids)) {
@@ -187,6 +212,7 @@ class ActivityService
                 $activity->lotteries()->delete();
                 $activity->goods()->delete();
                 $activity->tickets()->delete();
+                $activity->gifts()->delete();
                 $activity->delete();
             });
         } catch (Throwable $e) {

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AlbumController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BazaarController;
 use App\Http\Controllers\Api\V1\CharityController;
+use App\Http\Controllers\Api\V1\GiftController;
 use App\Http\Controllers\Api\V1\GoodsController;
 use App\Http\Controllers\Api\V1\GroupController;
 use App\Http\Controllers\Api\V1\HomeController;
@@ -106,6 +107,10 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::get('/events/{activity}/goods', [GoodsController::class, 'index']);
     Route::get('/events/{activity}/goods/{goods}', [GoodsController::class, 'show']);
     Route::post('/events/{activity}/goods/{goods}/actions/order', [GoodsController::class, 'order']);
+
+    Route::get('/events/{activity}/gifts', [GiftController::class, 'index']);
+    Route::get('/events/{activity}/gifts/{gift}', [GiftController::class, 'show']);
+    Route::post('/events/{activity}/gifts/{gift}/actions/like', [GiftController::class, 'like']);
 
     Route::get('/event/my-current', [ActivityController::class, 'myCurrent']);
     Route::get('/events/{activity}/ranks/donation-personal', [ActivityController::class, 'personRanks']);

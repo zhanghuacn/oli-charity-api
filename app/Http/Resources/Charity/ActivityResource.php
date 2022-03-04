@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Charity;
 
+use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
 use App\Models\Order;
@@ -82,6 +83,28 @@ class ActivityResource extends JsonResource
                             'id' => optional($item->user)->id,
                             'name' => optional($item->user)->name,
                             'avatar' => optional($item->user)->avatar,
+                        ];
+                    }),
+                ];
+            }),
+            'gifts' => $this->gifts->transform(function (Gift $gift) {
+                return [
+                    'id' => $gift->id,
+                    'name' => $gift->name,
+                    'sponsor' => optional($gift->giftable)->getMorphClass() != Sponsor::class ? [] : [
+                        'id' => $gift->giftable->id,
+                        'name' => $gift->giftable->name,
+                        'logo' => $gift->giftable->logo,
+                    ],
+                    'images' => $gift->images,
+                    'description' => $gift->description,
+                    'content' => $gift->content,
+                    'like' => $gift->likers()->get()->transform(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'avatar' => $item->avatar,
+                            'phone' => $item->phone,
                         ];
                     }),
                 ];

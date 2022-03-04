@@ -7,6 +7,7 @@ use App\Http\Resources\Charity\ActivityCollection;
 use App\Http\Resources\Charity\ActivityResource;
 use App\Models\Activity;
 use App\Models\Album;
+use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
 use App\Models\Order;
@@ -261,6 +262,14 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'gifts' => 'sometimes|array',
+            'gifts.*.name' => 'required|string',
+            'gifts.*.description' => 'required|string',
+            'gifts.*.content' => 'nullable|string',
+            'gifts.*.sponsor' => 'sometimes',
+            'gifts.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
+            'gifts.*.images' => 'required|array',
+            'gifts.*.images.*' => 'required|url',
             'staffs' => 'sometimes|array',
             'staffs.*.type' => 'required|in:HOST,STAFF',
             'staffs.*.uid' => 'required|distinct|integer|exists:charity_user,user_id',
@@ -324,6 +333,14 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'gifts' => 'sometimes|array',
+            'gifts.*.name' => 'required|string',
+            'gifts.*.description' => 'required|string',
+            'gifts.*.content' => 'nullable|string',
+            'gifts.*.sponsor' => 'sometimes',
+            'gifts.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
+            'gifts.*.images' => 'required|array',
+            'gifts.*.images.*' => 'required|url',
             'staffs' => 'sometimes|array',
             'staffs.*.id' => 'sometimes|integer|exists:tickets,id',
             'staffs.*.type' => 'required|in:HOST,STAFF',
@@ -388,6 +405,14 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'gifts' => 'sometimes|array',
+            'gifts.*.name' => 'required|string',
+            'gifts.*.description' => 'required|string',
+            'gifts.*.content' => 'nullable|string',
+            'gifts.*.sponsor' => 'sometimes',
+            'gifts.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
+            'gifts.*.images' => 'required|array',
+            'gifts.*.images.*' => 'required|url',
             'staffs' => 'required|array',
             'staffs.*.id' => 'sometimes|integer|exists:tickets,id',
             'staffs.*.type' => 'required|in:HOST,STAFF',
@@ -440,6 +465,21 @@ class ActivityController extends Controller
                             'id' => optional($item->user)->id,
                             'name' => optional($item->user)->name,
                             'avatar' => optional($item->user)->avatar,
+                        ];
+                    }),
+                ];
+            }),
+            'gifts' => $activity->gifts->transform(function (Gift $gift) {
+                return [
+                    'id' => $gift->id,
+                    'name' => $gift->name,
+                    'image' => collect($gift->images)->first(),
+                    'like' => $gift->likers()->get()->transform(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'avatar' => $item->avatar,
+                            'phone' => $item->phone,
                         ];
                     }),
                 ];
