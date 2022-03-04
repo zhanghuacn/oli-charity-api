@@ -23,4 +23,9 @@ class UserFilter extends ModelFilter
     {
         return $this->where('email', 'like', $email . '%');
     }
+
+    public function phone($phone): UserFilter
+    {
+        return $this->where('phone', 'like', $phone . '%');
+    }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Charity\V1\ActivityController;
 use App\Http\Controllers\Charity\V1\ApplyController;
 use App\Http\Controllers\Charity\V1\AuthController;
 use App\Http\Controllers\Charity\V1\CharityController;
+use App\Http\Controllers\Charity\V1\GiftController;
 use App\Http\Controllers\Charity\V1\HistoryController;
 use App\Http\Controllers\Charity\V1\HomeController;
 use App\Http\Controllers\Charity\V1\LotteryController;
@@ -57,6 +58,9 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
 
     Route::get('/events/{activity}/applies', [ApplyController::class, 'index']);
     Route::post('/events/{activity}/applies/{apply}/audit', [ApplyController::class, 'audit']);
+
+    Route::get('/events/{activity}/gifts', [GiftController::class, 'index']);
+    Route::get('/events/{activity}/gifts/{gift}/users', [GiftController::class, 'users']);
 
     Route::get('/events/{activity}/tickets', [ActivityController::class, 'tickets']);
 
