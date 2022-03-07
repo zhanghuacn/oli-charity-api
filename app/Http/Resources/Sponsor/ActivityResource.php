@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Sponsor;
 
+use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
 use App\Models\Prize;
@@ -75,6 +76,17 @@ class ActivityResource extends JsonResource
                     'images' => $goods->images,
                     'description' => $goods->description,
                     'content' => $goods->content,
+                ];
+            }),
+            'gifts' => Gift::whereHasMorph('giftable', Sponsor::class, function (Builder $query) {
+                $query->where('id', '=', getPermissionsTeamId());
+            })->where(['activity_id' => $this->id])->get()->transform(function (Gift $gift) {
+                return [
+                    'id' => $gift->id,
+                    'name' => $gift->name,
+                    'images' => $gift->images,
+                    'description' => $gift->description,
+                    'content' => $gift->content,
                 ];
             }),
             'staffs' => $this->tickets()->with('user')->whereIn('type', [TICKET::TYPE_HOST, Ticket::TYPE_STAFF])->get()
