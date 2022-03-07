@@ -48,11 +48,35 @@ class ActivityController extends Controller
 
     public function show(Activity $activity): JsonResponse|JsonResource
     {
-        return Response::success(new ActivityResource($activity));
+        if ($activity->status == Activity::STATUS_PASSED) {
+            return Response::success(new ActivityResource($activity));
+        } else {
+            $result = $activity->cache;
+            if (!empty($activity->cache['lotteries'])) {
+                $result['lotteries'] = collect($activity->cache['lotteries'])->map(function ($lottery) {
+                    $lottery['prizes'] = collect($lottery['prizes'])->filter(function ($value) {
+                        return !empty($value['sponsor']) && $value['sponsor']['id'] == getPermissionsTeamId();
+                    })->all();
+                    return $lottery;
+                })->values();
+            }
+            if (!empty($activity->cache['sales'])) {
+                $result['sales'] = collect($activity->cache['sales'])->filter(function ($value) {
+                    return !empty($value['sponsor']) && $value['sponsor']['id'] == getPermissionsTeamId();
+                })->values();
+            }
+            if (!empty($activity->cache['gifts'])) {
+                $result['gifts'] = collect($activity->cache['gifts'])->filter(function ($value) {
+                    return !empty($value['sponsor']) && $value['sponsor']['id'] == getPermissionsTeamId();
+                })->values();
+            }
+            return Response::success($result);
+        }
     }
 
     public function update(Request $request, Activity $activity): JsonResponse|JsonResource
     {
+        abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'During review, please do not submit again');
         $request->validate([
             'prizes' => 'sometimes|array',
             'prizes.*.id' => 'required|exists:prizes,id,prizeable_type,' . Sponsor::class,
@@ -66,7 +90,7 @@ class ActivityController extends Controller
             'sales.*.id' => 'required|exists:goods,id,goodsable_type,' . Sponsor::class,
             'sales.*.name' => 'required|string',
             'sales.*.description' => 'sometimes|string',
-            'sales.*.content' => 'sometimes|string',
+            'sales.*.content' => 'nullable|string',
             'sales.*.stock' => 'required|integer|min:1|not_in:0',
             'sales.*.price' => 'required|numeric|min:0|not_in:0',
             'sales.*.images' => 'required|array',
@@ -75,25 +99,54 @@ class ActivityController extends Controller
             'gifts.*.id' => 'required|exists:gifts,id,giftable_type,' . Sponsor::class,
             'gifts.*.name' => 'required|string',
             'gifts.*.description' => 'sometimes|string',
-            'gifts.*.content' => 'sometimes|string',
+            'gifts.*.content' => 'nullable|string',
             'gifts.*.images' => 'required|array',
             'gifts.*.images.*' => 'required|url',
         ]);
+        $sponsor = Sponsor::find(getPermissionsTeamId());
+        $data = $activity->cache;
         if (!empty($request->get('prizes'))) {
-            collect($request->get('prizes'))->each(function ($item) {
-                Prize::whereId(['id' => $item['id'], 'prizeable_type' => Sponsor::class, 'prizeable_id' => getPermissionsTeamId()])->update($item);
-            });
+            $data['lotteries'] = collect($activity->cache['lotteries'])->map(function ($lottery) use ($sponsor, $request) {
+                $lottery['prizes'] = collect($lottery['prizes'])->map(function ($value) use ($sponsor, $request) {
+                    $result = collect($request->get('prizes'))->where('id', '=', $value['id'])->first() ?? $value;
+                    if (!array_key_exists('sponsor', $result)) {
+                        $result['sponsor'] = [
+                            'id' => getPermissionsTeamId(),
+                            'name' => $sponsor->name
+                        ];
+                    }
+                    return $result;
+                })->toArray();
+                return $lottery;
+            })->toArray();
         }
         if (!empty($request->get('sales'))) {
-            collect($request->get('sales'))->each(function ($item) {
-                Goods::whereId(['id' => $item['id'], 'goodsable_type' => Sponsor::class, 'goodsable_id' => getPermissionsTeamId()])->update($item);
-            });
+            $data['sales'] = collect($activity->cache['sales'])->map(function ($value) use ($sponsor, $request) {
+                $result = collect($request->get('sales'))->where('id', '=', $value['id'])->first() ?? $value;
+                if (!array_key_exists('sponsor', $result)) {
+                    $result['sponsor'] = [
+                        'id' => getPermissionsTeamId(),
+                        'name' => $sponsor->name
+                    ];
+                }
+                return $result;
+            })->toArray();
         }
         if (!empty($request->get('gifts'))) {
-            collect($request->get('gifts'))->each(function ($item) {
-                Gift::where(['id' => $item['id'], 'giftable_type' => Sponsor::class, 'giftable_id' => getPermissionsTeamId()])->update($item);
-            });
+            $data['gifts'] = collect($activity->cache['gifts'])->map(function ($value) use ($sponsor, $request) {
+                $result = collect($request->get('gifts'))->where('id', '=', $value['id'])->first() ?? $value;
+                if (!array_key_exists('sponsor', $result)) {
+                    $result['sponsor'] = [
+                        'id' => getPermissionsTeamId(),
+                        'name' => $sponsor->name
+                    ];
+                }
+                return $result;
+            })->toArray();
         }
+        $activity->cache = $data->toArray();
+        $activity->status = Activity::STATUS_REVIEW;
+        $activity->save();
         return Response::success();
     }
 }

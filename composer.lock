@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fca259e68d2dbb1301a15209bb638ab8",
+    "content-hash": "e70712976d5a3b62fe54b848e3c70b51",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -2593,6 +2593,64 @@
                 }
             ],
             "time": "2021-09-22T03:54:36+00:00"
+        },
+        {
+            "name": "laravel-notification-channels/aws-sns",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel-notification-channels/aws-sns.git",
+                "reference": "4655c0588e7ab3792f6f601b20b044a139dfcb8c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel-notification-channels/aws-sns/zipball/4655c0588e7ab3792f6f601b20b044a139dfcb8c",
+                "reference": "4655c0588e7ab3792f6f601b20b044a139dfcb8c",
+                "shasum": ""
+            },
+            "require": {
+                "aws/aws-sdk-php": "^3.69.11",
+                "guzzlehttp/guzzle": "^6.2.1 || ^7.0",
+                "illuminate/notifications": "~5.5 || ~6.0 || ~7.0 || ~8.0 || ~9.0",
+                "illuminate/support": "~5.5 || ~6.0 || ~7.0 || ~8.0 || ~9.0",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.3.5",
+                "phpunit/phpunit": "^8.5.23"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "NotificationChannels\\AwsSns\\SnsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "NotificationChannels\\AwsSns\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Claudson Martins",
+                    "email": "claudson@outlook.com",
+                    "homepage": "https://claudsonmartins.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Amazon Simple Notification Service (AWS SNS) notification channel for Laravel.",
+            "homepage": "https://github.com/laravel-notification-channels/aws-sns",
+            "support": {
+                "issues": "https://github.com/laravel-notification-channels/aws-sns/issues",
+                "source": "https://github.com/laravel-notification-channels/aws-sns/tree/1.4.0"
+            },
+            "time": "2022-03-02T14:12:03+00:00"
         },
         {
             "name": "laravel/cashier",

@@ -78,6 +78,13 @@
       0 => 'Kra8\\Snowflake\\Providers\\LaravelServiceProvider',
     ),
   ),
+  'laravel-notification-channels/aws-sns' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'NotificationChannels\\AwsSns\\SnsServiceProvider',
+    ),
+  ),
   'laravel/cashier' => 
   array (
     'providers' => 

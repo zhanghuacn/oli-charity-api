@@ -151,7 +151,7 @@ class ActivityController extends Controller
     public function update(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
-        abort_if($activity->status == Activity::STATUS_REVIEW, 403, 'Permission denied');
+        abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'During review, please do not submit again');
         $this->checkUpdate($request);
         $activity->update(['cache' => $request->all()]);
         return Response::success([
@@ -171,7 +171,7 @@ class ActivityController extends Controller
     {
         Gate::authorize('check-charity-source', $activity);
         $this->checkSubmit($request);
-        abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'Under Review');
+        abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'During review, please do not submit again');
         $activity->status = Activity::STATUS_REVIEW;
         $activity->cache = $request->all();
         $activity->save();

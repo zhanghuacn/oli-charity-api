@@ -30,6 +30,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'ap-southeast-2'),
     ],
 
+    'sns' => [
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION', 'ap-southeast-2'),
+    ],
+
     'facebook' => [
         'client_id' => env('FB_CLIENT_ID'),
         'client_secret' => env('FB_CLIENT_SECRET'),

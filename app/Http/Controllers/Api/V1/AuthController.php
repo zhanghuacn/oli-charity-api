@@ -154,7 +154,7 @@ class AuthController extends Controller
         $email = $request->get('email');
         $key = 'email:register:code:' . $email;//redis key
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
-        Mail::send('mail.SendRegisterCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
+        Mail::send('emails.SendRegisterCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
             $message->subject('Imagine 2080 Email Verification');
         });
@@ -204,7 +204,7 @@ class AuthController extends Controller
         $email = $request->get('email');
         $key = 'email:forgot:code:' . $request->get('email');//redis key
         Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
-        Mail::send('mail.SendForgetCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
+        Mail::send('emails.SendForgetCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
             $message->to($email);
             $message->subject('Imagine 2080 Email Verification');
         });
