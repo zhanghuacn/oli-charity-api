@@ -258,7 +258,7 @@ class AuthController extends Controller
 
     public function captcha(Request $request)
     {
-        return Captcha::create();
+        dd(Captcha::create("default", true));
         $request->validate([
             'phone' => 'required|phone:AU,mobile',
         ]);
