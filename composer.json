@@ -37,7 +37,6 @@
         "maatwebsite/excel": "^3.1",
         "mattkingshott/axiom": "^3.2",
         "mavinoo/laravel-batch": "^2.3",
-        "mews/captcha": "^3.2",
         "overtrue/laravel-favorite": "^4.0",
         "overtrue/laravel-follow": "^3.1",
         "overtrue/laravel-like": "4.1.0",

@@ -256,9 +256,8 @@ class AuthController extends Controller
         return Response::success();
     }
 
-    public function captcha(Request $request)
+    public function captcha(Request $request): JsonResponse|JsonResource
     {
-        dd(Captcha::create("default", true));
         $request->validate([
             'phone' => 'required|phone:AU,mobile',
         ]);
