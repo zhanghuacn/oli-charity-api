@@ -46,6 +46,6 @@ environments:
     cli-memory: 512
     runtime: docker
     build:
-      - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
+      - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
       - 'php artisan event:cache'
-      - 'npm ci && npm run prod && rm -rf node_modules'
+      - 'npm ci && npm run dev && rm -rf node_modules'
