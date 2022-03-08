@@ -168,6 +168,7 @@ class AuthController extends Controller
     public function sendLoginCodePhone(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
+            'phone' => 'required|phone:AU,mobile',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
         ]);
@@ -177,7 +178,7 @@ class AuthController extends Controller
 
         try {
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
-            $phone = $captcha['phone'];
+            $phone = $request->get('phone');
             $key = 'phone:verify:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
             $client = new SnsClient([
@@ -256,17 +257,13 @@ class AuthController extends Controller
         return Response::success();
     }
 
-    public function captcha(Request $request): JsonResponse|JsonResource
+    public function captcha(): JsonResponse|JsonResource
     {
-        $request->validate([
-            'phone' => 'required|phone:AU,mobile',
-        ]);
-        $phone = $request->get('phone');
         $key = 'captcha-' . Str::random(15);
         $captchaBuilder = new CaptchaBuilder(null, (new PhraseBuilder(4, '0123456789')));
         $captcha = $captchaBuilder->build();
         $expiredAt = now()->addMinutes(5);
-        Cache::put($key, ['phone' => $phone, 'code' => $captcha->getPhrase()], $expiredAt);
+        Cache::put($key, ['code' => $captcha->getPhrase()], $expiredAt);
         $result = [
             'captcha_key' => $key,
             'expired_at' => $expiredAt->toDateTimeString(),
