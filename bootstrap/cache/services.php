@@ -64,6 +64,7 @@
     60 => 'Aws\\Laravel\\AwsServiceProvider',
     61 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
     62 => 'Mavinoo\\Batch\\BatchServiceProvider',
+    63 => 'App\\Providers\\RecaptchaServiceProvider',
   ),
   'eager' => 
   array (
@@ -113,6 +114,7 @@
     43 => 'Aws\\Laravel\\AwsServiceProvider',
     44 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
     45 => 'Mavinoo\\Batch\\BatchServiceProvider',
+    46 => 'App\\Providers\\RecaptchaServiceProvider',
   ),
   'deferred' => 
   array (

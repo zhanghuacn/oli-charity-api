@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BazaarController;
+use App\Http\Controllers\Api\V1\CaptchaController;
 use App\Http\Controllers\Api\V1\CharityController;
 use App\Http\Controllers\Api\V1\GiftController;
 use App\Http\Controllers\Api\V1\GoodsController;
@@ -42,7 +43,7 @@ Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEma
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::post('/auth/login/using-phone', [AuthController::class, 'loginByPhone']);
-Route::post('/auth/captcha', [AuthController::class, 'captcha']);
+Route::post('/auth/captcha', [CaptchaController::class, 'captcha']);
 Route::post('/auth/login/send-login-code', [AuthController::class, 'sendLoginCodePhone']);
 
 Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);

@@ -3,8 +3,11 @@
 namespace App\Providers;
 
 use App\Search\Search;
+use Illuminate\Auth\Recaller;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
+use ReCaptcha\ReCaptcha;
+use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {

@@ -7,8 +7,6 @@ use App\Models\User;
 use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Exception;
-use Gregwar\Captcha\CaptchaBuilder;
-use Gregwar\Captcha\PhraseBuilder;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -173,8 +171,8 @@ class AuthController extends Controller
             'captcha_code' => 'required|string',
         ]);
         $captcha = Cache::get($request->get('captcha_key'));
-        abort_if(!$captcha, 403, 'Picture verification code is invalid');
-        abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Verification code error');
+        abort_if(!$captcha, 403, 'Graphic verification code is invalid');
+        abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
 
         try {
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
@@ -255,20 +253,5 @@ class AuthController extends Controller
         abort_if($request->get('token') != md5($request->get('email')), 422, 'Parameter request error');
         User::whereEmail($request->get('email'))->update(['sync' => true]);
         return Response::success();
-    }
-
-    public function captcha(): JsonResponse|JsonResource
-    {
-        $key = 'captcha-' . Str::random(15);
-        $captchaBuilder = new CaptchaBuilder(null, (new PhraseBuilder(4, '0123456789')));
-        $captcha = $captchaBuilder->build();
-        $expiredAt = now()->addMinutes(5);
-        Cache::put($key, ['code' => $captcha->getPhrase()], $expiredAt);
-        $result = [
-            'captcha_key' => $key,
-            'expired_at' => $expiredAt->toDateTimeString(),
-            'captcha_image_content' => $captcha->inline(),
-        ];
-        return Response::success($result);
     }
 }

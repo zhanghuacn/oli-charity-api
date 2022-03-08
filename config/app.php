@@ -179,6 +179,7 @@ return [
         Aws\Laravel\AwsServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Mavinoo\Batch\BatchServiceProvider::class,
+        \App\Providers\RecaptchaServiceProvider::class,
     ],
 
     /*

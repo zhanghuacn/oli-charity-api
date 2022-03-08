@@ -64,6 +64,11 @@ return [
         'package_name' => env('ANDROID_PACKAGE_IDENTIFIER', 'org.olicharity.app')
     ],
 
+    'recaptcha' => [
+        'site_key' => env('RECAPTCHA_CHECKBOX_SITEKEY'),
+        'secret_key' => env('RECAPTCHA_CHECKBOX_SECRET'),
+    ],
+
     'custom' => [
         'lottery_url' => env('LOTTERY_URL', 'https://4omu1zxuba.execute-api.ap-southeast-2.amazonaws.com/default/lottery'),
         'oli_register_url' => env('OLI_REGISTER_URL', 'https://api.olicapital.com/login/existUser'),
