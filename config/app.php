@@ -179,6 +179,7 @@ return [
         Aws\Laravel\AwsServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Mavinoo\Batch\BatchServiceProvider::class,
+        Mews\Captcha\CaptchaServiceProvider::class,
     ],
 
     /*
@@ -236,6 +237,7 @@ return [
         'AWS' => Aws\Laravel\AwsFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Batch' => Mavinoo\Batch\BatchFacade::class,
+        'Captcha' => Mews\Captcha\Facades\Captcha::class,
     ],
 
 ];

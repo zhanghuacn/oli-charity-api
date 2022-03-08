@@ -32,8 +32,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
-
-
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/social-login', [AuthController::class, 'socialite']);
