@@ -3,14 +3,14 @@
 namespace App\Console;
 
 use App\Console\Commands\LotteryWinners;
+use App\Jobs\ProcessLotteryReminder;
+use App\Jobs\ProcessLotteryWinner;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    protected $commands = [
-        Commands\LotteryWinners::class
-    ];
+    protected $commands = [];
 
     /**
      * Define the application's command schedule.
@@ -21,7 +21,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('passport:purge')->hourly();
-        $schedule->command('lottery:draw')->everyMinute();
+        $schedule->job(new ProcessLotteryWinner())->everyMinute();
+        $schedule->job(new ProcessLotteryReminder(3))->dailyAt('09:00');
+        $schedule->job(new ProcessLotteryReminder(1))->dailyAt('09:00');
     }
 
     /**
