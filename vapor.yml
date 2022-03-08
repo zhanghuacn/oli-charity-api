@@ -11,7 +11,7 @@ environments:
     scheduler: true
     memory: 512
     cli-memory: 512
-    runtime: 'php-8.1:al2'
+    runtime: docker
     queue-timeout: 300
     timeout: 300
     build:
@@ -40,12 +40,22 @@ environments:
       - 'npm ci && npm run dev && rm -rf node_modules'
     deploy:
       - 'php artisan migrate --force'
-  test:
+  testing:
+    domain:
+      - api.olicharity.org
     database: oli-charity
-    memory: 1024
+    octane: true
+    octane-database-session-persist: true
+    octane-database-session-ttl: 10
+    scheduler: true
+    memory: 512
     cli-memory: 512
     runtime: docker
+    queue-timeout: 300
+    timeout: 300
     build:
       - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
       - 'php artisan event:cache'
       - 'npm ci && npm run dev && rm -rf node_modules'
+    deploy:
+      - 'php artisan migrate --force'
