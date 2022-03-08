@@ -196,7 +196,8 @@ class AuthController extends Controller
             Log::info($result);
             Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {
-            abort(500, $e->getMessage());
+            Log::error($e->getMessage());
+            abort(500, 'SMS sending failed');
         }
         return Response::success();
     }
