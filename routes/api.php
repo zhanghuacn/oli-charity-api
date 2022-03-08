@@ -43,7 +43,7 @@ Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEma
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::post('/auth/login/using-phone', [AuthController::class, 'loginByPhone']);
-Route::post('/auth/captcha', [CaptchaController::class, 'captcha']);
+Route::post('/auth/captcha', [CaptchaController::class, 'captcha'])->middleware('throttle:5,1');;
 Route::post('/auth/login/send-login-code', [AuthController::class, 'sendLoginCodePhone']);
 
 Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
