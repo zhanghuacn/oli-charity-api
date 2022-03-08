@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ProcessRegOliView;
 use App\Models\User;
-use AWS;
 use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Exception;
+use Gregwar\Captcha\CaptchaBuilder;
+use Gregwar\Captcha\PhraseBuilder;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +22,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as Pwd;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
+use Mews\Captcha\Facades\Captcha;
 use function abort;
 use function abort_if;
 
@@ -61,7 +62,7 @@ class AuthController extends Controller
     public function loginByPhone(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|phone:AU',
+            'phone' => 'required|phone:AU,mobile',
             'code' => 'required|digits:6',
         ]);
         $key = 'phone:verify:code:' . $request->get('phone');
@@ -167,11 +168,16 @@ class AuthController extends Controller
     public function sendLoginCodePhone(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|phone:AU',
+            'captcha_key' => 'required|string',
+            'captcha_code' => 'required|string',
         ]);
+        $captcha = Cache::get($request->get('captcha_key'));
+        abort_if(!$captcha, 403, 'Picture verification code is invalid');
+        abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Verification code error');
+
         try {
-            $code = rand(100000, 999999);
-            $phone = $request->get('phone');
+            $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
+            $phone = $captcha['phone'];
             $key = 'phone:verify:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
             $client = new SnsClient([
@@ -189,6 +195,7 @@ class AuthController extends Controller
                 ],
             ]);
             Log::info($result);
+            Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
@@ -247,5 +254,24 @@ class AuthController extends Controller
         abort_if($request->get('token') != md5($request->get('email')), 422, 'Parameter request error');
         User::whereEmail($request->get('email'))->update(['sync' => true]);
         return Response::success();
+    }
+
+    public function captcha(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'phone' => 'required|phone:AU,mobile',
+        ]);
+        $phone = $request->get('phone');
+        $key = 'captcha-' . Str::random(15);
+        $captchaBuilder = new CaptchaBuilder(null, (new PhraseBuilder(4, '0123456789')));
+        $captcha = $captchaBuilder->build();
+        $expiredAt = now()->addMinutes(5);
+        Cache::put($key, ['phone' => $phone, 'code' => $captcha->getPhrase()], $expiredAt);
+        $result = [
+            'captcha_key' => $key,
+            'expired_at' => $expiredAt->toDateTimeString(),
+            'captcha_image_content' => $captcha->inline(),
+        ];
+        return Response::success($result);
     }
 }

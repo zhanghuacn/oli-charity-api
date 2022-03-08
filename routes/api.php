@@ -32,25 +32,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
-Route::get('/email/verify/{id}', [AuthController::class, 'verifyEmail'])
-    ->middleware(['signed', 'throttle:6,1'])
-    ->name('verification.verify');
 
-Route::post('/email/verify/resend', [AuthController::class, 'verifyEmail'])
-    ->middleware(['auth:api', 'throttle:6,1'])
-    ->name('verification.send');
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/social-login', [AuthController::class, 'socialite']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
-Route::post('/auth/send-register-code', [AuthController::class, 'sendRegisterCodeEmail']);
-Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEmail']);
+Route::post('/auth/send-register-code', [AuthController::class, 'sendRegisterCodeEmail'])->middleware(['throttle:6,1']);
+Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEmail'])->middleware(['throttle:6,1']);
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::post('/auth/login/using-phone', [AuthController::class, 'loginByPhone']);
-Route::post('/auth/login/send-login-code', [AuthController::class, 'sendLoginCodePhone']);
+Route::post('/auth/captcha', [AuthController::class, 'captcha']);
+Route::post('/auth/login/send-login-code', [AuthController::class, 'sendLoginCodePhone'])->middleware(['throttle:6,1']);
 
 Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
 Route::post('/callbacks/sign_in_with_oliview', [AuthController::class, 'callbackSignWithOliView']);
@@ -72,7 +67,6 @@ Route::get('/charities/{charity}/source', [CharityController::class, 'source']);
 Route::get('/sponsors', [SponsorController::class, 'index']);
 Route::get('/sponsors/{sponsor}', [SponsorController::class, 'show']);
 Route::get('/sponsors/{sponsor}/goods', [SponsorController::class, 'goods']);
-
 
 Route::get('/events', [ActivityController::class, 'index']);
 Route::get('/events/{activity}', [ActivityController::class, 'show']);
