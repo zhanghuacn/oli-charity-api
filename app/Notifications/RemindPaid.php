@@ -57,7 +57,7 @@ EOF;
 
         return SnsMessage::create([
             'body' => $message,
-            'transactional' => false,
+            'promotional' => true,
             'sender' => 'Imagine2080',
         ]);
     }

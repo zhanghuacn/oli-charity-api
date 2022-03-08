@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use JetBrains\PhpStorm\ArrayShape;
 use NotificationChannels\AwsSns\SnsChannel;
 use NotificationChannels\AwsSns\SnsMessage;
 
@@ -58,7 +59,7 @@ EOF;
 
         return SnsMessage::create([
             'body' => $message,
-            'transactional' => false,
+            'promotional' => true,
             'sender' => 'Imagine2080',
         ]);
     }
