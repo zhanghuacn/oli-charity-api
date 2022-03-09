@@ -38,13 +38,13 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/social-login', [AuthController::class, 'socialite']);
 Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
 Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
-Route::post('/auth/send-register-code', [AuthController::class, 'sendRegisterCodeEmail']);
-Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEmail']);
 Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::post('/auth/login/using-phone', [AuthController::class, 'loginByPhone']);
-Route::post('/auth/captcha', [CaptchaController::class, 'captcha'])->middleware('throttle:5,1');;
-Route::post('/auth/login/send-login-code', [AuthController::class, 'sendLoginCodePhone']);
+Route::post('/auth/captcha', [CaptchaController::class, 'captcha']);
+Route::post('/auth/login/send-login-code', [AuthController::class, 'sendLoginCodePhone'])->middleware('throttle:5,1');
+Route::post('/auth/send-register-code', [AuthController::class, 'sendRegisterCodeEmail'])->middleware('throttle:5,1');
+Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEmail'])->middleware('throttle:5,1');
 
 Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
 Route::post('/callbacks/sign_in_with_oliview', [AuthController::class, 'callbackSignWithOliView']);

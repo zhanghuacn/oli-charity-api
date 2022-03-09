@@ -30,9 +30,12 @@ class LotteryPaid extends Notification implements ShouldQueue
 
     public function toDatabase($notifiable): array
     {
+        $event = $this->prize->activity->name;
+        $prize = $this->prize->name;
+        $date = Carbon::parse($this->prize->activity->end_time)->tz(config('app.timezone'))->toFormattedDateString();
         return [
-            'title' => 'Winning the ' . $this->prize->activity->name . ' event',
-            'content' => 'Congratulations on winning the prize：' . $this->prize->name,
+            'title' => "Congratulations",
+            'content' => "You've won the $prize in our $event , You can claim your prize on the day of the banquet on $date. ",
             'activity_id' => $this->prize->activity_id,
         ];
     }
