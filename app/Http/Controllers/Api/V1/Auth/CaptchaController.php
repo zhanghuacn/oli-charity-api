@@ -129,7 +129,6 @@ class CaptchaController extends Controller
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
-
         try {
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $phone = $request->get('phone');

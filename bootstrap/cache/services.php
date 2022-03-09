@@ -65,6 +65,7 @@
     61 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
     62 => 'Mavinoo\\Batch\\BatchServiceProvider',
     63 => 'App\\Providers\\RecaptchaServiceProvider',
+    64 => 'App\\Providers\\SnsServiceProvider',
   ),
   'eager' => 
   array (
@@ -115,6 +116,7 @@
     44 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
     45 => 'Mavinoo\\Batch\\BatchServiceProvider',
     46 => 'App\\Providers\\RecaptchaServiceProvider',
+    47 => 'App\\Providers\\SnsServiceProvider',
   ),
   'deferred' => 
   array (

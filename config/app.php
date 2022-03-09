@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -180,6 +180,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Mavinoo\Batch\BatchServiceProvider::class,
         \App\Providers\RecaptchaServiceProvider::class,
+        \App\Providers\SnsServiceProvider::class,
     ],
 
     /*
