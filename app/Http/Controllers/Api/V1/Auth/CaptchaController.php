@@ -101,16 +101,7 @@ class CaptchaController extends Controller
             $phone = $request->get('phone');
             $key = 'phone:register:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
-            $snsClient->publish([
-                'Message' => sprintf('The verification code is %s. Do not disclose the verification code to others. This verification code is valid for 15 minutes.', $code),
-                'PhoneNumber' => '+' . $phone,
-                'MessageAttributes' => [
-                    'AWS.SNS.SMS.SMSType' => [
-                        'DataType' => 'String',
-                        'StringValue' => 'Transactional',
-                    ]
-                ],
-            ]);
+            $this->smsPublish($snsClient, $code, $phone);
             Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {
             Log::error($e->getMessage());
@@ -134,21 +125,32 @@ class CaptchaController extends Controller
             $phone = $request->get('phone');
             $key = 'phone:login:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
-            $snsClient->publish([
-                'Message' => sprintf('The verification code is %s. Do not disclose the verification code to others. This verification code is valid for 15 minutes.', $code),
-                'PhoneNumber' => '+' . $phone,
-                'MessageAttributes' => [
-                    'AWS.SNS.SMS.SMSType' => [
-                        'DataType' => 'String',
-                        'StringValue' => 'Transactional',
-                    ]
-                ],
-            ]);
+            $this->smsPublish($snsClient, $code, $phone);
             Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {
             Log::error($e->getMessage());
             abort(500, 'SMS sending failed');
         }
         return Response::success();
+    }
+
+    /**
+     * @param SnsClient $snsClient
+     * @param string $code
+     * @param mixed $phone
+     * @return void
+     */
+    private function smsPublish(SnsClient $snsClient, string $code, mixed $phone): void
+    {
+        $snsClient->publish([
+            'Message' => sprintf('【%s】The verification code is %s. Do not disclose the verification code to others. This verification code is valid for 15 minutes.', config('app.name'), $code),
+            'PhoneNumber' => sprintf('+%s', $phone),
+            'MessageAttributes' => [
+                'AWS.SNS.SMS.SMSType' => [
+                    'DataType' => 'String',
+                    'StringValue' => 'Transactional',
+                ]
+            ],
+        ]);
     }
 }
