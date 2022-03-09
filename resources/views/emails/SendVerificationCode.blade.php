@@ -65,8 +65,5 @@
     <p>Your verification code is valid for 15 minutes. In order to ensure the security of your account, please do not provide this verification code to anyone. Thank you for your support to Imagine 2080!</p>
     <p>Cheers, <br /> Imagine2080 Teams</p>
 </div>
-<div class="footer">
-    You received this email because we received a request for the {{ $operation }} of Imagine2080 for your account. If you didn't request the {{ $operation }}, you can safely delete this email.
-</div>
 </body>
 </html>

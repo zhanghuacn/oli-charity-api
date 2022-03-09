@@ -15,5 +15,3 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [HomeController::class, 'index']);
-//Route::get('/test', [HomeController::class, 'test']);
-//Route::any('/test2', [HomeController::class, 'test2']);

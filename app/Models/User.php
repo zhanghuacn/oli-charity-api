@@ -8,6 +8,7 @@ use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
 use App\Traits\ModelFilter;
 use Cache;
+use Carbon\Carbon;
 use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -26,6 +27,7 @@ use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Cashier\Billable;
 use Laravel\Passport\HasApiTokens;
 use Laravel\Scout\Searchable;
+use Nubs\RandomNameGenerator\Alliteration;
 use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
 use Overtrue\LaravelLike\Traits\Liker;
@@ -200,7 +202,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         static::saving(
             function (User $user) {
-                $user->name = $user->name ?? Str::random(8);
+                $generator = new Alliteration();
+                $user->name = $user->name ?? $generator->getName();
+                $user->username = $user->username ?? Str::uuid();
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
 
                 if (Hash::needsRehash($user->password)) {
@@ -290,5 +294,28 @@ class User extends Authenticatable implements MustVerifyEmail
     public function routeNotificationForSns($notification): string
     {
         return sprintf('+%s', $this->phone);
+    }
+
+    public function userInfo()
+    {
+        $data = $this->createPlaceToken('api', ['place-app']);
+        $data['user'] = [
+            'id' => $this->id,
+            'avatar' => $this->avatar,
+            'name' => $this->name,
+            'backdrop' => $this->backdrop,
+            'profile' => $this->profile,
+            'first_name' => $this->first_name,
+            'middle_name' => $this->middle_name,
+            'last_name' => $this->last_name,
+            'gender' => $this->gender,
+            'phone' => $this->phone,
+            'birthday' => Carbon::parse($this->birthday)->tz(config('app.timezone'))->toDateString(),
+            'is_public_records' => $this->extends['records'],
+            'is_public_portfolio' => $this->extends['portfolio'],
+            'type' => $this->charities()->exists() ? 'CHARITY' : ($this->sponsors()->exists() ? 'SPONSOR' : 'USER'),
+            'type_name' => $this->charities()->exists() ? $this->charities()->first()->name : ($this->sponsors()->exists() ? $this->sponsors()->first()->name : ''),
+        ];
+        return $data;
     }
 }

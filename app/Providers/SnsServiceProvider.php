@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
+use Aws\Sns\SnsClient;
 use Illuminate\Support\ServiceProvider;
-use ReCaptcha\ReCaptcha;
 
-class RecaptchaServiceProvider extends ServiceProvider
+class SnsServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -24,10 +24,10 @@ class RecaptchaServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->bind(ReCaptcha::class, function ($app) {
-            return new ReCaptcha(config('services.recaptcha.secret_key'));
+        $this->app->bind(SnsClient::class, function ($app) {
+            return new SnsClient(['region' => config('aws.region'), 'version' => config('aws.version')]);
         });
 
-        $this->app->alias(ReCaptcha::class, 'recaptcha');
+        $this->app->alias(SnsClient::class, 'sns');
     }
 }

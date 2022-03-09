@@ -15,23 +15,25 @@ class HomeController
         return Response::success();
     }
 
-//    public function test()
-//    {
-//        return view('index');
-//    }
-//
-//    public function test2(Request $request, ReCaptcha $reCaptcha)
-//    {
-//        $request->validate([
-//            'g-recaptcha-response' => [
-//                'required',
-//                'numeric',
-//                function ($attribute, $value, $fail) use ($reCaptcha) {
-//                    $response = $reCaptcha->verify($value, $_SERVER['REMOTE_ADDR']);
-//                    return $response->isSuccess();
-//                },
-//            ],
-//        ]);
-//        echo 123;
-//    }
+    public function test()
+    {
+        return view('index');
+    }
+
+    public function test2(Request $request, ReCaptcha $reCaptcha)
+    {
+        $request->validate([
+            'g-recaptcha-response' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) use ($reCaptcha) {
+                    $response = $reCaptcha->verify($value, $_SERVER['REMOTE_ADDR']);
+                    if ($response->isSuccess() === false) {
+                        $fail($attribute . ' is invalid.');
+                    }
+                },
+            ],
+        ]);
+        return view('welcome');
+    }
 }

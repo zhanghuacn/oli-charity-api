@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
-use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\Auth\CaptchaController;
+use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\BazaarController;
-use App\Http\Controllers\Api\V1\CaptchaController;
 use App\Http\Controllers\Api\V1\CharityController;
 use App\Http\Controllers\Api\V1\GiftController;
 use App\Http\Controllers\Api\V1\GoodsController;
@@ -33,21 +34,24 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/social-login', [AuthController::class, 'socialite']);
-Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
-Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
-Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
-
-Route::post('/auth/login/using-phone', [AuthController::class, 'loginByPhone']);
 Route::post('/auth/captcha', [CaptchaController::class, 'captcha']);
-Route::post('/auth/login/send-login-code', [AuthController::class, 'sendLoginCodePhone'])->middleware('throttle:5,1');
-Route::post('/auth/send-register-code', [AuthController::class, 'sendRegisterCodeEmail'])->middleware('throttle:5,1');
-Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEmail'])->middleware('throttle:5,1');
 
-Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
-Route::post('/callbacks/sign_in_with_oliview', [AuthController::class, 'callbackSignWithOliView']);
+Route::post('/auth/register-email', [RegisterController::class, 'registerEmail']);
+Route::post('/auth/register-phone', [RegisterController::class, 'registerPhone']);
+
+Route::post('/auth/login', [LoginController::class, 'login']);
+Route::post('/auth/login-phone', [LoginController::class, 'loginByPhone']);
+Route::post('/auth/login-email', [LoginController::class, 'loginByEmail']);
+Route::post('/auth/login-social', [LoginController::class, 'socialite']);
+Route::post('/auth/reset-password-email', [LoginController::class, 'resetByEmail']);
+Route::post('/auth/reset-password-phone', [LoginController::class, 'resetByPhone']);
+Route::post('/callbacks/sign_in_with_apple', [LoginController::class, 'callbackSignWithApple']);
+Route::post('/callbacks/sign_in_with_oliview', [LoginController::class, 'callbackSignWithOliView']);
+
+Route::post('/auth/phone-register-code', [CaptchaController::class, 'sendRegisterCodeByPhone'])->middleware('throttle:5,1');
+Route::post('/auth/email-register-code', [CaptchaController::class, 'sendRegisterCodeByEmail'])->middleware('throttle:5,1');
+Route::post('/auth/phone-login-code', [CaptchaController::class, 'sendLoginCodeByPhone'])->middleware('throttle:5,1');
+Route::post('/auth/email-login-code', [CaptchaController::class, 'sendLoginCodeByEmail'])->middleware('throttle:5,1');
 
 Route::get('/explore', [HomeController::class, 'explore']);
 Route::get('/search', [HomeController::class, 'search']);
