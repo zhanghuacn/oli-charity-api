@@ -155,15 +155,21 @@ class LoginController extends Controller
     public function callbackSignWithOliView(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'email' => 'sometimes|email|exists:users',
-            'phone' => 'sometimes|phone|exists:users',
+            'email' => 'nullable|email|exists:users',
+            'phone' => 'nullable|phone:AU,mobile|exists:users',
             'token' => 'required|string',
         ]);
         $email = $request->get('email');
         $phone = $request->get('phone');
-        $token = sprintf('%s%s', $email, $phone);
-        abort_if($request->get('token') != md5($token), 422, 'Parameter request error');
-        User::where(['email' => $email])->orWhere(['phone' => $phone])->update(['sync' => true]);
+        if ($request->has('email')) {
+            abort_if($request->get('token') != md5($email), 422, 'Parameter request error');
+            User::whereEmail($email)->update(['sync' => true]);
+        } elseif ($request->has('phone')) {
+            abort_if($request->get('token') != md5($phone), 422, 'Parameter request error');
+            User::wherePhone($phone)->update(['sync' => true]);
+        } else {
+            abort(422, '邮箱或手机不能为空');
+        }
         return Response::success();
     }
 }
