@@ -3,7 +3,6 @@ name: oli-chartiy-api
 environments:
   staging:
     domain:
-      - dev-api.olicharity.org
       - api.imagine2080.com.au
     database: oli-charity
     octane: true
