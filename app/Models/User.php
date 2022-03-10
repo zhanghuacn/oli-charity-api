@@ -157,11 +157,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender' => self::GENDER_UNKNOWN,
     ];
 
-    public function getAvatarAttribute(): ?string
-    {
-        return $this->attributes['avatar'] ?? Avatar::create($this->email ?? $this->phone)->toBase64();
-    }
-
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
@@ -211,6 +206,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $generator = new Alliteration();
                 $user->name = $user->name ?? $generator->getName();
                 $user->username = $user->username ?? Str::uuid();
+                $user->avatar = $user->avatar ?? Avatar::create($user->name)->toBase64();
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
                 $user->email_verified_at = $user->email ? now()->tz(config('app.timezone')) : null;
                 $user->avatar = $user->avatar ?? Avatar::create($user->name)->toGravatar();
