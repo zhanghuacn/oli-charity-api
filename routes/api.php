@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AlbumController;
 use App\Http\Controllers\Api\V1\Auth\CaptchaController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\RegisterController;
+use App\Http\Controllers\Api\V1\Auth\UcenterController;
 use App\Http\Controllers\Api\V1\BazaarController;
 use App\Http\Controllers\Api\V1\CharityController;
 use App\Http\Controllers\Api\V1\GiftController;
@@ -16,7 +17,6 @@ use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\SponsorController;
 use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TransferController;
-use App\Http\Controllers\Api\V1\UcenterController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WebhookController;
 use Illuminate\Support\Facades\Route;
@@ -77,7 +77,7 @@ Route::get('/events/{activity}', [ActivityController::class, 'show']);
 Route::get('/users/{user}', [UserController::class, 'show']);
 
 Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/logout', [LoginController::class, 'logout']);
     Route::get('/ucenter/notifications', [UcenterController::class, 'notifications']);
     Route::get('/ucenter/events', [UcenterController::class, 'activities']);
     Route::put('/ucenter/information', [UcenterController::class, 'update']);
@@ -89,6 +89,9 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::get('/ucenter/follow-charities', [UcenterController::class, 'followCharities']);
     Route::get('/ucenter/follow-events', [UcenterController::class, 'followActivities']);
     Route::get('/ucenter/follow-users', [UcenterController::class, 'followUsers']);
+
+    Route::put('/ucenter/bind-email', [UcenterController::class, 'bindEmail']);
+    Route::put('/ucenter/bind-phone', [UcenterController::class, 'bindPhone']);
 
     Route::post('/events/{activity}/actions/apply', [ActivityController::class, 'apply']);
     Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);

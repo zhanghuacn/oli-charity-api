@@ -43,25 +43,10 @@ class GiftController extends Controller
         return Response::success(new GiftResource($gift));
     }
 
-    public function like(Request $request, Activity $activity, Gift $gift): JsonResponse|JsonResource
+    public function like(Activity $activity, Gift $gift): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $request->validate([
-            'phone' => 'sometimes|phone:AU|unique:users,phone',
-            'code' => 'sometimes|digits:6',
-        ]);
-        abort_if(Auth::user()->phone == null && $request->get('phone') == null, 422, 'Please verify your phone');
-        $key = 'phone:verify:code:' . $request->get('phone');
-        if (config('app.env') == 'production') {
-            abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
-        } else {
-            if ($request->get('code') != '666666') {
-                abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
-            }
-        }
-        if (empty(Auth::user()->phone)) {
-            Auth::user()->update(['phone' => $request->get('phone')]);
-        }
+        abort_if(Auth::user()->phone == null, 422, 'Please verify your phone');
         if (!Auth::user()->hasLiked($gift)) {
             Auth::user()->like($gift);
         }
