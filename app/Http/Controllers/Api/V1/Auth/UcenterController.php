@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
@@ -11,7 +11,6 @@ use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\Order;
 use App\Models\Sponsor;
-use App\Models\User;
 use App\Notifications\ApplyPaid;
 use App\Notifications\InvitePaid;
 use App\Notifications\LotteryPaid;
@@ -20,12 +19,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use function abort_if;
+use function collect;
 
 class UcenterController extends Controller
 {
@@ -68,20 +68,7 @@ class UcenterController extends Controller
         $user = Auth::user();
         $user->update($request->only(['avatar', 'backdrop', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));
         $user->refresh();
-        return Response::success([
-            'id' => $user->id,
-            'birthday' => Carbon::parse($user->birthday)->tz(config('app.timezone'))->toDateString(),
-            'gender' => $user->gender,
-            'last_name' => $user->last_name,
-            'middle_name' => $user->middle_name,
-            'first_name' => $user->first_name,
-            'profile' => $user->profile,
-            'name' => $user->name,
-            'avatar' => $user->avatar,
-            'is_public_records' => $user->extends['records'],
-            'is_public_portfolio' => $user->extends['portfolio'],
-            'backdrop' => $user->backdrop,
-        ]);
+        return Response::success($user->info());
     }
 
     public function privacy(Request $request): JsonResponse|JsonResource
@@ -205,5 +192,41 @@ EOF;
         return Response::success([
             'token' => Crypt::encryptString(json_encode($data)),
         ]);
+    }
+
+    public function bindEmail(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users',
+            'code' => 'required|digits:6',
+        ]);
+        $key = 'email:login:code:' . $request->get('email');
+        if (config('app.env') == 'production') {
+            abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        } else {
+            if ($request->get('code') != '888888') {
+                abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+            }
+        }
+        Auth::user()->update(['email' => $request->get('email'), 'email_verified_at' => now()]);
+        return Response::success(Auth::user()->info());
+    }
+
+    public function bindPhone(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'phone' => 'required|phone:AU,mobile|unique:users',
+            'code' => 'required|digits:6',
+        ]);
+        $key = 'phone:login:code:' . $request->get('phone');
+        if (config('app.env') == 'production') {
+            abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        } else {
+            if ($request->get('code') != '666666') {
+                abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+            }
+        }
+        Auth::user()->update(['phone' => $request->get('phone')]);
+        return Response::success(Auth::user()->info());
     }
 }

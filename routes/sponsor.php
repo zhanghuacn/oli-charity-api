@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Sponsor\V1\ActivityController;
 use App\Http\Controllers\Sponsor\V1\AuthController;
+use App\Http\Controllers\Sponsor\V1\GiftController;
 use App\Http\Controllers\Sponsor\V1\GoodsController;
 use App\Http\Controllers\Sponsor\V1\HomeController;
 use App\Http\Controllers\Sponsor\V1\PermissionController;
@@ -33,6 +34,9 @@ Route::middleware(['auth:sponsor', 'scopes:place-sponsor', 'sponsor'])->group(fu
     Route::get('/events', [ActivityController::class, 'index']);
     Route::get('/events/{activity}', [ActivityController::class, 'show']);
     Route::put('/events/{activity}', [ActivityController::class, 'update']);
+
+    Route::get('/events/{activity}/gifts', [GiftController::class, 'index']);
+    Route::get('/events/{activity}/gifts/{gift}/users', [GiftController::class, 'users']);
 
     Route::get('/sponsor', [SponsorController::class, 'show']);
     Route::put('/sponsor', [SponsorController::class, 'update']);

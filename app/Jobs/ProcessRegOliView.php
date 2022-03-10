@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,7 +40,8 @@ class ProcessRegOliView implements ShouldQueue
         $data = [
             'email' => $this->user['email'],
             'username' => '匿名',
-            'password' => $this->user['password'],
+            'password' => $this->user['password'] ?? 888888,
+            'phone' => $this->user['phone'],
             'url' => config('app.url'),
         ];
         Log::info(sprintf('请求参数：%s', json_encode($data)));
@@ -49,7 +49,12 @@ class ProcessRegOliView implements ShouldQueue
         Log::info(sprintf('响应参数：%s', $body));
         $result = json_decode($body, true);
         if ($result['status'] == 1 && $result['data']['ischecklogin'] == true) {
-            User::whereEmail($this->user['email'])->update(['sync' => true]);
+            if (!empty($this->user['email'])) {
+                User::whereEmail($this->user['email'])->update(['sync' => true]);
+            }
+            if (!empty($this->user['phone'])) {
+                User::wherePhone($this->user['phone'])->update(['sync' => true]);
+            }
         }
     }
 }

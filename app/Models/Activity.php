@@ -166,6 +166,11 @@ class Activity extends Model
         return $this->hasMany(Goods::class);
     }
 
+    public function gifts(): HasMany
+    {
+        return $this->hasMany(Gift::class);
+    }
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
@@ -179,6 +184,11 @@ class Activity extends Model
     public function albums(): MorphMany
     {
         return $this->morphMany(Album::class, 'albumable');
+    }
+
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class);
     }
 
     protected static function booted()

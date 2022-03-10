@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
 use App\Models\Prize;
@@ -75,6 +76,20 @@ class ActivityResource extends JsonResource
                     'images' => $goods->images,
                     'description' => $goods->description,
                     'content' => $goods->content,
+                ];
+            }),
+            'gifts' => $this->gifts->transform(function (Gift $gift) {
+                return [
+                    'id' => $gift->id,
+                    'name' => $gift->name,
+                    'sponsor' => optional($gift->giftable)->getMorphClass() != Sponsor::class ? [] : [
+                        'id' => $gift->giftable->id,
+                        'name' => $gift->giftable->name,
+                        'logo' => $gift->giftable->logo,
+                    ],
+                    'images' => $gift->images,
+                    'description' => $gift->description,
+                    'content' => $gift->content,
                 ];
             }),
             'staffs' => $this->tickets()->with('user')->whereIn('type', [TICKET::TYPE_HOST, Ticket::TYPE_STAFF])->get()

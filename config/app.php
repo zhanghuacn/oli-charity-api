@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -176,6 +176,12 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\VaporUiServiceProvider::class,
         EloquentFilter\ServiceProvider::class,
+        Aws\Laravel\AwsServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+        Mavinoo\Batch\BatchServiceProvider::class,
+        \App\Providers\RecaptchaServiceProvider::class,
+        \App\Providers\SnsServiceProvider::class,
+        Laravolt\Avatar\ServiceProvider::class,
     ],
 
     /*
@@ -230,7 +236,10 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        'AWS' => Aws\Laravel\AwsFacade::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Batch' => Mavinoo\Batch\BatchFacade::class,
+        'Avatar' => Laravolt\Avatar\Facade::class,
     ],
 
 ];

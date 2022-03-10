@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Jobs\ProcessRegOliView;
 use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
 use App\Traits\ModelFilter;
+use Avatar;
+use Cache;
+use Carbon\Carbon;
 use DateTimeInterface;
 use EloquentFilter\Filterable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -24,8 +28,10 @@ use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Cashier\Billable;
 use Laravel\Passport\HasApiTokens;
 use Laravel\Scout\Searchable;
+use Nubs\RandomNameGenerator\Alliteration;
 use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
+use Overtrue\LaravelLike\Traits\Liker;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -43,6 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use Searchable;
     use Filterable;
     use ModelFilter;
+    use Liker;
     use SoftDeletes;
 
     public const GENDER_UNKNOWN = 'UNKNOWN';
@@ -196,10 +203,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         static::saving(
             function (User $user) {
-                $user->name = $user->name ?? Str::random(8);
+                $generator = new Alliteration();
+                $user->name = $user->name ?? $generator->getName();
+                $user->username = $user->username ?? Str::uuid();
+                $user->avatar = $user->avatar ?? Avatar::create($user->name)->toBase64();
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
+                $user->email_verified_at = $user->email ? now()->tz(config('app.timezone')) : null;
+                $user->avatar = $user->avatar ?? Avatar::create($user->name)->toGravatar();
 
                 if (Hash::needsRehash($user->password)) {
+                    Cache::put(sprintf('USER:%s:PASSWORD', $user->username), $user->password, Carbon::now()->tz(config('app.timezone'))->addDay());
                     $user->password = bcrypt($user->password);
                 }
 
@@ -209,11 +222,10 @@ class User extends Authenticatable implements MustVerifyEmail
             }
         );
 
-        static::created(
-            function (User $user) {
-                $user->createOrGetStripeCustomer();
-            }
-        );
+        static::created(function (User $user) {
+            $user->createOrGetStripeCustomer();
+            $user->createOliViewAccount($user);
+        });
     }
 
     #[ArrayShape(['token_type' => "string", 'token' => "string", 'user' => "[]|array"])]
@@ -223,6 +235,15 @@ class User extends Authenticatable implements MustVerifyEmail
             'token_type' => 'Bearer',
             'token' => $this->createToken($name, $scopes)->accessToken,
         ];
+    }
+
+    public function createOliViewAccount(User $user): void
+    {
+        ProcessRegOliView::dispatch([
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'password' => Cache::get(sprintf('USER:%s:PASSWORD', $user->username), '888888')
+        ]);
     }
 
     public function refreshLastActiveAt(): static
@@ -270,5 +291,32 @@ class User extends Authenticatable implements MustVerifyEmail
     public function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    public function routeNotificationForSns($notification): string
+    {
+        return sprintf('+%s', $this->phone);
+    }
+
+    public function info(): array
+    {
+        return [
+            'id' => $this->id,
+            'avatar' => $this->avatar,
+            'name' => $this->name,
+            'backdrop' => $this->backdrop,
+            'profile' => $this->profile,
+            'first_name' => $this->first_name,
+            'middle_name' => $this->middle_name,
+            'last_name' => $this->last_name,
+            'gender' => $this->gender,
+            'email' => $this->email ? hide_email($this->email) : null,
+            'phone' => $this->phone ? substr_replace($this->phone, '****', 3, 5) : null,
+            'birthday' => Carbon::parse($this->birthday)->tz(config('app.timezone'))->toDateString(),
+            'is_public_records' => $this->extends['records'],
+            'is_public_portfolio' => $this->extends['portfolio'],
+            'type' => $this->charities()->exists() ? 'CHARITY' : ($this->sponsors()->exists() ? 'SPONSOR' : 'USER'),
+            'type_name' => $this->charities()->exists() ? $this->charities()->first()->name : ($this->sponsors()->exists() ? $this->sponsors()->first()->name : ''),
+        ];
     }
 }

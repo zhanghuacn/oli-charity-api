@@ -111,3 +111,6 @@ cghooks.lock
 rr
 .rr.yaml
 .env.development
+.env.test
+.vapor
+.env.testing

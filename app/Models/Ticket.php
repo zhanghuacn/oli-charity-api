@@ -76,12 +76,7 @@ class Ticket extends Model
 
     public function group(): BelongsTo
     {
-        return $this->belongsTo(Group::class, 'group_id', 'id');
-    }
-
-    public function groups(): BelongsToMany
-    {
-        return $this->belongsToMany(Group::class, 'group_ticket');
+        return $this->belongsTo(Group::class);
     }
 
     public function groupInvite(): HasOne

@@ -55,8 +55,8 @@ class Goods extends Model
         'activity_id',
         'extends',
         'cache',
-        'prizeable_type',
-        'prizeable_id',
+        'goodsable_type',
+        'goodsable_id',
         'deleted_at',
     ];
 

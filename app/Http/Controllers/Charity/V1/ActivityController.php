@@ -7,6 +7,7 @@ use App\Http\Resources\Charity\ActivityCollection;
 use App\Http\Resources\Charity\ActivityResource;
 use App\Models\Activity;
 use App\Models\Album;
+use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
 use App\Models\Order;
@@ -150,7 +151,7 @@ class ActivityController extends Controller
     public function update(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
-        abort_if($activity->status == Activity::STATUS_REVIEW, 403, 'Permission denied');
+        abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'During review, please do not submit again');
         $this->checkUpdate($request);
         $activity->update(['cache' => $request->all()]);
         return Response::success([
@@ -170,7 +171,7 @@ class ActivityController extends Controller
     {
         Gate::authorize('check-charity-source', $activity);
         $this->checkSubmit($request);
-        abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'Under Review');
+        abort_if($activity->status == Activity::STATUS_REVIEW, 422, 'During review, please do not submit again');
         $activity->status = Activity::STATUS_REVIEW;
         $activity->cache = $request->all();
         $activity->save();
@@ -233,8 +234,8 @@ class ActivityController extends Controller
             'lotteries' => 'sometimes|array',
             'lotteries.*.name' => 'required|string',
             'lotteries.*.description' => 'required|string',
-            'lotteries.*.begin_time' => 'required|date|date_format:Y-m-d H:i:s',
-            'lotteries.*.end_time' => 'required|date|date_format:Y-m-d H:i:s|after:lotteries.*.begin_time',
+            'lotteries.*.begin_time' => 'nullable|date|date_format:Y-m-d H:i:s',
+            'lotteries.*.end_time' => 'nullable|date|date_format:Y-m-d H:i:s|after:lotteries.*.begin_time',
             'lotteries.*.standard_amount' => 'required|numeric|min:0',
             'lotteries.*.standard_oli_register' => 'nullable|boolean',
             'lotteries.*.type' => 'required|in:AUTOMATIC,MANUAL',
@@ -261,6 +262,14 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'gifts' => 'sometimes|array',
+            'gifts.*.name' => 'required|string',
+            'gifts.*.description' => 'required|string',
+            'gifts.*.content' => 'nullable|string',
+            'gifts.*.sponsor' => 'sometimes',
+            'gifts.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
+            'gifts.*.images' => 'required|array',
+            'gifts.*.images.*' => 'required|url',
             'staffs' => 'sometimes|array',
             'staffs.*.type' => 'required|in:HOST,STAFF',
             'staffs.*.uid' => 'required|distinct|integer|exists:charity_user,user_id',
@@ -294,8 +303,8 @@ class ActivityController extends Controller
             'lotteries.*.id' => 'sometimes|integer|exists:lotteries,id',
             'lotteries.*.name' => 'required|string',
             'lotteries.*.description' => 'required|string',
-            'lotteries.*.begin_time' => 'required|date|date_format:Y-m-d H:i:s',
-            'lotteries.*.end_time' => 'required|date|date_format:Y-m-d H:i:s|after:lotteries.*.begin_time',
+            'lotteries.*.begin_time' => 'nullable|date|date_format:Y-m-d H:i:s',
+            'lotteries.*.end_time' => 'nullable|date|date_format:Y-m-d H:i:s|after:lotteries.*.begin_time',
             'lotteries.*.standard_amount' => 'required|numeric|min:0',
             'lotteries.*.standard_oli_register' => 'nullable|boolean',
             'lotteries.*.type' => 'required|in:AUTOMATIC,MANUAL',
@@ -324,6 +333,14 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'gifts' => 'sometimes|array',
+            'gifts.*.name' => 'required|string',
+            'gifts.*.description' => 'required|string',
+            'gifts.*.content' => 'nullable|string',
+            'gifts.*.sponsor' => 'sometimes',
+            'gifts.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
+            'gifts.*.images' => 'required|array',
+            'gifts.*.images.*' => 'required|url',
             'staffs' => 'sometimes|array',
             'staffs.*.id' => 'sometimes|integer|exists:tickets,id',
             'staffs.*.type' => 'required|in:HOST,STAFF',
@@ -358,8 +375,8 @@ class ActivityController extends Controller
             'lotteries.*.id' => 'sometimes|integer|exists:lotteries,id',
             'lotteries.*.name' => 'required|string',
             'lotteries.*.description' => 'required|string',
-            'lotteries.*.begin_time' => 'required|date|date_format:Y-m-d H:i:s',
-            'lotteries.*.end_time' => 'required|date|date_format:Y-m-d H:i:s|after:lotteries.*.begin_time',
+            'lotteries.*.begin_time' => 'nullable|date|date_format:Y-m-d H:i:s',
+            'lotteries.*.end_time' => 'nullable|date|date_format:Y-m-d H:i:s|after:lotteries.*.begin_time',
             'lotteries.*.standard_oli_register' => 'nullable|boolean',
             'lotteries.*.standard_amount' => 'required|numeric|min:0',
             'lotteries.*.type' => 'required|in:AUTOMATIC,MANUAL',
@@ -388,6 +405,14 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'gifts' => 'sometimes|array',
+            'gifts.*.name' => 'required|string',
+            'gifts.*.description' => 'required|string',
+            'gifts.*.content' => 'nullable|string',
+            'gifts.*.sponsor' => 'sometimes',
+            'gifts.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
+            'gifts.*.images' => 'required|array',
+            'gifts.*.images.*' => 'required|url',
             'staffs' => 'required|array',
             'staffs.*.id' => 'sometimes|integer|exists:tickets,id',
             'staffs.*.type' => 'required|in:HOST,STAFF',
@@ -440,6 +465,21 @@ class ActivityController extends Controller
                             'id' => optional($item->user)->id,
                             'name' => optional($item->user)->name,
                             'avatar' => optional($item->user)->avatar,
+                        ];
+                    }),
+                ];
+            }),
+            'gifts' => $activity->gifts->transform(function (Gift $gift) {
+                return [
+                    'id' => $gift->id,
+                    'name' => $gift->name,
+                    'image' => collect($gift->images)->first(),
+                    'like' => $gift->likers()->get()->transform(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'avatar' => $item->avatar,
+                            'phone' => $item->phone,
                         ];
                     }),
                 ];

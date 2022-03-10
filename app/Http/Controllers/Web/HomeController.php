@@ -2,14 +2,39 @@
 
 namespace App\Http\Controllers\Web;
 
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use ReCaptcha\ReCaptcha;
 
 class HomeController
 {
-    public function index(): JsonResponse|JsonResource
+    public function index(Request $request): JsonResponse|JsonResource
     {
-        return Response::noContent();
+        return Response::success(Carbon::now()->format('Y-m-d H:i:s'));
+    }
+
+    public function test()
+    {
+        return view('index');
+    }
+
+    public function test2(Request $request, ReCaptcha $reCaptcha)
+    {
+        $request->validate([
+            'g-recaptcha-response' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) use ($reCaptcha) {
+                    $response = $reCaptcha->verify($value, $_SERVER['REMOTE_ADDR']);
+                    if ($response->isSuccess() === false) {
+                        $fail($attribute . ' is invalid.');
+                    }
+                },
+            ],
+        ]);
+        return view('welcome');
     }
 }

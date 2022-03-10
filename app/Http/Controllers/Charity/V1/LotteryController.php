@@ -21,7 +21,6 @@ class LotteryController extends Controller
     public function draw(Lottery $lottery): JsonResponse|JsonResource
     {
         abort_if($lottery->status, 422, 'Please do not repeat the lottery');
-        abort_if(!Carbon::now()->tz(config('app.timezone'))->between($lottery->begin_time, $lottery->end_time), 403, 'Please draw during the lucky draw');
         DB::transaction(function () use ($lottery) {
             $result = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
             if ($lottery->extends['standard_oli_register'] == true) {

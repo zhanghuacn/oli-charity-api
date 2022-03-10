@@ -87,6 +87,11 @@ class Sponsor extends Model
         return $this->morphMany(Prize::class, 'prizeable');
     }
 
+    public function gifts(): MorphMany
+    {
+        return $this->morphMany(Gift::class, 'giftable');
+    }
+
     protected static function booted()
     {
         self::created(function (Sponsor $sponsor) {

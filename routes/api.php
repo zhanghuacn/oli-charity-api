@@ -2,9 +2,13 @@
 
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
-use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\Auth\CaptchaController;
+use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\RegisterController;
+use App\Http\Controllers\Api\V1\Auth\UcenterController;
 use App\Http\Controllers\Api\V1\BazaarController;
 use App\Http\Controllers\Api\V1\CharityController;
+use App\Http\Controllers\Api\V1\GiftController;
 use App\Http\Controllers\Api\V1\GoodsController;
 use App\Http\Controllers\Api\V1\GroupController;
 use App\Http\Controllers\Api\V1\HomeController;
@@ -13,7 +17,6 @@ use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\SponsorController;
 use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TransferController;
-use App\Http\Controllers\Api\V1\UcenterController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WebhookController;
 use Illuminate\Support\Facades\Route;
@@ -31,25 +34,24 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
-Route::get('/email/verify/{id}', [AuthController::class, 'verifyEmail'])
-    ->middleware(['signed', 'throttle:6,1'])
-    ->name('verification.verify');
+Route::post('/auth/captcha', [CaptchaController::class, 'captcha']);
 
-Route::post('/email/verify/resend', [AuthController::class, 'verifyEmail'])
-    ->middleware(['auth:api', 'throttle:6,1'])
-    ->name('verification.send');
+Route::post('/auth/register-email', [RegisterController::class, 'registerEmail']);
+Route::post('/auth/register-phone', [RegisterController::class, 'registerPhone']);
 
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/social-login', [AuthController::class, 'socialite']);
-Route::post('/auth/social-bind', [AuthController::class, 'socialiteBind']);
-Route::post('/auth/social-register', [AuthController::class, 'socialiteRegister']);
-Route::post('/auth/send-register-code', [AuthController::class, 'sendRegisterCodeEmail']);
-Route::post('/auth/send-forgot-code', [AuthController::class, 'sendForgotCodeEmail']);
-Route::post('/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
+Route::post('/auth/login', [LoginController::class, 'login']);
+Route::post('/auth/login-phone', [LoginController::class, 'loginByPhone']);
+Route::post('/auth/login-email', [LoginController::class, 'loginByEmail']);
+Route::post('/auth/login-social', [LoginController::class, 'socialite']);
+Route::post('/auth/reset-password-email', [LoginController::class, 'resetByEmail']);
+Route::post('/auth/reset-password-phone', [LoginController::class, 'resetByPhone']);
+Route::post('/callbacks/sign_in_with_apple', [LoginController::class, 'callbackSignWithApple']);
+Route::post('/callbacks/sign_in_with_oliview', [LoginController::class, 'callbackSignWithOliView']);
 
-Route::post('/callbacks/sign_in_with_apple', [AuthController::class, 'callbackSignWithApple']);
-Route::post('/callbacks/sign_in_with_oliview', [AuthController::class, 'callbackSignWithOliView']);
+Route::post('/auth/phone-register-code', [CaptchaController::class, 'sendRegisterCodeByPhone'])->middleware('throttle:5,1');
+Route::post('/auth/email-register-code', [CaptchaController::class, 'sendRegisterCodeByEmail'])->middleware('throttle:5,1');
+Route::post('/auth/phone-login-code', [CaptchaController::class, 'sendLoginCodeByPhone'])->middleware('throttle:5,1');
+Route::post('/auth/email-login-code', [CaptchaController::class, 'sendLoginCodeByEmail'])->middleware('throttle:5,1');
 
 Route::get('/explore', [HomeController::class, 'explore']);
 Route::get('/search', [HomeController::class, 'search']);
@@ -69,14 +71,13 @@ Route::get('/sponsors', [SponsorController::class, 'index']);
 Route::get('/sponsors/{sponsor}', [SponsorController::class, 'show']);
 Route::get('/sponsors/{sponsor}/goods', [SponsorController::class, 'goods']);
 
-
 Route::get('/events', [ActivityController::class, 'index']);
 Route::get('/events/{activity}', [ActivityController::class, 'show']);
 
 Route::get('/users/{user}', [UserController::class, 'show']);
 
 Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/logout', [LoginController::class, 'logout']);
     Route::get('/ucenter/notifications', [UcenterController::class, 'notifications']);
     Route::get('/ucenter/events', [UcenterController::class, 'activities']);
     Route::put('/ucenter/information', [UcenterController::class, 'update']);
@@ -89,6 +90,9 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::get('/ucenter/follow-events', [UcenterController::class, 'followActivities']);
     Route::get('/ucenter/follow-users', [UcenterController::class, 'followUsers']);
 
+    Route::put('/ucenter/bind-email', [UcenterController::class, 'bindEmail']);
+    Route::put('/ucenter/bind-phone', [UcenterController::class, 'bindPhone']);
+
     Route::post('/events/{activity}/actions/apply', [ActivityController::class, 'apply']);
     Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);
     Route::post('/events/{activity}/actions/free-collection', [TicketController::class, 'collection']);
@@ -99,9 +103,14 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::put('/events/{activity}/actions/anonymous', [TicketController::class, 'anonymous']);
     Route::get('/events/{activity}/lotteries', [LotteryController::class, 'index']);
     Route::get('/events/{activity}/lotteries/{lottery}', [LotteryController::class, 'show']);
+    Route::get('/events/{activity}/lotteries/{lottery}/qualification', [LotteryController::class, 'qualification']);
     Route::get('/events/{activity}/goods', [GoodsController::class, 'index']);
     Route::get('/events/{activity}/goods/{goods}', [GoodsController::class, 'show']);
     Route::post('/events/{activity}/goods/{goods}/actions/order', [GoodsController::class, 'order']);
+
+    Route::get('/events/{activity}/gifts', [GiftController::class, 'index']);
+    Route::get('/events/{activity}/gifts/{gift}', [GiftController::class, 'show']);
+    Route::post('/events/{activity}/gifts/{gift}/actions/like', [GiftController::class, 'like']);
 
     Route::get('/event/my-current', [ActivityController::class, 'myCurrent']);
     Route::get('/events/{activity}/ranks/donation-personal', [ActivityController::class, 'personRanks']);

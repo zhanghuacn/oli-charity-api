@@ -6,6 +6,17 @@
       0 => 'Algolia\\ScoutExtended\\ScoutExtendedServiceProvider',
     ),
   ),
+  'aws/aws-sdk-php-laravel' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Aws\\Laravel\\AwsServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'AWS' => 'Aws\\Laravel\\AwsFacade',
+    ),
+  ),
   'awssat/laravel-visits' => 
   array (
     'providers' => 
@@ -49,6 +60,17 @@
       0 => 'Fruitcake\\Cors\\CorsServiceProvider',
     ),
   ),
+  'intervention/image' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Intervention\\Image\\ImageServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Image' => 'Intervention\\Image\\Facades\\Image',
+    ),
+  ),
   'jiannei/laravel-response' => 
   array (
     'providers' => 
@@ -65,6 +87,13 @@
     'providers' => 
     array (
       0 => 'Kra8\\Snowflake\\Providers\\LaravelServiceProvider',
+    ),
+  ),
+  'laravel-notification-channels/aws-sns' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'NotificationChannels\\AwsSns\\SnsServiceProvider',
     ),
   ),
   'laravel/cashier' => 
@@ -138,6 +167,39 @@
       0 => 'Laravel\\VaporUi\\VaporUiServiceProvider',
     ),
   ),
+  'laravolt/avatar' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravolt\\Avatar\\ServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Avatar' => 'Laravolt\\Avatar\\Facade',
+    ),
+  ),
+  'maatwebsite/excel' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
+    ),
+  ),
+  'mavinoo/laravel-batch' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Mavinoo\\Batch\\BatchServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Batch' => 'Mavinoo\\Batch\\BatchFacade',
+    ),
+  ),
   'nesbot/carbon' => 
   array (
     'providers' => 
@@ -164,6 +226,20 @@
     'providers' => 
     array (
       0 => 'Overtrue\\LaravelFollow\\FollowServiceProvider',
+    ),
+  ),
+  'overtrue/laravel-like' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Overtrue\\LaravelLike\\LikeServiceProvider',
+    ),
+  ),
+  'propaganistas/laravel-phone' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Propaganistas\\LaravelPhone\\PhoneServiceProvider',
     ),
   ),
   'socialiteproviders/manager' => 
