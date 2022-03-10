@@ -159,7 +159,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAvatarAttribute(): ?string
     {
-        return $this->avatar ?? Avatar::create($this->email ?? $this->phone)->toBase64();
+        return $this->attributes['avatar'] ?? Avatar::create($this->email ?? $this->phone)->toBase64();
     }
 
     public function tickets(): HasMany
