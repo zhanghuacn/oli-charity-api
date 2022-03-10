@@ -18,7 +18,7 @@ class RegisterController extends Controller
         $request->validate([
             'email' => 'required|email|unique:users',
             'code' => 'required|digits:6',
-            'password' => ['required', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
+            'password' => ['required', Pwd::min(8)->mixedCase()->numbers()],
         ]);
         $key = 'email:register:code:' . $request->get('email');
         if (config('app.env') == 'production') {
@@ -37,7 +37,7 @@ class RegisterController extends Controller
         $request->validate([
             'phone' => 'required|phone:AU,mobile|unique:users',
             'code' => 'required|digits:6',
-            'password' => ['required', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
+            'password' => ['required', Pwd::min(8)->mixedCase()->numbers()],
         ]);
         $key = 'phone:register:code:' . $request->get('phone');
         if (config('app.env') == 'production') {
