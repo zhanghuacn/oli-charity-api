@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -12,7 +13,7 @@ class HomeController
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
-        return Response::success();
+        return Response::success(Carbon::now());
     }
 
     public function test()

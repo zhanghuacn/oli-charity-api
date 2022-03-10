@@ -206,6 +206,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $user->name = $user->name ?? $generator->getName();
                 $user->username = $user->username ?? Str::uuid();
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
+                $user->email_verified_at = $user->email ? now()->tz(config('app.timezone')) : null;
 
                 if (Hash::needsRehash($user->password)) {
                     Cache::put(sprintf('USER:%s:PASSWORD', $user->username), $user->password, Carbon::now()->tz(config('app.timezone'))->addDay());

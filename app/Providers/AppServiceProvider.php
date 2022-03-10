@@ -3,11 +3,9 @@
 namespace App\Providers;
 
 use App\Search\Search;
-use Illuminate\Auth\Recaller;
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
-use ReCaptcha\ReCaptcha;
-use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,5 +31,7 @@ class AppServiceProvider extends ServiceProvider
     {
         JsonResource::withoutWrapping();
         Search::bootSearchable();
+        Carbon::setLocale(config('app.locale'));
+        date_default_timezone_set(config('app.timezone'));
     }
 }
