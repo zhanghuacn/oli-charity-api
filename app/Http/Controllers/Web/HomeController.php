@@ -13,7 +13,7 @@ class HomeController
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
-        return Response::success(Carbon::now());
+        return Response::success(Carbon::now()->format('Y-m-d H:i:s'));
     }
 
     public function test()
