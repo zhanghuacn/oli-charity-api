@@ -208,7 +208,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
 
                 if (Hash::needsRehash($user->password)) {
-                    Cache::put(sprintf('USER:%s:PASSWORD', $user->username), $user->password);
+                    Cache::put(sprintf('USER:%s:PASSWORD', $user->username), $user->password, Carbon::now()->tz(config('app.timezone'))->addDay());
                     $user->password = bcrypt($user->password);
                 }
 
@@ -218,12 +218,10 @@ class User extends Authenticatable implements MustVerifyEmail
             }
         );
 
-        static::created(
-            function (User $user) {
-                $user->createOrGetStripeCustomer();
-                $user->createOliViewAccount($user);
-            }
-        );
+        static::created(function (User $user) {
+            $user->createOrGetStripeCustomer();
+            $user->createOliViewAccount($user);
+        });
     }
 
     #[ArrayShape(['token_type' => "string", 'token' => "string", 'user' => "[]|array"])]
@@ -235,7 +233,7 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function createOliViewAccount($user): void
+    public function createOliViewAccount(User $user): void
     {
         ProcessRegOliView::dispatch([
             'email' => $user->email,

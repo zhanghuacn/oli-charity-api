@@ -28,7 +28,7 @@ class RegisterController extends Controller
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }
-        $user = User::create($request->only(['phone', 'password']));
+        $user = User::create($request->only(['email', 'password']));
         return Response::success($user->userInfo());
     }
 
