@@ -25,6 +25,9 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
         $account = $request->get('account');
+        if (Str::substr($account, 0, 2) != '61') {
+            $account = sprintf('61%s', $account);
+        }
         $user = User::where('phone', $account)->orWhere('email', $account)->orWhere('username', $account)->first();
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
