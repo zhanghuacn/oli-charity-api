@@ -12,7 +12,7 @@ environments:
         scheduler: true
         memory: 1024
         cli-memory: 1024
-        runtime: 'php-8.1:al2'
+        runtime: docker
         queue-timeout: 300
         timeout: 300
         build:
