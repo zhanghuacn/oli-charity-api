@@ -181,6 +181,7 @@ return [
         Mavinoo\Batch\BatchServiceProvider::class,
         \App\Providers\RecaptchaServiceProvider::class,
         \App\Providers\SnsServiceProvider::class,
+        Laravolt\Avatar\ServiceProvider::class,
     ],
 
     /*
@@ -238,6 +239,7 @@ return [
         'AWS' => Aws\Laravel\AwsFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Batch' => Mavinoo\Batch\BatchFacade::class,
+        'Avatar' => Laravolt\Avatar\Facade::class,
     ],
 
 ];

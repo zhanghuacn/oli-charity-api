@@ -60,6 +60,17 @@
       0 => 'Fruitcake\\Cors\\CorsServiceProvider',
     ),
   ),
+  'intervention/image' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Intervention\\Image\\ImageServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Image' => 'Intervention\\Image\\Facades\\Image',
+    ),
+  ),
   'jiannei/laravel-response' => 
   array (
     'providers' => 
@@ -154,6 +165,17 @@
     'providers' => 
     array (
       0 => 'Laravel\\VaporUi\\VaporUiServiceProvider',
+    ),
+  ),
+  'laravolt/avatar' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravolt\\Avatar\\ServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Avatar' => 'Laravolt\\Avatar\\Facade',
     ),
   ),
   'maatwebsite/excel' => 

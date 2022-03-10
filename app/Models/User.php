@@ -7,6 +7,7 @@ use App\Traits\HasCacheProperty;
 use App\Traits\HasExtendsProperty;
 use App\Traits\HasSettingsProperty;
 use App\Traits\ModelFilter;
+use Avatar;
 use Cache;
 use Carbon\Carbon;
 use DateTimeInterface;
@@ -156,6 +157,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender' => self::GENDER_UNKNOWN,
     ];
 
+    public function getAvatarAttribute(): ?string
+    {
+        return $this->avatar ?? Avatar::create($this->email ?? $this->phone)->toBase64();
+    }
+
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
@@ -207,6 +213,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $user->username = $user->username ?? Str::uuid();
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
                 $user->email_verified_at = $user->email ? now()->tz(config('app.timezone')) : null;
+                $user->avatar = $user->avatar ?? Avatar::create($user->name)->toGravatar();
 
                 if (Hash::needsRehash($user->password)) {
                     Cache::put(sprintf('USER:%s:PASSWORD', $user->username), $user->password, Carbon::now()->tz(config('app.timezone'))->addDay());
