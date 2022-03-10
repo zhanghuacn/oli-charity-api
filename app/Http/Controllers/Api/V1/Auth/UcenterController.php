@@ -68,20 +68,7 @@ class UcenterController extends Controller
         $user = Auth::user();
         $user->update($request->only(['avatar', 'backdrop', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));
         $user->refresh();
-        return Response::success([
-            'id' => $user->id,
-            'birthday' => Carbon::parse($user->birthday)->tz(config('app.timezone'))->toDateString(),
-            'gender' => $user->gender,
-            'last_name' => $user->last_name,
-            'middle_name' => $user->middle_name,
-            'first_name' => $user->first_name,
-            'profile' => $user->profile,
-            'name' => $user->name,
-            'avatar' => $user->avatar,
-            'is_public_records' => $user->extends['records'],
-            'is_public_portfolio' => $user->extends['portfolio'],
-            'backdrop' => $user->backdrop,
-        ]);
+        return Response::success($user->info());
     }
 
     public function privacy(Request $request): JsonResponse|JsonResource
@@ -222,7 +209,7 @@ EOF;
             }
         }
         Auth::user()->update(['email' => $request->get('email'), 'email_verified_at' => now()]);
-        return Response::success(Auth::user()->userInfo());
+        return Response::success(Auth::user()->info());
     }
 
     public function bindPhone(Request $request): JsonResponse|JsonResource
@@ -240,6 +227,6 @@ EOF;
             }
         }
         Auth::user()->update(['phone' => $request->get('phone')]);
-        return Response::success(Auth::user()->userInfo());
+        return Response::success(Auth::user()->info());
     }
 }

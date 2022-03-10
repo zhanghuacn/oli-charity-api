@@ -295,11 +295,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return sprintf('+%s', $this->phone);
     }
 
-    #[ArrayShape(['token_type' => "string", 'token' => "string", 'user' => "\[]|array|array"])]
-    public function userInfo(): array
+    public function info(): array
     {
-        $data = $this->createPlaceToken('api', ['place-app']);
-        $data['user'] = [
+        return [
             'id' => $this->id,
             'avatar' => $this->avatar,
             'name' => $this->name,
@@ -317,6 +315,5 @@ class User extends Authenticatable implements MustVerifyEmail
             'type' => $this->charities()->exists() ? 'CHARITY' : ($this->sponsors()->exists() ? 'SPONSOR' : 'USER'),
             'type_name' => $this->charities()->exists() ? $this->charities()->first()->name : ($this->sponsors()->exists() ? $this->sponsors()->first()->name : ''),
         ];
-        return $data;
     }
 }

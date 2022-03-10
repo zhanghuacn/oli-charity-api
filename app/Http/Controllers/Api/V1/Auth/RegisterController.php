@@ -29,7 +29,7 @@ class RegisterController extends Controller
             }
         }
         $user = User::create($request->only(['email', 'password']));
-        return Response::success($user->userInfo());
+        return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
     public function registerPhone(Request $request): JsonResponse|JsonResource
@@ -48,6 +48,6 @@ class RegisterController extends Controller
             }
         }
         $user = User::create($request->only(['phone', 'password']));
-        return Response::success($user->userInfo());
+        return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 }

@@ -29,7 +29,7 @@ class LoginController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
-        return Response::success($user->userInfo());
+        return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
     public function loginByPhone(Request $request): JsonResponse|JsonResource
@@ -48,7 +48,7 @@ class LoginController extends Controller
         }
         $user = User::where(['phone' => $request->get('phone')])->firstOrFail();
         Cache::forget($key);
-        return Response::success($user->userInfo());
+        return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
     public function loginByEmail(Request $request): JsonResponse|JsonResource
@@ -67,7 +67,7 @@ class LoginController extends Controller
         }
         $user = User::where(['email' => $request->get('email')])->firstOrFail();
         Cache::forget($key);
-        return Response::success($user->userInfo());
+        return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
     public function socialite(Request $request): JsonResponse|JsonResource
@@ -94,7 +94,7 @@ class LoginController extends Controller
                 'extends->' . $provider => $socialite->id,
             ]
         );
-        return Response::success($user->userInfo());
+        return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
     public function logout(Request $request): JsonResponse|JsonResource
