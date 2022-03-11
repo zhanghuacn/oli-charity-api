@@ -217,6 +217,8 @@ EOF;
         $request->validate([
             'phone' => 'required|phone:AU,mobile|unique:users',
             'code' => 'required|digits:6',
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $key = 'phone:login:code:' . $request->get('phone');
         if (config('app.env') == 'production') {

@@ -62,7 +62,6 @@ class ActivityController extends Controller
             'status' => 'required|in:PASSED,REFUSE',
             'remark' => 'sometimes|string',
         ]);
-
         $activity->status = $request->get('status');
         $activity->remark = $request->get('remark');
         if ($activity->status == Activity::STATUS_PASSED) {
@@ -70,7 +69,7 @@ class ActivityController extends Controller
             $activity->is_visible = true;
             $activity->cache = (new ActivityResource($activity))->toArray($request);
         }
-        $activity->save();
+        $activity->saveQuietly();
         return Response::success();
     }
 }
