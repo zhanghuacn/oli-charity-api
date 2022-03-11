@@ -93,7 +93,7 @@ class LoginController extends Controller
             [
                 'name' => $socialite->name,
                 'avatar' => $socialite->avatar,
-                'email_verified_at' => Carbon::now()->tz(config('app.timezone')),
+                'email_verified_at' => Carbon::now(),
                 'extends->' . $provider => $socialite->id,
             ]
         );

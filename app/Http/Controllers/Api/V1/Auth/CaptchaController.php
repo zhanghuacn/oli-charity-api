@@ -50,7 +50,7 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $email = $request->get('email');
             $key = 'email:login:code:' . $request->get('email');
-            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
             Mail::send('emails.SendVerificationCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
                 $message->to($email);
                 $message->subject('Imagine 2080 Email Verification');
@@ -75,7 +75,7 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $email = $request->get('email');
             $key = 'email:register:code:' . $email;
-            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
             Mail::send('emails.SendVerificationCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
                 $message->to($email);
                 $message->subject('Imagine 2080 Email Verification');
@@ -100,7 +100,7 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $phone = $request->get('phone');
             $key = 'phone:register:code:' . $phone;
-            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
             $this->smsPublish($snsClient, $code, $phone);
             Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {
@@ -124,7 +124,7 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $phone = $request->get('phone');
             $key = 'phone:login:code:' . $phone;
-            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
             $this->smsPublish($snsClient, $code, $phone);
             Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {

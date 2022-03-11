@@ -5,9 +5,7 @@ namespace Database\Seeders;
 use App\Models\Activity;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Nette\Utils\Random;
 
 class ActivitySeeder extends Seeder
 {
@@ -20,8 +18,8 @@ class ActivitySeeder extends Seeder
             'description' => Str::random(40),
             'content' => Str::random(100),
             'location' => 'beijing',
-            'begin_time' => Carbon::now()->tz(config('app.timezone')),
-            'end_time' => Carbon::now()->tz(config('app.timezone'))->addDays(10),
+            'begin_time' => Carbon::now(),
+            'end_time' => Carbon::now()->addDays(10),
             'price' => 100,
             'stocks' => 100,
         ]);

@@ -4,23 +4,31 @@
         "actions": [
             {
                 "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\Beams",
-                "options": []
-            }
-        ]
-    },
-    "pre-commit": {
-        "enabled": true,
-        "actions": [
-            {
-                "action": "phpunit"
+                "options": [],
+                "conditions": []
             },
             {
-                "action": "composer check-style"
+                "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\Beams",
+                "options": {
+                    "subjectLength": 50,
+                    "bodyLineLength": 72
+                },
+                "conditions": []
             }
         ]
     },
     "pre-push": {
         "enabled": false,
         "actions": []
+    },
+    "pre-commit": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "composer check-style",
+                "options": [],
+                "conditions": []
+            }
+        ]
     }
 }

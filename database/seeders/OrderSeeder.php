@@ -30,7 +30,7 @@ class OrderSeeder extends Seeder
             'payment_no' => '123123123123123',
             'payment_type' => Order::PAYMENT_ONLINE,
             'payment_status' => Order::STATUS_PAID,
-            'payment_time' => Carbon::now()->tz(config('app.timezone')),
+            'payment_time' => Carbon::now(),
         ]);
         $order->orderable()->associate(Activity::find(1));
         $order->save();

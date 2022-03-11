@@ -11,7 +11,6 @@
         "php": "^8.0",
         "ext-bcmath": "*",
         "ext-pdo": "*",
-        "algolia/scout-extended": "^2.0.0",
         "aws/aws-sdk-php": "^3.208",
         "aws/aws-sdk-php-laravel": "^3.6",
         "awssat/laravel-visits": "^3.0",
@@ -34,6 +33,7 @@
         "laravel/vapor-core": "^2.17",
         "laravel/vapor-ui": "^1.5",
         "laravolt/avatar": "^4.1",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "maatwebsite/excel": "^3.1",
         "mattkingshott/axiom": "^3.2",
         "mavinoo/laravel-batch": "^2.3",
@@ -107,7 +107,7 @@
             "dont-discover": [
                 "laravel/telescope"
             ]
-        },
+        }
     },
     "config": {
         "optimize-autoloader": true,

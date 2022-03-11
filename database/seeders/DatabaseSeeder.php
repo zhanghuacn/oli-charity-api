@@ -6,7 +6,6 @@ use App\Models\Activity;
 use App\Models\Lottery;
 use App\Models\Prize;
 use App\Models\Ticket;
-use App\Services\OrderService;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

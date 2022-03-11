@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
-use function Aws\filter;
 
 class GiftController extends Controller
 {

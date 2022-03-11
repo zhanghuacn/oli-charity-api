@@ -3,7 +3,6 @@ name: oli-chartiy-api
 environments:
     staging:
         domain:
-            - dev-api.olicharity.org
             - api.imagine2080.com.au
         database: oli-charity
         octane: true
@@ -16,9 +15,8 @@ environments:
         queue-timeout: 300
         timeout: 300
         build:
-            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
+            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader --no-dev'
             - 'php artisan event:cache'
-            - 'npm ci && npm run dev && rm -rf node_modules'
         deploy:
             - 'php artisan migrate --force'
     testing:
@@ -37,6 +35,5 @@ environments:
         build:
             - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
             - 'php artisan event:cache'
-            - 'npm ci && npm run dev && rm -rf node_modules'
         deploy:
             - 'php artisan migrate --force'

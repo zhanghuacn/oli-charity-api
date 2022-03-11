@@ -8,7 +8,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use JetBrains\PhpStorm\ArrayShape;
 use NotificationChannels\AwsSns\SnsChannel;
 use NotificationChannels\AwsSns\SnsMessage;
 
@@ -32,7 +31,7 @@ class LotteryPaid extends Notification implements ShouldQueue
     {
         $event = $this->prize->activity->name;
         $prize = $this->prize->name;
-        $date = Carbon::parse($this->prize->activity->end_time)->tz(config('app.timezone'))->toFormattedDateString();
+        $date = Carbon::parse($this->prize->activity->end_time)->toFormattedDateString();
         return [
             'title' => "Congratulations",
             'content' => "You've won the $prize in our $event , You can claim your prize on the day of the banquet on $date. ",
@@ -52,7 +51,7 @@ class LotteryPaid extends Notification implements ShouldQueue
     {
         $event = $this->prize->activity->name;
         $prize = $this->prize->name;
-        $date = Carbon::parse($this->prize->activity->end_time)->tz(config('app.timezone'))->toFormattedDateString();
+        $date = Carbon::parse($this->prize->activity->end_time)->toFormattedDateString();
         $message = <<<EOF
 Dear user
 Congratulations, you've won the $prize in our $event,

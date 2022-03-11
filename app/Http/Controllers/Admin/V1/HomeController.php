@@ -17,11 +17,11 @@ class HomeController extends Controller
 {
     public function dashboard(): JsonResponse|JsonResource
     {
-        $result = DB::table('users')->whereBetween('created_at', [Carbon::now()->tz(config('app.timezone'))->addDays(-7)->startOfDay(), Carbon::now()->tz(config('app.timezone'))->endOfDay()])
+        $result = DB::table('users')->whereBetween('created_at', [Carbon::now()->addDays(-7)->startOfDay(), Carbon::now()->endOfDay()])
             ->selectRaw('date(created_at) as date,count(*) as num')->groupBy('date')->pluck('num', 'date')->toArray();
         for ($i = 7; $i >= 1; $i--) {
-            if (!array_key_exists(Carbon::now()->tz(config('app.timezone'))->subDays($i)->toDateString(), $result)) {
-                $result[Carbon::now()->tz(config('app.timezone'))->subDays($i)->toDateString()] = 0;
+            if (!array_key_exists(Carbon::now()->subDays($i)->toDateString(), $result)) {
+                $result[Carbon::now()->subDays($i)->toDateString()] = 0;
             }
         }
         ksort($result);

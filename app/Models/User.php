@@ -208,11 +208,11 @@ class User extends Authenticatable implements MustVerifyEmail
                 $user->username = $user->username ?? Str::uuid();
                 $user->avatar = $user->avatar ?? Avatar::create($user->name)->toBase64();
                 $user->first_active_at = !is_null($user->getOriginal('first_active_at')) ? $user->first_active_at : null;
-                $user->email_verified_at = $user->email ? now()->tz(config('app.timezone')) : null;
+                $user->email_verified_at = $user->email ? now() : null;
                 $user->avatar = $user->avatar ?? Avatar::create($user->name)->toGravatar();
 
                 if (Hash::needsRehash($user->password)) {
-                    Cache::put(sprintf('USER:%s:PASSWORD', $user->username), $user->password, Carbon::now()->tz(config('app.timezone'))->addDay());
+                    Cache::put(sprintf('USER:%s:PASSWORD', $user->username), $user->password, Carbon::now()->addDay());
                     $user->password = bcrypt($user->password);
                 }
 
@@ -312,7 +312,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'gender' => $this->gender,
             'email' => $this->email ? hide_email($this->email) : null,
             'phone' => $this->phone ? substr_replace($this->phone, '****', 3, 5) : null,
-            'birthday' => Carbon::parse($this->birthday)->tz(config('app.timezone'))->toDateString(),
+            'birthday' => Carbon::parse($this->birthday)->toDateString(),
             'is_public_records' => $this->extends['records'],
             'is_public_portfolio' => $this->extends['portfolio'],
             'type' => $this->charities()->exists() ? 'CHARITY' : ($this->sponsors()->exists() ? 'SPONSOR' : 'USER'),

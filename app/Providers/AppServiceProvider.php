@@ -30,7 +30,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         JsonResource::withoutWrapping();
-        Search::bootSearchable();
         Carbon::setLocale(config('app.locale'));
         date_default_timezone_set(config('app.timezone'));
     }

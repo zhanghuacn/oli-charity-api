@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\AlbumCollection;
-use App\Http\Resources\Api\NewsCollection;
 use App\Models\Activity;
 use App\Models\Album;
 use App\Models\Ticket;

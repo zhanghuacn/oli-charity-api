@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Admin;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 class AdminSeeder extends Seeder
 {
@@ -23,7 +22,7 @@ class AdminSeeder extends Seeder
             'name' => '超级管理员',
             'password' => 'admin',
             'last_ip' => '127.0.0.1',
-            'last_active_at' => Carbon::now()->tz(config('app.timezone')),
+            'last_active_at' => Carbon::now(),
         ]);
     }
 }

@@ -2,8 +2,6 @@
 
 namespace App\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Carbon;
 use Laravel\Passport\Token;
 
@@ -32,7 +30,7 @@ class RevokeOldTokens
             ->where('user_id', $event->userId)
             ->where('client_id', $event->clientId)
             ->where('revoked', 0)
-            ->where('expires_at', '<=', Carbon::now()->tz(config('app.timezone'))->toDateTimeString())
+            ->where('expires_at', '<=', Carbon::now()->toDateTimeString())
             ->delete();
     }
 }

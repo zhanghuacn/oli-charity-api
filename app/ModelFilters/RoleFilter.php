@@ -5,7 +5,6 @@ namespace App\ModelFilters;
 use App\Models\Role;
 use EloquentFilter\ModelFilter;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Passport\Passport;
 
 class RoleFilter extends ModelFilter
 {

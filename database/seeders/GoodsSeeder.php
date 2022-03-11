@@ -2,12 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Activity;
-use App\Models\Goods;
-use App\Models\Sponsor;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class GoodsSeeder extends Seeder
 {
