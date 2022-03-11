@@ -38,7 +38,7 @@ class LoginController extends Controller
     public function loginByPhone(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|phone:AU,mobile|exists:users',
+            'phone' => 'required|phone:AU|exists:users',
             'code' => 'required|digits:6',
         ]);
         $key = 'phone:login:code:' . $request->get('phone');
