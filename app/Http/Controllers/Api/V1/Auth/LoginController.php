@@ -135,6 +135,8 @@ class LoginController extends Controller
             'code' => 'required|string',
             'phone' => 'required|phone:AU,mobile|exists:users',
             'password' => ['required', 'confirmed', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $phone = $request->input('phone');
         $key = 'phone:login:code:' . $phone;
@@ -158,6 +160,8 @@ class LoginController extends Controller
             'email' => 'nullable|email|exists:users',
             'phone' => 'nullable|phone:AU,mobile|exists:users',
             'token' => 'required|string',
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $email = $request->get('email');
         $phone = $request->get('phone');
