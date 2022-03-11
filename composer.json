@@ -47,7 +47,8 @@
         "spatie/laravel-permission": "^5.4",
         "spiral/roadrunner": "^2.6",
         "stripe/stripe-php": "^7.107",
-        "tucker-eric/eloquentfilter": "^3.0"
+        "tucker-eric/eloquentfilter": "^3.0",
+        "spatie/laravel-ignition": "^1.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",
@@ -60,8 +61,7 @@
         "laravel/telescope": "^4.7",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "phpunit/phpunit": "^9.5.10"
     },
     "autoload": {
         "psr-4": {

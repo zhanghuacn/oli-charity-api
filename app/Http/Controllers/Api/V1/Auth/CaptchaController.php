@@ -92,6 +92,8 @@ class CaptchaController extends Controller
             'phone' => 'required|phone:AU,mobile|unique:users',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
@@ -113,9 +115,11 @@ class CaptchaController extends Controller
     public function sendLoginCodeByPhone(Request $request, SnsClient $snsClient): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|phone:AU,mobile',
+            'phone' => 'required|phone:AU,mobile|exists:users',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');

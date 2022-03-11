@@ -34,6 +34,8 @@ class GoodsController extends Controller
                 'name' => $item->name,
                 'image' => collect($item->images)->first(),
                 'description' => $item->description,
+                'stock' => $item->stock,
+                'price' => $item->price,
                 'sponsor' => [
                     'id' => optional($item->goodsable)->id,
                     'name' => optional($item->goodsable)->name,
