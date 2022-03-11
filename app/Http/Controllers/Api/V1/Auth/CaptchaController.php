@@ -113,7 +113,7 @@ class CaptchaController extends Controller
     public function sendLoginCodeByPhone(Request $request, SnsClient $snsClient): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|phone:AU,mobile',
+            'phone' => 'required|phone:AU,mobile|exists:users',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
         ]);
