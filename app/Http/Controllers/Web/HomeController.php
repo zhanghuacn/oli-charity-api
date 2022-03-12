@@ -15,7 +15,7 @@ class HomeController
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
-        return Response::success(env('AWS_ACCESS_KEY_ID'));
+        return Response::noContent();
     }
 
     public function reCaptcha(): Factory|View|Application
