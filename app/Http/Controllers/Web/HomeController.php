@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Web;
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -15,12 +18,12 @@ class HomeController
         return Response::success(env('AWS_ACCESS_KEY_ID'));
     }
 
-    public function reCaptcha()
+    public function reCaptcha(): Factory|View|Application
     {
         return view('index');
     }
 
-    public function store(Request $request, ReCaptcha $reCaptcha)
+    public function store(Request $request, ReCaptcha $reCaptcha): Factory|View|Application
     {
         $request->validate([
             'g-recaptcha-response' => [
