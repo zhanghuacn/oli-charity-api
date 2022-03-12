@@ -5,7 +5,7 @@
     <script src="https://recaptcha.net/recaptcha/api.js" async defer></script>
 </head>
 <body>
-<form action="/test2" method="POST">
+<form action="/store" method="POST">
     <div class="g-recaptcha" data-sitekey="6LchhsIeAAAAAC6Q8YMgsbsBVNRU-gbA3w6Rt6g4"></div>
     <?php echo csrf_field(); ?>
     <br/>
