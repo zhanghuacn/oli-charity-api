@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Web;
 
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,15 +12,15 @@ class HomeController
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
-        return Response::success(Carbon::now()->format('Y-m-d H:i:s'));
+        return Response::success(env('AWS_ACCESS_KEY_ID'));
     }
 
-    public function test()
+    public function reCaptcha()
     {
         return view('index');
     }
 
-    public function test2(Request $request, ReCaptcha $reCaptcha)
+    public function store(Request $request, ReCaptcha $reCaptcha)
     {
         $request->validate([
             'g-recaptcha-response' => [

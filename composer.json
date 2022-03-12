@@ -44,11 +44,11 @@
         "predis/predis": "^1.1",
         "propaganistas/laravel-phone": "^4.3",
         "socialiteproviders/apple": "^5.0",
+        "spatie/laravel-ignition": "^1.0",
         "spatie/laravel-permission": "^5.4",
         "spiral/roadrunner": "^2.6",
         "stripe/stripe-php": "^7.107",
-        "tucker-eric/eloquentfilter": "^3.0",
-        "spatie/laravel-ignition": "^1.0"
+        "tucker-eric/eloquentfilter": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",

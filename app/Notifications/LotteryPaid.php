@@ -59,10 +59,9 @@ You can claim your prize on the day of the banquet on $date.
 If you have any questions, please contact the administrator of the WeChat group and check the details by email.
 EOF;
 
-        return SnsMessage::create([
-            'body' => $message,
-            'promotional' => true,
-            'sender' => 'Imagine2080',
-        ]);
+        return SnsMessage::create()
+            ->body($message)
+            ->promotional()
+            ->sender(config('app.name'));
     }
 }
