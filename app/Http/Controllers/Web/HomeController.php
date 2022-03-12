@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Mail\OrderShipped;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -15,7 +16,7 @@ class HomeController
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
-        return Response::noContent();
+        return Response::success();
     }
 
     public function reCaptcha(): Factory|View|Application

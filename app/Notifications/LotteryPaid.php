@@ -41,10 +41,10 @@ class LotteryPaid extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage())->subject('Imagine 2080 Congratulations！')->view(
-            'emails.SendWinnerPrize',
-            ['prize' => $this->prize->name, 'event' => $this->prize->activity->name, 'image' => collect($this->prize->images)->first()]
-        );
+        return (new MailMessage())->subject(sprintf('%s Congratulations！', config('app.name')))
+            ->markdown('emails.award', [
+                'prize' => $this->prize->name, 'event' => $this->prize->activity->name, 'image' => collect($this->prize->images)->first()
+            ]);
     }
 
     public function toSns($notifiable): SnsMessage

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CaptchaShipped;
 use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Exception;
@@ -50,11 +51,8 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $email = $request->get('email');
             $key = 'email:login:code:' . $request->get('email');
+            Mail::to($email)->send(new CaptchaShipped($code));
             Cache::put($key, $code, Carbon::now()->addMinutes(15));
-            Mail::send('emails.SendVerificationCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
-                $message->to($email);
-                $message->subject('Imagine 2080 Email Verification');
-            });
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
@@ -75,11 +73,8 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $email = $request->get('email');
             $key = 'email:register:code:' . $email;
+            Mail::to($email)->send(new CaptchaShipped($code));
             Cache::put($key, $code, Carbon::now()->addMinutes(15));
-            Mail::send('emails.SendVerificationCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
-                $message->to($email);
-                $message->subject('Imagine 2080 Email Verification');
-            });
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
