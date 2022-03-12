@@ -2,7 +2,6 @@
 
 namespace App\Console;
 
-use App\Console\Commands\LotteryWinners;
 use App\Jobs\ProcessLotteryReminder;
 use App\Jobs\ProcessLotteryWinner;
 use Illuminate\Console\Scheduling\Schedule;

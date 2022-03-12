@@ -15,7 +15,6 @@ use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\LotteryController;
 use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\SponsorController;
-use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TransferController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WebhookController;
@@ -34,125 +33,163 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
-Route::post('/auth/captcha', [CaptchaController::class, 'captcha']);
+Route::controller(HomeController::class)->group(function () {
+    Route::get('/explore', 'explore');
+    Route::get('/search', 'search');
+});
 
-Route::post('/auth/register-email', [RegisterController::class, 'registerEmail']);
-Route::post('/auth/register-phone', [RegisterController::class, 'registerPhone']);
+Route::controller(NewsController::class)->group(function () {
+    Route::get('/news', 'index');
+    Route::get('/news/{news}', 'show');
+});
 
-Route::post('/auth/login', [LoginController::class, 'login']);
-Route::post('/auth/login-phone', [LoginController::class, 'loginByPhone']);
-Route::post('/auth/login-email', [LoginController::class, 'loginByEmail']);
-Route::post('/auth/login-social', [LoginController::class, 'socialite']);
-Route::post('/auth/reset-password-email', [LoginController::class, 'resetByEmail']);
-Route::post('/auth/reset-password-phone', [LoginController::class, 'resetByPhone']);
-Route::post('/callbacks/sign_in_with_apple', [LoginController::class, 'callbackSignWithApple']);
-Route::post('/callbacks/sign_in_with_oliview', [LoginController::class, 'callbackSignWithOliView']);
+Route::controller(RegisterController::class)->group(function () {
+    Route::post('/auth/register-email', 'registerEmail');
+    Route::post('/auth/register-phone', 'registerPhone');
+});
 
-Route::post('/auth/phone-register-code', [CaptchaController::class, 'sendRegisterCodeByPhone'])->middleware('throttle:5,1');
-Route::post('/auth/email-register-code', [CaptchaController::class, 'sendRegisterCodeByEmail'])->middleware('throttle:5,1');
-Route::post('/auth/phone-login-code', [CaptchaController::class, 'sendLoginCodeByPhone'])->middleware('throttle:5,1');
-Route::post('/auth/email-login-code', [CaptchaController::class, 'sendLoginCodeByEmail'])->middleware('throttle:5,1');
+Route::controller(LoginController::class)->group(function () {
+    Route::post('/auth/login', 'login');
+    Route::post('/auth/login-phone', 'loginByPhone');
+    Route::post('/auth/login-email', 'loginByEmail');
+    Route::post('/auth/login-social', 'socialite');
+    Route::post('/auth/reset-password-email', 'resetByEmail');
+    Route::post('/auth/reset-password-phone', 'resetByPhone');
+    Route::post('/callbacks/sign_in_with_apple', 'callbackSignWithApple');
+    Route::post('/callbacks/sign_in_with_oliview', 'callbackSignWithOliView');
+});
 
-Route::get('/explore', [HomeController::class, 'explore']);
-Route::get('/search', [HomeController::class, 'search']);
+Route::controller(CaptchaController::class)->group(function () {
+    Route::post('/auth/captcha', 'captcha');
+    Route::middleware(['throttle:5,1'])->group(function () {
+        Route::post('/auth/phone-register-code', 'sendRegisterCodeByPhone');
+        Route::post('/auth/email-register-code', 'sendRegisterCodeByEmail');
+        Route::post('/auth/phone-login-code', 'sendLoginCodeByPhone');
+        Route::post('/auth/email-login-code', 'sendLoginCodeByEmail');
+    });
+});
 
-Route::get('/news', [NewsController::class, 'index']);
-Route::get('/news/{news}', [NewsController::class, 'show']);
+Route::controller(CharityController::class)->group(function () {
+    Route::get('/charities', 'index');
+    Route::get('/charities/{charity}', 'show');
+    Route::get('/charities/{charity}/news', 'news');
+    Route::get('/charities/{charity}/events', 'activities');
+    Route::get('/charities/{charity}/historical-donation', 'chart');
+    Route::get('/charities/{charity}/history', 'history');
+    Route::get('/charities/{charity}/source', 'source');
+});
 
-Route::get('/charities', [CharityController::class, 'index']);
-Route::get('/charities/{charity}', [CharityController::class, 'show']);
-Route::get('/charities/{charity}/news', [CharityController::class, 'news']);
-Route::get('/charities/{charity}/events', [CharityController::class, 'activities']);
-Route::get('/charities/{charity}/historical-donation', [CharityController::class, 'chart']);
-Route::get('/charities/{charity}/history', [CharityController::class, 'history']);
-Route::get('/charities/{charity}/source', [CharityController::class, 'source']);
-
-Route::get('/sponsors', [SponsorController::class, 'index']);
-Route::get('/sponsors/{sponsor}', [SponsorController::class, 'show']);
-Route::get('/sponsors/{sponsor}/goods', [SponsorController::class, 'goods']);
+Route::controller(SponsorController::class)->group(function () {
+    Route::get('/sponsors', 'index');
+    Route::get('/sponsors/{sponsor}', 'show');
+    Route::get('/sponsors/{sponsor}/goods', 'goods');
+});
 
 Route::get('/events', [ActivityController::class, 'index']);
 Route::get('/events/{activity}', [ActivityController::class, 'show']);
-
 Route::get('/users/{user}', [UserController::class, 'show']);
 
 Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::post('/auth/logout', [LoginController::class, 'logout']);
-    Route::get('/ucenter/notifications', [UcenterController::class, 'notifications']);
-    Route::get('/ucenter/events', [UcenterController::class, 'activities']);
-    Route::put('/ucenter/information', [UcenterController::class, 'update']);
-    Route::put('/ucenter/privacy', [UcenterController::class, 'privacy']);
-    Route::get('/ucenter/chart-history', [UcenterController::class, 'chart']);
-    Route::get('/ucenter/charity-token', [UcenterController::class, 'charityToken']);
-    Route::get('/ucenter/sponsor-token', [UcenterController::class, 'sponsorToken']);
 
-    Route::get('/ucenter/follow-charities', [UcenterController::class, 'followCharities']);
-    Route::get('/ucenter/follow-events', [UcenterController::class, 'followActivities']);
-    Route::get('/ucenter/follow-users', [UcenterController::class, 'followUsers']);
+    Route::controller(UcenterController::class)->group(function () {
+        Route::get('/ucenter/notifications', 'notifications');
+        Route::get('/ucenter/events', 'activities');
+        Route::put('/ucenter/information', 'update');
+        Route::put('/ucenter/privacy', 'privacy');
+        Route::get('/ucenter/chart-history', 'chart');
+        Route::get('/ucenter/charity-token', 'charityToken');
+        Route::get('/ucenter/sponsor-token', 'sponsorToken');
+        Route::get('/ucenter/follow-charities', 'followCharities');
+        Route::get('/ucenter/follow-events', 'followActivities');
+        Route::get('/ucenter/follow-users', 'followUsers');
+        Route::put('/ucenter/bind-email', 'bindEmail');
+        Route::put('/ucenter/bind-phone', 'bindPhone');
+    });
 
-    Route::put('/ucenter/bind-email', [UcenterController::class, 'bindEmail']);
-    Route::put('/ucenter/bind-phone', [UcenterController::class, 'bindPhone']);
+    Route::controller(ActivityController::class)->group(function () {
+        Route::post('/events/{activity}/actions/apply', 'apply');
+        Route::get('/event/my-current', 'myCurrent');
+        Route::get('/events/{activity}/ranks/donation-personal', 'personRanks');
+        Route::get('/events/{activity}/ranks/donation-table', 'tableRanks');
+        Route::get('/events/{activity}/ranks/donation-teams', 'teamRanks');
+        Route::get('/events/{activity}/donation/my-history', 'history');
+        Route::post('/events/{activity}/actions/donation', 'order');
+        Route::post('/events/{activity}/actions/follow', 'favorite');
+        Route::delete('/events/{activity}/actions/unfollow', 'unfavorite');
+    });
 
-    Route::post('/events/{activity}/actions/apply', [ActivityController::class, 'apply']);
-    Route::post('/events/{activity}/actions/buy-tickets', [TicketController::class, 'buyTicket']);
-    Route::post('/events/{activity}/actions/free-collection', [TicketController::class, 'collection']);
-    Route::post('/events/{activity}/actions/scan', [TicketController::class, 'scan']);
-    Route::get('/events/{activity}/my-tickets', [TicketController::class, 'myTickets']);
-    Route::post('/events/{activity}/ticket-status', [TicketController::class, 'state']);
-    Route::get('/events/{activity}/guests', [TicketController::class, 'guests']);
-    Route::put('/events/{activity}/actions/anonymous', [TicketController::class, 'anonymous']);
-    Route::get('/events/{activity}/lotteries', [LotteryController::class, 'index']);
-    Route::get('/events/{activity}/lotteries/{lottery}', [LotteryController::class, 'show']);
-    Route::get('/events/{activity}/lotteries/{lottery}/qualification', [LotteryController::class, 'qualification']);
-    Route::get('/events/{activity}/goods', [GoodsController::class, 'index']);
-    Route::get('/events/{activity}/goods/{goods}', [GoodsController::class, 'show']);
-    Route::post('/events/{activity}/goods/{goods}/actions/order', [GoodsController::class, 'order']);
+    Route::controller(ActivityController::class)->group(function () {
+        Route::post('/events/{activity}/actions/buy-tickets', 'buyTicket');
+        Route::post('/events/{activity}/actions/free-collection', 'collection');
+        Route::post('/events/{activity}/actions/scan', 'scan');
+        Route::get('/events/{activity}/my-tickets', 'myTickets');
+        Route::post('/events/{activity}/ticket-status', 'state');
+        Route::get('/events/{activity}/guests', 'guests');
+        Route::put('/events/{activity}/actions/anonymous', 'anonymous');
+    });
 
-    Route::get('/events/{activity}/gifts', [GiftController::class, 'index']);
-    Route::get('/events/{activity}/gifts/{gift}', [GiftController::class, 'show']);
-    Route::post('/events/{activity}/gifts/{gift}/actions/like', [GiftController::class, 'like']);
+    Route::controller(LotteryController::class)->group(function () {
+        Route::get('/events/{activity}/lotteries', 'index');
+        Route::get('/events/{activity}/lotteries/{lottery}', 'show');
+        Route::get('/events/{activity}/lotteries/{lottery}/qualification', 'qualification');
+    });
 
-    Route::get('/event/my-current', [ActivityController::class, 'myCurrent']);
-    Route::get('/events/{activity}/ranks/donation-personal', [ActivityController::class, 'personRanks']);
-    Route::get('/events/{activity}/ranks/donation-table', [ActivityController::class, 'tableRanks']);
-    Route::get('/events/{activity}/ranks/donation-teams', [ActivityController::class, 'teamRanks']);
-    Route::get('/events/{activity}/donation/my-history', [ActivityController::class, 'history']);
+    Route::controller(GoodsController::class)->group(function () {
+        Route::get('/events/{activity}/goods', 'index');
+        Route::get('/events/{activity}/goods/{goods}', 'show');
+        Route::post('/events/{activity}/goods/{goods}/actions/order', 'order');
+    });
 
-    Route::get('/events/{activity}/teams/search', [GroupController::class, 'search']);
-    Route::get('/events/{activity}/teams/details', [GroupController::class, 'show']);
-    Route::post('/events/{activity}/teams', [GroupController::class, 'store']);
-    Route::put('/events/{activity}/teams', [GroupController::class, 'update']);
-    Route::post('/events/{activity}/teams/actions/invite', [GroupController::class, 'invite']);
-    Route::post('/events/{activity}/teams/actions/accept', [GroupController::class, 'acceptInvite']);
-    Route::post('/events/{activity}/teams/actions/deny', [GroupController::class, 'denyInvite']);
-    Route::post('/events/{activity}/teams/actions/quit', [GroupController::class, 'quit']);
+    Route::controller(GiftController::class)->group(function () {
+        Route::get('/events/{activity}/gifts', 'index');
+        Route::get('/events/{activity}/gifts/{gift}', 'show');
+        Route::post('/events/{activity}/gifts/{gift}/actions/like', 'like');
+    });
 
-    Route::get('/events/{activity}/transfers', [TransferController::class, 'index']);
-    Route::get('/events/{activity}/transfers', [TransferController::class, 'list']);
-    Route::post('/events/{activity}/actions/donation', [ActivityController::class, 'order']);
-    Route::post('/events/{activity}/actions/transfer', [TransferController::class, 'transfer']);
-    Route::post('/events/{activity}/actions/verify-transfer', [TransferController::class, 'check']);
+    Route::controller(GroupController::class)->group(function () {
+        Route::get('/events/{activity}/teams/search', 'search');
+        Route::get('/events/{activity}/teams/details', 'show');
+        Route::post('/events/{activity}/teams', 'store');
+        Route::put('/events/{activity}/teams', 'update');
+        Route::post('/events/{activity}/teams/actions/invite', 'invite');
+        Route::post('/events/{activity}/teams/actions/accept', 'acceptInvite');
+        Route::post('/events/{activity}/teams/actions/deny', 'denyInvite');
+        Route::post('/events/{activity}/teams/actions/quit', 'quit');
+    });
 
-    Route::post('/events/{activity}/actions/follow', [ActivityController::class, 'favorite']);
-    Route::delete('/events/{activity}/actions/unfollow', [ActivityController::class, 'unfavorite']);
+    Route::controller(TransferController::class)->group(function () {
+        Route::get('/events/{activity}/transfers', 'index');
+        Route::get('/events/{activity}/transfers', 'list');
+        Route::post('/events/{activity}/actions/transfer', 'transfer');
+        Route::post('/events/{activity}/actions/verify-transfer', 'check');
+    });
 
-    Route::post('/charities/{charity}/actions/donation', [CharityController::class, 'order']);
-    Route::post('/charities/{charity}/actions/follow', [CharityController::class, 'favorite']);
-    Route::delete('/charities/{charity}/actions/unfollow', [CharityController::class, 'unfavorite']);
+    Route::controller(CharityController::class)->group(function () {
+        Route::post('/charities/{charity}/actions/donation', 'order');
+        Route::post('/charities/{charity}/actions/follow', 'favorite');
+        Route::delete('/charities/{charity}/actions/unfollow', 'unfavorite');
+    });
 
-    Route::post('/users/{user}/actions/follow', [UserController::class, 'follow']);
-    Route::delete('/users/{user}/actions/unfollow', [UserController::class, 'unfollow']);
-    Route::get('/users/{user}/donation-history', [UserController::class, 'history']);
-    Route::get('/users/{user}/charts/constitute', [UserController::class, 'constitute']);
-    Route::get('/users/{user}/charts/history', [UserController::class, 'chart']);
+    Route::controller(UserController::class)->group(function () {
+        Route::post('/users/{user}/actions/follow', 'follow');
+        Route::delete('/users/{user}/actions/unfollow', 'unfollow');
+        Route::get('/users/{user}/donation-history', 'history');
+        Route::get('/users/{user}/charts/constitute', 'constitute');
+        Route::get('/users/{user}/charts/history', 'chart');
+    });
 
-    Route::get('/events/{activity}/albums', [AlbumController::class, 'index']);
-    Route::post('/events/{activity}/albums', [AlbumController::class, 'store']);
-    Route::delete('/events/{activity}/albums/{album}', [AlbumController::class, 'destroy']);
+    Route::controller(AlbumController::class)->group(function () {
+        Route::get('/events/{activity}/albums', 'index');
+        Route::post('/events/{activity}/albums', 'store');
+        Route::delete('/events/{activity}/albums/{album}', 'destroy');
+    });
 
-    Route::get('/bazaars', [BazaarController::class, 'index']);
-    Route::get('/events/{activity}/warehouse', [BazaarController::class, 'warehouse']);
-    Route::post('/bazaars/{bazaar}/affirm', [BazaarController::class, 'affirm']);
+    Route::controller(BazaarController::class)->group(function () {
+        Route::get('/bazaars', 'index');
+        Route::get('/events/{activity}/warehouse', 'warehouse');
+        Route::post('/bazaars/{bazaar}/affirm', 'affirm');
+    });
 });
 
 
