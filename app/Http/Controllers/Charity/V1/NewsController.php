@@ -8,7 +8,6 @@ use App\Models\News;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class NewsController extends Controller

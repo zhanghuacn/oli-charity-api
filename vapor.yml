@@ -9,15 +9,14 @@ environments:
     octane-database-session-persist: true
     octane-database-session-ttl: 10
     scheduler: true
-    memory: 512
-    cli-memory: 512
-    runtime: docker
+    memory: 1024
+    cli-memory: 1024
+    runtime: 'php-8.1:al2'
     queue-timeout: 300
     timeout: 300
     build:
-      - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
+      - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader --no-dev'
       - 'php artisan event:cache'
-      - 'npm ci && npm run dev && rm -rf node_modules'
     deploy:
       - 'php artisan migrate --force'
   testing:
@@ -36,6 +35,5 @@ environments:
     build:
       - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
       - 'php artisan event:cache'
-      - 'npm ci && npm run dev && rm -rf node_modules'
     deploy:
       - 'php artisan migrate --force'

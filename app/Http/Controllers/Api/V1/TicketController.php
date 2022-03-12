@@ -4,12 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
-use App\Models\Apply;
 use App\Models\Ticket;
 use App\Models\Transfer;
 use App\Services\OrderService;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -31,7 +29,7 @@ class TicketController extends Controller
     public function buyTicket(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-apply', $activity);
-        abort_if(Carbon::parse($activity->end_time)->tz(config('app.timezone'))->lt(Carbon::now()->tz(config('app.timezone'))), 422, 'Event ended');
+        abort_if(Carbon::parse($activity->end_time)->lt(Carbon::now()), 422, 'Event ended');
         abort_if(!empty($activity->my_ticket), 422, 'Tickets purchased');
         abort_if(empty($activity->charity->stripe_account_id), 422, 'Unbound payment platform account');
         abort_if($activity->stocks <= 0, 422, 'Tickets have been sold out');
@@ -47,7 +45,7 @@ class TicketController extends Controller
     {
         Gate::authorize('check-apply', $activity);
         abort_if($activity->price != 0, 403, 'Permission denied');
-        abort_if(Carbon::parse($activity->end_time)->tz(config('app.timezone'))->lt(Carbon::now()->tz(config('app.timezone'))), 422, 'Event ended');
+        abort_if(Carbon::parse($activity->end_time)->lt(Carbon::now()), 422, 'Event ended');
         abort_if(!empty($activity->my_ticket), 422, 'Tickets Repeat Claim');
         abort_if($activity->stocks <= 0, 422, 'Tickets have been sold out');
         DB::transaction(function () use ($activity) {
@@ -63,7 +61,7 @@ class TicketController extends Controller
                     $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
                     if (Ticket::where(['activity_id' => $activity->id, 'lottery_code' => $code])->doesntExist()) {
                         $ticket->lottery_code = $code;
-                        $ticket->verified_at = Carbon::now()->tz(config('app.timezone'));
+                        $ticket->verified_at = Carbon::now();
                         break;
                     }
                 } while (true);
@@ -96,7 +94,7 @@ class TicketController extends Controller
         do {
             $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
             if (Ticket::where(['activity_id' => $ticket->activity_id, 'lottery_code' => $code])->doesntExist()) {
-                $ticket->update(['lottery_code' => $code, 'verified_at' => Carbon::now()->tz(config('app.timezone'))]);
+                $ticket->update(['lottery_code' => $code, 'verified_at' => Carbon::now()]);
                 break;
             }
         } while (true);
@@ -155,7 +153,7 @@ class TicketController extends Controller
             'code' => 'required|exists:tickets,code',
         ]);
         return Response::success(['verified_at' => optional($activity->my_ticket)->verified_at ?
-            Carbon::parse($activity->my_ticket->verified_at)->tz(config('app.timezone'))->format('Y-m-d H:i:s')
+            Carbon::parse($activity->my_ticket->verified_at)->format('Y-m-d H:i:s')
             : null]);
     }
 }

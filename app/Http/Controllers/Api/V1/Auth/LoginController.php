@@ -40,6 +40,8 @@ class LoginController extends Controller
         $request->validate([
             'phone' => 'required|phone:AU,mobile|exists:users',
             'code' => 'required|digits:6',
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $key = 'phone:login:code:' . $request->get('phone');
         if (config('app.env') == 'production') {
@@ -93,7 +95,7 @@ class LoginController extends Controller
             [
                 'name' => $socialite->name,
                 'avatar' => $socialite->avatar,
-                'email_verified_at' => Carbon::now()->tz(config('app.timezone')),
+                'email_verified_at' => Carbon::now(),
                 'extends->' . $provider => $socialite->id,
             ]
         );

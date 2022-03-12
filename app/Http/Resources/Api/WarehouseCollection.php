@@ -24,7 +24,7 @@ class WarehouseCollection extends ResourceCollection
                 'username' => optional($item->user)->username,
                 'avatar' => optional($item->user)->avatar,
                 'is_receive' => $item->is_receive,
-                'created_at' => Carbon::parse($item->created_at)->tz(config('app.timezone'))->format('Y-m-d H:i:s'),
+                'created_at' => Carbon::parse($item->created_at)->format('Y-m-d H:i:s'),
             ];
         });
     }

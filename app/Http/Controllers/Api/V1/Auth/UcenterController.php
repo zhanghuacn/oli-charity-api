@@ -107,7 +107,7 @@ EOF;
         $total = Order::where(['user_id' => Auth::id(), 'payment_status' => Order::STATUS_PAID])->sum('total_amount');
         $data = [];
         for ($i = 0; $i <= 11; $i++) {
-            $month = Carbon::now()->tz(config('app.timezone'))->subMonths($i)->format('Y-m');
+            $month = Carbon::now()->subMonths($i)->format('Y-m');
             $data[$month] = floatval($received[$month] ?? 0);
         }
         ksort($data);
@@ -172,7 +172,7 @@ EOF;
         abort_if(DB::table('sponsor_user')->where('user_id', Auth::id())->exists(), 422, 'Non charity users');
         $data = [
             'type' => Charity::class,
-            'expires' => Carbon::now()->tz(config('app.timezone'))->addDays(),
+            'expires' => Carbon::now()->addDays(),
             'user_id' => Auth::id(),
         ];
         return Response::success([
@@ -186,7 +186,7 @@ EOF;
         abort_if(DB::table('charity_user')->where('user_id', Auth::id())->exists(), 422, 'Non charity users');
         $data = [
             'type' => Sponsor::class,
-            'expires' => Carbon::now()->tz(config('app.timezone'))->addDays(),
+            'expires' => Carbon::now()->addDays(),
             'user_id' => Auth::id(),
         ];
         return Response::success([
@@ -217,6 +217,8 @@ EOF;
         $request->validate([
             'phone' => 'required|phone:AU,mobile|unique:users',
             'code' => 'required|digits:6',
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $key = 'phone:login:code:' . $request->get('phone');
         if (config('app.env') == 'production') {

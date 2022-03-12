@@ -8,7 +8,6 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\LotteryPaid;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -44,7 +43,7 @@ class ProcessLotteryWinner implements ShouldQueue
     public function handle()
     {
         DB::transaction(function () {
-            Lottery::where('status', '=', false)->where('draw_time', '<=', Carbon::now()->tz(config('app.timezone')))->get()
+            Lottery::where('status', '=', false)->where('draw_time', '<=', Carbon::now())->get()
                 ->each(function (Lottery $lottery) {
                     $result = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
                     if ($lottery->extends['standard_oli_register'] == true) {

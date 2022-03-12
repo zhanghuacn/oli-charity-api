@@ -7,7 +7,6 @@ use App\Http\Resources\Charity\ApplyCollection;
 use App\Models\Activity;
 use App\Models\Apply;
 use App\Notifications\ApplyPaid;
-use App\Notifications\LotteryPaid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -39,7 +38,7 @@ class ApplyController extends Controller
         $apply->status = $request->get('status');
         $apply->remark = $request->get('remark');
         $apply->reviewer = Auth::id();
-        $apply->reviewed_at = Carbon::now()->tz(config('app.timezone'));
+        $apply->reviewed_at = Carbon::now();
         $apply->save();
         $apply->user->notify(new ApplyPaid($activity));
         return Response::success();

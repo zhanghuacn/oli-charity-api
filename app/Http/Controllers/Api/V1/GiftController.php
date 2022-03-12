@@ -6,14 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\GiftResource;
 use App\Models\Activity;
 use App\Models\Gift;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
-use Illuminate\Http\Request;
 
 class GiftController extends Controller
 {

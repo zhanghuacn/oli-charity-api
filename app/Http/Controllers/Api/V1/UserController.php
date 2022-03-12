@@ -80,7 +80,7 @@ class UserController extends Controller
             return [
                 'id' => $order->order_sn,
                 'amount' => floatval($order->amount),
-                'time' => Carbon::parse($order->payment_time)->tz(config('app.timezone'))->toDateString(),
+                'time' => Carbon::parse($order->payment_time)->toDateString(),
                 'orderable' => [
                     'id' => $orderable->id,
                     'name' => $orderable->name,

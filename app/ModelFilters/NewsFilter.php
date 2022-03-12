@@ -4,11 +4,9 @@ namespace App\ModelFilters;
 
 use App\Models\Admin;
 use App\Models\Charity;
-use App\Models\News;
 use EloquentFilter\ModelFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Passport\Passport;
 
 class NewsFilter extends ModelFilter
 {

@@ -8,7 +8,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use JetBrains\PhpStorm\ArrayShape;
 use NotificationChannels\AwsSns\SnsChannel;
 use NotificationChannels\AwsSns\SnsMessage;
 
@@ -32,7 +31,7 @@ class LotteryPaid extends Notification implements ShouldQueue
     {
         $event = $this->prize->activity->name;
         $prize = $this->prize->name;
-        $date = Carbon::parse($this->prize->activity->end_time)->tz(config('app.timezone'))->toFormattedDateString();
+        $date = Carbon::parse($this->prize->activity->end_time)->toFormattedDateString();
         return [
             'title' => "Congratulations",
             'content' => "You've won the $prize in our $event , You can claim your prize on the day of the banquet on $date. ",
@@ -42,17 +41,17 @@ class LotteryPaid extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage())->subject('Imagine 2080 Congratulations！')->view(
-            'emails.SendWinnerPrize',
-            ['prize' => $this->prize->name, 'event' => $this->prize->activity->name, 'image' => collect($this->prize->images)->first()]
-        );
+        return (new MailMessage())->subject(sprintf('%s Congratulations！', config('app.name')))
+            ->markdown('emails.award', [
+                'prize' => $this->prize->name, 'event' => $this->prize->activity->name, 'image' => collect($this->prize->images)->first()
+            ]);
     }
 
     public function toSns($notifiable): SnsMessage
     {
         $event = $this->prize->activity->name;
         $prize = $this->prize->name;
-        $date = Carbon::parse($this->prize->activity->end_time)->tz(config('app.timezone'))->toFormattedDateString();
+        $date = Carbon::parse($this->prize->activity->end_time)->toFormattedDateString();
         $message = <<<EOF
 Dear user
 Congratulations, you've won the $prize in our $event,
@@ -60,10 +59,9 @@ You can claim your prize on the day of the banquet on $date.
 If you have any questions, please contact the administrator of the WeChat group and check the details by email.
 EOF;
 
-        return SnsMessage::create([
-            'body' => $message,
-            'promotional' => true,
-            'sender' => 'Imagine2080',
-        ]);
+        return SnsMessage::create()
+            ->body($message)
+            ->promotional()
+            ->sender(config('app.name'));
     }
 }

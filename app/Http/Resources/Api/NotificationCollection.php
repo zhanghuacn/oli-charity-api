@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources\Api;
 
-use App\Models\Apply;
-use App\Models\Lottery;
 use App\Notifications\ApplyPaid;
 use App\Notifications\InvitePaid;
 use App\Notifications\LotteryPaid;

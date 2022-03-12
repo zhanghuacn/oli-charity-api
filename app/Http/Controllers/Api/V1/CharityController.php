@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityCollection;
 use App\Http\Resources\Api\CharityCollection;
 use App\Http\Resources\Api\CharityResource;
-use App\Http\Resources\Api\NewsCollection;
 use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\News;
@@ -100,7 +99,7 @@ class CharityController extends Controller
             return [
                 'event_id' => $activity->id,
                 'name' => Str::random(10),
-                'date' => Carbon::parse($activity->begin_time)->tz(config('app.timezone'))->toDateString(),
+                'date' => Carbon::parse($activity->begin_time)->toDateString(),
                 'amount' => floatval($activity->extends['total_amount']) ?? 0,
             ];
         });

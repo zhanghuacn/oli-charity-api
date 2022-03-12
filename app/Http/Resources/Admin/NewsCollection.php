@@ -14,7 +14,7 @@ class NewsCollection extends ResourceCollection
         return $this->collection->map(function ($item) {
             return [
                 'id' => $item->id,
-                'title' => $item->id,
+                'title' => $item->title,
                 'banner' => $item->banner,
                 'thumb' => $item->thumb,
                 'keyword' => $item->keyword,

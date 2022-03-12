@@ -33,8 +33,8 @@ class HistoryController extends Controller
                 'payment_type' => $model->payment_type,
                 'payment_method' => $model->payment_method,
                 'payment_status' => $model->payment_status,
-                'payment_time' => Carbon::parse($model->payment_time)->tz(config('app.timezone'))->format('Y-m-d H:i:s'),
-                'created_at' => Carbon::parse($model->created_at)->tz(config('app.timezone'))->format('Y-m-d H:i:s'),
+                'payment_time' => Carbon::parse($model->payment_time)->format('Y-m-d H:i:s'),
+                'created_at' => Carbon::parse($model->created_at)->format('Y-m-d H:i:s'),
             ];
         });
         return Response::success($data);

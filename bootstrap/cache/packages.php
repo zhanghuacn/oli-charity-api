@@ -1,11 +1,4 @@
 <?php return array (
-  'algolia/scout-extended' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Algolia\\ScoutExtended\\ScoutExtendedServiceProvider',
-    ),
-  ),
   'aws/aws-sdk-php-laravel' => 
   array (
     'providers' => 
@@ -40,17 +33,6 @@
     'providers' => 
     array (
       0 => 'BeyondCode\\DumpServer\\DumpServerServiceProvider',
-    ),
-  ),
-  'facade/ignition' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Facade\\Ignition\\IgnitionServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Flare' => 'Facade\\Ignition\\Facades\\Flare',
     ),
   ),
   'fruitcake/laravel-cors' => 
@@ -247,6 +229,17 @@
     'providers' => 
     array (
       0 => 'SocialiteProviders\\Manager\\ServiceProvider',
+    ),
+  ),
+  'spatie/laravel-ignition' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
     ),
   ),
   'spatie/laravel-permission' => 

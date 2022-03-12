@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
 
 class RemindPaid extends Notification implements ShouldQueue
 {
@@ -28,13 +29,15 @@ class RemindPaid extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage())->subject('Imagine 2080 Reminder！')->view(
-            'emails.SendEventReminder',
-            ['event' => $this->activity->name, 'days' => $this->days]
-        );
+        $url = sprintf('%s/events/detail/%d', Str::of(config('app.url'))->replace('api', 'www')->value(), $this->activity->id);
+        return (new MailMessage())
+            ->subject(sprintf('%s Event Reminder！', config('app.name')))
+            ->markdown('emails.remind', [
+                'event' => $this->activity->name, 'days' => $this->days, 'url' => $url,
+            ]);
     }
 
-    public function toDatabase($notifiable)
+    public function toDatabase($notifiable): array
     {
         return [
             'title' => 'Imagine 2080 Reminder！',
@@ -42,19 +45,4 @@ class RemindPaid extends Notification implements ShouldQueue
             'activity_id' => $this->activity->id,
         ];
     }
-
-//    public function toSns($notifiable): SnsMessage
-//    {
-//        $event = $this->activity->name;
-//        $message = <<<EOF
-//A friendly reminder you $event will be held in next $this->days days.
-//Please confirm you have registered and Raffle ticket number. .
-//EOF;
-//
-//        return SnsMessage::create([
-//            'body' => $message,
-//            'promotional' => true,
-//            'sender' => 'Imagine2080',
-//        ]);
-//    }
 }

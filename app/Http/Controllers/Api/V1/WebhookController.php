@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Bazaar;
-use App\Models\Goods;
 use App\Models\Order;
 use App\Models\Ticket;
 use Carbon\Carbon;
@@ -41,7 +40,7 @@ class WebhookController extends CashierController
                 Log::info('stripe_payment_intent_succeeded:', $data);
                 $order = Order::where(['payment_no' => $data['id']])->firstOrFail();
                 $order->payment_status = Order::STATUS_PAID;
-                $order->payment_time = Carbon::now()->tz(config('app.timezone'));
+                $order->payment_time = Carbon::now();
                 $order->save();
 
                 switch ($order->type) {
@@ -96,7 +95,7 @@ class WebhookController extends CashierController
                 $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
                 if (Ticket::where(['activity_id' => $ticket->activity_id, 'lottery_code' => $code])->doesntExist()) {
                     $ticket->lottery_code = $code;
-                    $ticket->verified_at = Carbon::now()->tz(config('app.timezone'));
+                    $ticket->verified_at = Carbon::now();
                     break;
                 }
             } while (true);

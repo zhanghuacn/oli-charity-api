@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Web;
 
-use Carbon\Carbon;
+use App\Mail\OrderShipped;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,15 +16,15 @@ class HomeController
 {
     public function index(Request $request): JsonResponse|JsonResource
     {
-        return Response::success(Carbon::now()->format('Y-m-d H:i:s'));
+        return Response::success();
     }
 
-    public function test()
+    public function reCaptcha(): Factory|View|Application
     {
         return view('index');
     }
 
-    public function test2(Request $request, ReCaptcha $reCaptcha)
+    public function store(Request $request, ReCaptcha $reCaptcha): Factory|View|Application
     {
         $request->validate([
             'g-recaptcha-response' => [

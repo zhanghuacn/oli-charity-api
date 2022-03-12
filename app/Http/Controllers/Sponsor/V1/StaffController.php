@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Sponsor\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Charity\StaffCollection;
-use App\Models\Charity;
 use App\Models\Role;
 use App\Models\Sponsor;
 use App\Models\User;

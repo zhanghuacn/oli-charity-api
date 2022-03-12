@@ -2,9 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Activity;
-use App\Models\Permission;
-use App\Models\Role;
 use App\Policies\Admin\PermissionPolicy;
 use App\Policies\Admin\RolePolicy;
 use App\Policies\AdminPolicy;

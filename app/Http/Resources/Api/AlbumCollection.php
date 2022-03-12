@@ -17,7 +17,7 @@ class AlbumCollection extends ResourceCollection
             return [
                 'id' => $item->id,
                 'path' => $item->path,
-                'created_at' => Carbon::parse($item->created_at)->tz(config('app.timezone'))->format('Y-m-d H:i:s'),
+                'created_at' => Carbon::parse($item->created_at)->format('Y-m-d H:i:s'),
                 'is_delete' => Auth::id() == $item->user_id,
             ];
         });

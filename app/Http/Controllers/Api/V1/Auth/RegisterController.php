@@ -38,6 +38,8 @@ class RegisterController extends Controller
             'phone' => 'required|phone:AU,mobile|unique:users',
             'code' => 'required|digits:6',
             'password' => ['required', Pwd::min(8)->mixedCase()->numbers()],
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $key = 'phone:register:code:' . $request->get('phone');
         if (config('app.env') == 'production') {

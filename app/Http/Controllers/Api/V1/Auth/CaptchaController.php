@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CaptchaShipped;
 use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Exception;
@@ -50,11 +51,8 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $email = $request->get('email');
             $key = 'email:login:code:' . $request->get('email');
-            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
-            Mail::send('emails.SendVerificationCode', ['code' => $code, 'operation' => 'forgot password', 'email' => $email], function (Message $message) use ($email) {
-                $message->to($email);
-                $message->subject('Imagine 2080 Email Verification');
-            });
+            Mail::to($email)->send(new CaptchaShipped($code));
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
@@ -75,11 +73,8 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $email = $request->get('email');
             $key = 'email:register:code:' . $email;
-            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
-            Mail::send('emails.SendVerificationCode', ['code' => $code, 'operation' => 'register', 'email' => $email], function (Message $message) use ($email) {
-                $message->to($email);
-                $message->subject('Imagine 2080 Email Verification');
-            });
+            Mail::to($email)->send(new CaptchaShipped($code));
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
@@ -92,6 +87,8 @@ class CaptchaController extends Controller
             'phone' => 'required|phone:AU,mobile|unique:users',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
+        ], [
+            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
@@ -100,7 +97,7 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $phone = $request->get('phone');
             $key = 'phone:register:code:' . $phone;
-            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
             $this->smsPublish($snsClient, $code, $phone);
             Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {
@@ -126,7 +123,7 @@ class CaptchaController extends Controller
             $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
             $phone = $request->get('phone');
             $key = 'phone:login:code:' . $phone;
-            Cache::put($key, $code, Carbon::now()->tz(config('app.timezone'))->addMinutes(15));
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
             $this->smsPublish($snsClient, $code, $phone);
             Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {

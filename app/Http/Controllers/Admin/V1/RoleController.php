@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Jiannei\Response\Laravel\Support\Facades\Response;
-use function auth;
 use function getPermissionsTeamId;
 
 class RoleController extends Controller
