@@ -30,8 +30,8 @@ class HomeController
             'g-recaptcha-response' => [
                 'required',
                 'string',
-                function ($attribute, $value, $fail) use ($reCaptcha) {
-                    $response = $reCaptcha->verify($value, $_SERVER['REMOTE_ADDR']);
+                function ($attribute, $value, $fail) use ($request, $reCaptcha) {
+                    $response = $reCaptcha->verify($value, $request->header('x-vapor-source-ip'));
                     if ($response->isSuccess() === false) {
                         $fail($attribute . ' is invalid.');
                     }
