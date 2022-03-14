@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\LotteryController;
 use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\SponsorController;
+use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TransferController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WebhookController;
@@ -119,13 +120,13 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
         Route::delete('/events/{activity}/actions/unfollow', 'unfavorite');
     });
 
-    Route::controller(ActivityController::class)->group(function () {
+    Route::controller(TicketController::class)->group(function () {
+        Route::get('/events/{activity}/my-tickets', 'myTickets');
+        Route::get('/events/{activity}/guests', 'guests');
         Route::post('/events/{activity}/actions/buy-tickets', 'buyTicket');
         Route::post('/events/{activity}/actions/free-collection', 'collection');
         Route::post('/events/{activity}/actions/scan', 'scan');
-        Route::get('/events/{activity}/my-tickets', 'myTickets');
         Route::post('/events/{activity}/ticket-status', 'state');
-        Route::get('/events/{activity}/guests', 'guests');
         Route::put('/events/{activity}/actions/anonymous', 'anonymous');
     });
 
