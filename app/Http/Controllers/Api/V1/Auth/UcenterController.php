@@ -200,7 +200,7 @@ EOF;
             'email' => 'required|email|unique:users',
             'code' => 'required|digits:6',
         ]);
-        $key = 'email:login:code:' . $request->get('email');
+        $key = 'email:register:code:' . $request->get('email');
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
@@ -220,7 +220,7 @@ EOF;
         ], [
             'phone.exists' => 'The phone number is not registered or disabled'
         ]);
-        $key = 'phone:login:code:' . $request->get('phone');
+        $key = 'phone:register:code:' . $request->get('phone');
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
