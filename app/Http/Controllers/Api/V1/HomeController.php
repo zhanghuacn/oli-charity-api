@@ -23,10 +23,10 @@ class HomeController extends Controller
 {
     public function explore(): JsonResponse|JsonResource
     {
-        $events = Activity::where([['is_visible', '=', true], ['end_time', '>=', Carbon::now()]])->orderBy('begin_time')->fresh()->limit(10)->get();
+        $events = Activity::where([['is_visible', '=', true], ['end_time', '>=', Carbon::now()]])->orderBy('begin_time')->limit(10)->get();
         $peoples = User::orderByAmount()->limit(10)->get();
-        $news = visits(News::class)->fresh()->top(10);
-        $charities = visits(Charity::class)->fresh()->top(10);
+        $news = visits(News::class)->top(10);
+        $charities = visits(Charity::class)->top(10);
         $data = [
             'events' => new ActivityCollection($events),
             'peoples' => new UserCollection($peoples),
