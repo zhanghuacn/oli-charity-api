@@ -60,6 +60,9 @@ class ActivityController extends Controller
             'id' => $activity->charity->id,
             'name' => $activity->charity->name,
             'logo' => $activity->charity->logo,
+            'events' => $activity->charity->activities_count ?? 0,
+            'donations' => optional($activity->charity->setting)->donations ?? 0,
+            'members' => $activity->charity->favoriters()->count(),
         ];
         $data['price'] = floatval($activity->price);
         $data['is_sales'] = $activity->stocks - $activity->extends['participates'] > 0;
