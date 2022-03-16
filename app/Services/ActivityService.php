@@ -150,6 +150,8 @@ class ActivityService
                             ]
                         );
                     });
+                } else {
+                    $activity->goods()->delete();
                 }
                 if (!empty($arr['gifts'])) {
                     $gift_ids = collect($arr['gifts'])->whereNotNull('id')->pluck('id');
@@ -175,6 +177,8 @@ class ActivityService
                             ]
                         );
                     });
+                } else {
+                    $activity->gifts()->delete();
                 }
                 if (!empty($arr['staffs'])) {
                     $ticket_ids = collect($arr['staffs'])->whereNotNull('id')->pluck('id');
