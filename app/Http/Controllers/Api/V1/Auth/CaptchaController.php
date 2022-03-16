@@ -98,7 +98,6 @@ class CaptchaController extends Controller
             $key = 'phone:register:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->addMinutes(15));
             $this->smsPublish($snsClient, $code, $phone);
-            Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {
             Log::error($e->getMessage());
             abort(500, 'SMS sending failed');
@@ -124,7 +123,6 @@ class CaptchaController extends Controller
             $key = 'phone:login:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->addMinutes(15));
             $this->smsPublish($snsClient, $code, $phone);
-            Cache::forget($request->get('captcha_key'));
         } catch (Exception $e) {
             Log::error($e->getMessage());
             abort(500, 'SMS sending failed');
