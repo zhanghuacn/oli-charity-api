@@ -15,6 +15,7 @@ class NewsCollection extends ResourceCollection
             return [
                 'id' => $item->id,
                 'title' => $item->title,
+                'keyword' => $item->keyword,
                 'banner' => $item->banner,
                 'image' => $item->thumb,
                 'description' => $item->description,
