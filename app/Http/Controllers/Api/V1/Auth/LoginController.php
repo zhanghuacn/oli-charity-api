@@ -116,7 +116,7 @@ class LoginController extends Controller
             'password' => ['required', 'confirmed', Pwd::min(8)->mixedCase()->numbers()->uncompromised()],
         ]);
         $email = $request->input('email');
-        $key = 'email:forgot:code:' . $email;
+        $key = 'email:login:code:' . $email;
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
