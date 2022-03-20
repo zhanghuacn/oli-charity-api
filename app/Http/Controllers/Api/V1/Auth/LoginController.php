@@ -167,10 +167,10 @@ class LoginController extends Controller
         ]);
         $email = $request->get('email');
         $phone = $request->get('phone');
-        if ($request->has('email')) {
+        if (!empty($email)) {
             abort_if($request->get('token') != md5($email), 422, 'Parameter request error');
             User::whereEmail($email)->update(['sync' => true]);
-        } elseif ($request->has('phone')) {
+        } elseif (!empty($phone)) {
             abort_if($request->get('token') != md5($phone), 422, 'Parameter request error');
             User::wherePhone($phone)->update(['sync' => true]);
         } else {
