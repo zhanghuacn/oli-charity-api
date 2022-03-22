@@ -98,29 +98,20 @@ class Ticket extends Model
                 $this->load('group');
             }
         }
-        $this->load('groups');
-        if (!$this->groups->contains($group)) {
-            $this->groups()->attach($group, $pivotData);
-            if ($this->relationLoaded('groups')) {
-                $this->load('groups');
-            }
-        }
+        $this->load('group');
         return $this;
     }
 
     public function detachGroup($group): static
     {
         $group = $this->retrieveGroupId($group);
-        $this->groups()->detach($group);
-
-        if ($this->relationLoaded('groups')) {
-            $this->load('groups');
+        if ($this->relationLoaded('group')) {
+            $this->load('group');
         }
 
-        if ($this->groups()->count() === 0 || $this->group_id === $group) {
+        if ($this->group_id === $group) {
             $this->group_id = null;
             $this->save();
-
             if ($this->relationLoaded('group')) {
                 $this->load('group');
             }
