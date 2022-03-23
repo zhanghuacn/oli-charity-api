@@ -57,7 +57,7 @@ class UcenterController extends Controller
     public function read(Notification $notification): JsonResponse|JsonResource
     {
         $notification->id ? $notification->markAsRead() : Auth::user()->unreadNotifications->markAsRead();
-        return Response::noContent();
+        return Response::success();
     }
 
     public function update(Request $request): JsonResponse|JsonResource
