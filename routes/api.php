@@ -95,6 +95,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
 
     Route::controller(UcenterController::class)->group(function () {
         Route::get('/ucenter/notifications', 'notifications');
+        Route::patch('/ucenter/notifications/read/{notification?}', 'read');
         Route::get('/ucenter/events', 'activities');
         Route::put('/ucenter/information', 'update');
         Route::put('/ucenter/privacy', 'privacy');
