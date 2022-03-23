@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use Illuminate\Notifications\DatabaseNotification as Notification;
 use function abort_if;
 use function collect;
 
@@ -37,7 +38,7 @@ class UcenterController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = Auth::user()->notifications()->when($request->has('type'), function (Builder $query) use ($request) {
+        $data = Auth::user()->unreadNotifications()->when($request->has('type'), function (Builder $query) use ($request) {
             $query->where(
                 'type',
                 '=',
@@ -51,6 +52,12 @@ class UcenterController extends Controller
             $query->where('data->activity_id', '=', $request->get('event_id'));
         })->paginate($request->input('per_page', 15));
         return Response::success(new NotificationCollection($data));
+    }
+
+    public function read(Notification $notification): JsonResponse|JsonResource
+    {
+        $notification->id ? $notification->markAsRead() : Auth::user()->unreadNotifications->markAsRead();
+        return Response::success();
     }
 
     public function update(Request $request): JsonResponse|JsonResource

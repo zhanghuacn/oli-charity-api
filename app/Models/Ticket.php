@@ -112,7 +112,6 @@ class Ticket extends Model
         if ($this->group_id === $group) {
             $this->group_id = null;
             $this->save();
-
             if ($this->relationLoaded('group')) {
                 $this->load('group');
             }

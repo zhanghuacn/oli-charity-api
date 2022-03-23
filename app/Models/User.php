@@ -33,6 +33,7 @@ use Overtrue\LaravelFavorite\Traits\Favoriter;
 use Overtrue\LaravelFollow\Followable;
 use Overtrue\LaravelLike\Traits\Liker;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\DatabaseNotification as Notification;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
