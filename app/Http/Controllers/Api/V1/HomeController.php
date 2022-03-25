@@ -25,7 +25,7 @@ class HomeController extends Controller
     {
         $events = Activity::where([['is_visible', '=', true], ['end_time', '>=', Carbon::now()]])->orderBy('begin_time')->limit(10)->get();
         $peoples = User::orderByAmount()->limit(10)->get();
-        $news = visits(News::class)->top(10);
+        $news = News::limit(10)->orderByDesc('sort')->get();
         $charities = visits(Charity::class)->top(10);
         $data = [
             'events' => new ActivityCollection($events),
