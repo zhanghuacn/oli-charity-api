@@ -43,7 +43,7 @@ class ProcessLotteryWinner implements ShouldQueue
     public function handle()
     {
         DB::transaction(function () {
-            Lottery::where('status', '=', false)->where('draw_time', '<=', Carbon::now())->get()
+            Lottery::where('status', '=', false)->where('draw_time', '<=', Carbon::now())->whereNotNull('draw_time')->get()
                 ->each(function (Lottery $lottery) {
                     $result = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
                     if ($lottery->extends['standard_oli_register'] == true) {
