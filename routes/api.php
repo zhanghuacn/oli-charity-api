@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
 use App\Http\Controllers\Api\V1\Auth\CaptchaController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\Auth\UcenterController;
 use App\Http\Controllers\Api\V1\BazaarController;
@@ -92,6 +93,18 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 
 Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::post('/auth/logout', [LoginController::class, 'logout']);
+
+    Route::apiResource('/payment-method', PaymentMethodController::class);
+    Route::any('/intent-payment-method', [PaymentMethodController::class, 'createSetupIntent']);
+
+    Route::controller(UcenterController::class)->group(function () {
+        Route::any('/payment-method/intent', [PaymentMethodController::class, 'createSetupIntent']);
+        Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+        Route::post('/payment-method', [PaymentMethodController::class, 'store']);
+        Route::put('/payment-method', [PaymentMethodController::class, 'update']);
+        Route::get('/payment-method', [PaymentMethodController::class, 'show']);
+        Route::delete('/payment-method', [PaymentMethodController::class, 'destroy']);
+    });
 
     Route::controller(UcenterController::class)->group(function () {
         Route::get('/ucenter/notifications', 'notifications');

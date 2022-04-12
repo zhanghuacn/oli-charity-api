@@ -318,6 +318,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'birthday' => Carbon::parse($this->birthday)->toDateString(),
             'is_public_records' => $this->extends['records'],
             'is_public_portfolio' => $this->extends['portfolio'],
+            'is_payment_method' => $this->hasPaymentMethod(),
             'type' => $this->charities()->exists() ? 'CHARITY' : ($this->sponsors()->exists() ? 'SPONSOR' : 'USER'),
             'type_name' => $this->charities()->exists() ? $this->charities()->first()->name : ($this->sponsors()->exists() ? $this->sponsors()->first()->name : ''),
         ];
