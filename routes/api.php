@@ -104,6 +104,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
         Route::put('/payment-method', [PaymentMethodController::class, 'update']);
         Route::get('/payment-method', [PaymentMethodController::class, 'show']);
         Route::delete('/payment-method', [PaymentMethodController::class, 'destroy']);
+        Route::get('/default-payment-method', [PaymentMethodController::class, 'default']);
     });
 
     Route::controller(UcenterController::class)->group(function () {

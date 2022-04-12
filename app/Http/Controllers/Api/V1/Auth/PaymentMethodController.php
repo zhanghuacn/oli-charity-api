@@ -64,6 +64,7 @@ class PaymentMethodController extends Controller
             'payment_method' => 'required|string',
         ]);
         Auth::user()->updateDefaultPaymentMethod($request->get('payment_method'));
+        Auth::user()->updateDefaultPaymentMethodFromStripe();
         return Response::success();
     }
 
@@ -80,6 +81,16 @@ class PaymentMethodController extends Controller
         ]);
         Auth::user()->findPaymentMethod($request->get('payment_method'))->delete();
         return Response::success();
+    }
+
+    /**
+     * 获取默认支付方式
+     * @param Request $request
+     * @return JsonResponse|JsonResource
+     */
+    public function default(Request $request): JsonResponse|JsonResource
+    {
+        return Response::success(Auth::user()->defaultPaymentMethod());
     }
 
     /**
