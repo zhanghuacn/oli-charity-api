@@ -2093,13 +2093,16 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: "app-key",
-  wsHost: "127.0.0.1",
+  wsHost: '159.75.71.224',
   wsPort: "6001",
-  wsSPort: "6001",
+  wssPort: "6001",
   forceTLS: false,
   encrypted: true,
   disableStats: true,
-  enableTransports: ['ws']
+  enabledTransports: ['ws', 'wss']
+});
+window.Echo.channel('auction').listen('.auction.msg', function (e) {
+  alert(e.msg); // 这里只是弹出弹幕消息，滚动的效果就不做了
 });
 
 /***/ }),

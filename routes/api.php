@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\BidSuccessEvent;
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
 use App\Http\Controllers\Api\V1\Auth\CaptchaController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TransferController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WebhookController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,6 +36,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
+
+Route::post('/put-msg', function (Request $request) {
+    broadcast(new BidSuccessEvent($request->get('msg')));
+    return 'success';
+});
 
 Route::controller(HomeController::class)->group(function () {
     Route::get('/explore', 'explore');

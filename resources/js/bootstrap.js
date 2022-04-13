@@ -23,11 +23,16 @@ window.Pusher = require('pusher-js');
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
-    wsHost: process.env.MIX_PUSHER_HOST,
+    wsHost: '159.75.71.224',
     wsPort: process.env.MIX_PUSHER_PORT,
-    wsSPort: process.env.MIX_PUSHER_PORT,
+    wssPort: process.env.MIX_PUSHER_PORT,
     forceTLS: false,
     encrypted: true,
     disableStats: true,
-    enableTransports: ['ws'],
+    enabledTransports: ['ws', 'wss'],
 });
+
+window.Echo.channel('auction')
+    .listen('.auction.msg', (e) => {
+        alert(e.msg);  // 这里只是弹出弹幕消息，滚动的效果就不做了
+    });

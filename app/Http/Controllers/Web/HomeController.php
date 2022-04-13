@@ -40,4 +40,9 @@ class HomeController
         ]);
         return view('welcome');
     }
+
+    public function broadcasting(): Factory|View|Application
+    {
+        return view('broadcasting');
+    }
 }
