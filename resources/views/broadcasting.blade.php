@@ -1,9 +1,10 @@
-<!DOCTYPE html>
 <html>
 <head>
-    <title>channel</title>
-    <script src="{{ asset('js/app.js') }}"></script>
+    <title>Buy cool new product</title>
 </head>
 <body>
+<form action="/create-checkout-session" method="POST">
+    <button type="submit">Checkout</button>
+</form>
 </body>
 </html>

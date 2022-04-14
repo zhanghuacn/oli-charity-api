@@ -26,14 +26,17 @@ class TicketController extends Controller
         $this->orderService = $orderService;
     }
 
-    public function buyTicket(Activity $activity): JsonResponse|JsonResource
+    public function buyTicket(Request $request, Activity $activity): JsonResponse|JsonResource
     {
+        $request->validate([
+            'payment_method' => 'nullable|string',
+        ]);
         Gate::authorize('check-apply', $activity);
         abort_if(Carbon::parse($activity->end_time)->lt(Carbon::now()), 422, 'Event ended');
         abort_if(!empty($activity->my_ticket), 422, 'Tickets purchased');
         abort_if(empty($activity->charity->stripe_account_id), 422, 'Unbound payment platform account');
         abort_if($activity->stocks <= 0, 422, 'Tickets have been sold out');
-        $order = $this->orderService->tickets(Auth::user(), $activity);
+        $order = $this->orderService->tickets(Auth::user(), $activity, $request->payment_method);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,

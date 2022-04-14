@@ -178,12 +178,12 @@ class ActivityController extends Controller
     public function order(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'method' => 'sometimes|in:STRIPE',
+            'payment_method' => 'nullable|string',
             'amount' => 'required|numeric|min:1|not_in:0',
         ]);
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
         abort_if(Carbon::parse($activity->end_time)->lt(Carbon::now()), 422, 'Event ended');
-        $order = $this->orderService->activity(Auth::user(), $activity, $request->get('amount'));
+        $order = $this->orderService->activity(Auth::user(), $activity, $request->get('amount'), $request->payment_method);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,

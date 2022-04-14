@@ -94,7 +94,7 @@ class PaymentMethodController extends Controller
     }
 
     /**
-     * 更新默认支付方式.
+     * 创建支付方式授权.
      *
      * @param Request $request
      * @return JsonResponse|JsonResource

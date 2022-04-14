@@ -59,9 +59,9 @@ class GoodsController extends Controller
         abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404, 'Goods is not found');
         abort_if($goods->stock <= 0, 422, 'Goods sold out');
         $request->validate([
-            'method' => 'required|in:STRIPE',
+            'payment_method' => 'nullable|string',
         ]);
-        $order = $this->orderService->bazaar(Auth::user(), $activity, $goods);
+        $order = $this->orderService->bazaar(Auth::user(), $activity, $goods, $request->payment_method);
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,

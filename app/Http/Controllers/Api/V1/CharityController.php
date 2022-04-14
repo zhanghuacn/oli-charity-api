@@ -10,6 +10,7 @@ use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\News;
 use App\Models\Order;
+use App\Models\User;
 use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -52,15 +53,16 @@ class CharityController extends Controller
     public function order(Charity $charity, Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'method' => 'sometimes|in:STRIPE',
+            'payment_method' => 'nullable|string',
             'amount' => 'required|numeric|min:1|not_in:0',
         ]);
         abort_if(empty($charity->stripe_account_id), 500, 'No stripe connect account opened');
-        $order = $this->orderService->charity(Auth::user(), $charity, $request->amount);
+        $order = $this->orderService->charity(Auth::user(), $charity, $request->amount, $request->payment_method);
         return Response::success([
             'stripe_account_id' => $charity->stripe_account_id,
             'order_sn' => $order->order_sn,
-            'client_secret' => $order->extends['client_secret']
+            'client_secret' => $order->extends['client_secret'],
+            'payment_method' => $order->extends['payment_method'] ?? null
         ]);
     }
 

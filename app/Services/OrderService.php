@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Stripe\PaymentIntent;
+use Stripe\PaymentMethod;
 use Stripe\Stripe;
 use Throwable;
 
@@ -24,17 +25,25 @@ class OrderService
         Stripe::setApiKey(Config::get('cashier.secret'));
     }
 
-    public function bazaar(User $user, Activity $activity, Goods $goods): Order
+    public function bazaar(User $user, Activity $activity, Goods $goods, string $paymentMethod = null): Order
     {
         try {
-            return DB::transaction(function () use ($activity, $user, $goods) {
-                $payment_intent = PaymentIntent::create([
-                    'payment_method_types' => ['card'],
+            return DB::transaction(function () use ($paymentMethod, $activity, $user, $goods) {
+                $data = [
                     'amount' => $goods->price * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
-                    'application_fee_amount' => 0,
-                    'receipt_email' => $user->email,
-                ], ['stripe_account' => $activity->charity->stripe_account_id]);
+                    'payment_method_types' => ['card'],
+                ];
+                if (!empty($paymentMethod)) {
+                    $payment_method = PaymentMethod::create([
+                        'customer' => $user->stripeId(),
+                        'payment_method' => $paymentMethod,
+                    ], [
+                        'stripe_account' => $activity->charity->stripe_account_id,
+                    ]);
+                    $data['payment_method'] = $payment_method->id;
+                }
+                $payment_intent = PaymentIntent::create($data, ['stripe_account' => $activity->charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_BAZAAR,
@@ -58,17 +67,25 @@ class OrderService
         }
     }
 
-    public function activity(User $user, Activity $activity, $amount): Order
+    public function activity(User $user, Activity $activity, $amount, string $paymentMethod = null): Order
     {
         try {
-            return DB::transaction(function () use ($activity, $user, $amount) {
-                $payment_intent = PaymentIntent::create([
-                    'payment_method_types' => ['card'],
+            return DB::transaction(function () use ($paymentMethod, $activity, $user, $amount) {
+                $data = [
                     'amount' => $amount * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
-                    'application_fee_amount' => 0,
-                    'receipt_email' => $user->email,
-                ], ['stripe_account' => $activity->charity->stripe_account_id]);
+                    'payment_method_types' => ['card'],
+                ];
+                if (!empty($paymentMethod)) {
+                    $payment_method = PaymentMethod::create([
+                        'customer' => $user->stripeId(),
+                        'payment_method' => $paymentMethod,
+                    ], [
+                        'stripe_account' => $activity->charity->stripe_account_id,
+                    ]);
+                    $data['payment_method'] = $payment_method->id;
+                }
+                $payment_intent = PaymentIntent::create($data, ['stripe_account' => $activity->charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_ACTIVITY,
@@ -92,17 +109,25 @@ class OrderService
         }
     }
 
-    public function tickets(User $user, Activity $activity): Order
+    public function tickets(User $user, Activity $activity, string $paymentMethod = null): Order
     {
         try {
-            return DB::transaction(function () use ($activity, $user) {
-                $payment_intent = PaymentIntent::create([
-                    'payment_method_types' => ['card'],
+            return DB::transaction(function () use ($paymentMethod, $activity, $user) {
+                $data = [
                     'amount' => $activity->price * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
-                    'application_fee_amount' => 0,
-                    'receipt_email' => $user->email,
-                ], ['stripe_account' => $activity->charity->stripe_account_id]);
+                    'payment_method_types' => ['card'],
+                ];
+                if (!empty($paymentMethod)) {
+                    $payment_method = PaymentMethod::create([
+                        'customer' => $user->stripeId(),
+                        'payment_method' => $paymentMethod,
+                    ], [
+                        'stripe_account' => $activity->charity->stripe_account_id,
+                    ]);
+                    $data['payment_method'] = $payment_method->id;
+                }
+                $payment_intent = PaymentIntent::create($data, ['stripe_account' => $activity->charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_TICKETS,
@@ -126,17 +151,25 @@ class OrderService
         }
     }
 
-    public function charity(User $user, Charity $charity, $amount): Order
+    public function charity(User $user, Charity $charity, float $amount, string $paymentMethod = null): Order
     {
         try {
-            return DB::transaction(function () use ($charity, $user, $amount) {
-                $payment_intent = PaymentIntent::create([
-                    'payment_method_types' => ['card'],
+            return DB::transaction(function () use ($paymentMethod, $charity, $user, $amount) {
+                $data = [
                     'amount' => $amount * 100,
                     'currency' => Str::lower(Config::get('cashier.currency')),
-                    'application_fee_amount' => 0,
-                    'receipt_email' => $user->email,
-                ], ['stripe_account' => $charity->stripe_account_id]);
+                    'payment_method_types' => ['card'],
+                ];
+                if (!empty($paymentMethod)) {
+                    $payment_method = PaymentMethod::create([
+                        'customer' => $user->stripeId(),
+                        'payment_method' => $paymentMethod,
+                    ], [
+                        'stripe_account' => $charity->stripe_account_id,
+                    ]);
+                    $data['payment_method'] = $payment_method->id;
+                }
+                $payment_intent = PaymentIntent::create($data, ['stripe_account' => $charity->stripe_account_id]);
                 $order = new Order([
                     'user_id' => $user->id,
                     'type' => Order::TYPE_CHARITY,
@@ -148,6 +181,7 @@ class OrderService
                     'payment_no' => $payment_intent->id,
                     'extends' => [
                         'client_secret' => $payment_intent->client_secret,
+                        'payment_method' => $payment_method->id ?? null,
                     ]
                 ]);
                 $order->orderable()->associate($charity);

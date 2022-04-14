@@ -213,6 +213,13 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
         Route::get('/events/{activity}/warehouse', 'warehouse');
         Route::post('/bazaars/{bazaar}/affirm', 'affirm');
     });
+
+    Route::post('/purchase', function (Request $request) {
+        $stripeCharge = $request->user()->charge(
+            100, 'pm_1KnggAHP0UsCblE9gL2lUKBv'
+        );
+        dd($stripeCharge);
+    });
 });
 
 
