@@ -7,6 +7,7 @@ use App\Http\Resources\Charity\ActivityCollection;
 use App\Http\Resources\Charity\ActivityResource;
 use App\Models\Activity;
 use App\Models\Album;
+use App\Models\Auction;
 use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
@@ -262,6 +263,15 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'auctions' => 'sometimes|array',
+            'auctions.*.name' => 'required|string',
+            'auctions.*.description' => 'nullable|string',
+            'auctions.*.images' => 'required|array',
+            'auctions.*.price' => 'required|numeric|min:0|not_in:0',
+            'auctions.*.start_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.end_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.sponsor' => 'sometimes',
+            'auctions.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'gifts' => 'sometimes|array',
             'gifts.*.name' => 'required|string',
             'gifts.*.description' => 'required|string',
@@ -333,6 +343,16 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'auctions' => 'sometimes|array',
+            'auctions.*.id' => 'sometimes|integer|exists:auctions,id',
+            'auctions.*.name' => 'required|string',
+            'auctions.*.description' => 'nullable|string',
+            'auctions.*.images' => 'required|array',
+            'auctions.*.price' => 'required|numeric|min:0|not_in:0',
+            'auctions.*.start_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.end_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.sponsor' => 'sometimes',
+            'auctions.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'gifts' => 'sometimes|array',
             'gifts.*.name' => 'required|string',
             'gifts.*.description' => 'required|string',
@@ -405,6 +425,16 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'auctions' => 'sometimes|array',
+            'auctions.*.id' => 'sometimes|integer|exists:auctions,id',
+            'auctions.*.name' => 'required|string',
+            'auctions.*.description' => 'nullable|string',
+            'auctions.*.images' => 'required|array',
+            'auctions.*.price' => 'required|numeric|min:0|not_in:0',
+            'auctions.*.start_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.end_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.sponsor' => 'sometimes',
+            'auctions.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'gifts' => 'sometimes|array',
             'gifts.*.name' => 'required|string',
             'gifts.*.description' => 'required|string',
@@ -461,6 +491,24 @@ class ActivityController extends Controller
                     'sale_num' => $goods->extends['sale_num'],
                     'income' => $goods->extends['sale_income'],
                     'order' => $goods->orders()->where(['payment_status' => Order::STATUS_PAID])->with('user')->get()->transform(function ($item) {
+                        return [
+                            'id' => optional($item->user)->id,
+                            'name' => optional($item->user)->name,
+                            'avatar' => optional($item->user)->avatar,
+                        ];
+                    }),
+                ];
+            }),
+            'auctions' => $activity->auctions->transform(function (Auction $auction) {
+                return [
+                    'id' => $auction->id,
+                    'name' => $auction->name,
+                    'description' => $auction->description,
+                    'image' => collect($auction->images)->first(),
+                    'price' => $auction->price,
+                    'start_time' => $auction->start_time,
+                    'end_time' => $auction->end_time,
+                    'order' => $auction->orders()->where(['payment_status' => Order::STATUS_PAID])->with('user')->get()->transform(function ($item) {
                         return [
                             'id' => optional($item->user)->id,
                             'name' => optional($item->user)->name,

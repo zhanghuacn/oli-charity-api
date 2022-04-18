@@ -3,6 +3,7 @@
 use App\Events\BidSuccessEvent;
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
+use App\Http\Controllers\Api\V1\AuctionController;
 use App\Http\Controllers\Api\V1\Auth\CaptchaController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\PaymentMethodController;
@@ -214,11 +215,10 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
         Route::post('/bazaars/{bazaar}/affirm', 'affirm');
     });
 
-    Route::post('/purchase', function (Request $request) {
-        $stripeCharge = $request->user()->charge(
-            100, 'pm_1KnggAHP0UsCblE9gL2lUKBv'
-        );
-        dd($stripeCharge);
+    Route::controller(AuctionController::class)->group(function () {
+        Route::get('/events/{activity}/auctions', 'index');
+        Route::get('/auctions/{auction}', 'show');
+        Route::get('/auctions/{auction}/history', 'history');
     });
 });
 

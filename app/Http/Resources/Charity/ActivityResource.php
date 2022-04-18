@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Charity;
 
+use App\Models\Auction;
 use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
@@ -79,6 +80,29 @@ class ActivityResource extends JsonResource
                     'description' => $goods->description,
                     'content' => $goods->content,
                     'order' => $goods->orders()->where(['payment_status' => Order::STATUS_PAID])->with('user')->get()->transform(function ($item) {
+                        return [
+                            'id' => optional($item->user)->id,
+                            'name' => optional($item->user)->name,
+                            'avatar' => optional($item->user)->avatar,
+                        ];
+                    }),
+                ];
+            }),
+            'auctions' => $this->auctions->transform(function (Auction $auction) {
+                return [
+                    'id' => $auction->id,
+                    'name' => $auction->name,
+                    'images' => $auction->images,
+                    'description' => $auction->description,
+                    'price' => floatval($auction->price),
+                    'start_time' => $auction->start_time,
+                    'end_time' => $auction->end_time,
+                    'sponsor' => optional($auction->auctionable)->getMorphClass() != Sponsor::class ? [] : [
+                        'id' => $auction->auctionable->id,
+                        'name' => $auction->auctionable->name,
+                        'logo' => $auction->auctionable->logo,
+                    ],
+                    'order' => $auction->orders()->where(['payment_status' => Order::STATUS_PAID])->with('user')->get()->transform(function ($item) {
                         return [
                             'id' => optional($item->user)->id,
                             'name' => optional($item->user)->name,

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Activity;
+use App\Models\Auction;
 use App\Models\Charity;
 use App\Models\Gift;
 use App\Models\Goods;
@@ -152,6 +153,35 @@ class ActivityService
                     });
                 } else {
                     $activity->goods()->delete();
+                }
+                if (!empty($arr['auctions'])) {
+                    $auction_ids = collect($arr['auctions'])->whereNotNull('id')->pluck('id');
+                    if (!empty($auction_ids)) {
+                        $activity->auctions()->whereNotIn('id', $auction_ids)->delete();
+                    } else {
+                        $activity->auctions()->delete();
+                    }
+                    collect($arr['auctions'])->each(function ($item) use ($activity) {
+                        Auction::updateOrCreate(
+                            [
+                                'id' => $item['id'] ?? null,
+                                'activity_id' => $activity->id,
+                                'charity_id' => $activity->charity_id,
+                            ],
+                            [
+                                'name' => $item['name'],
+                                'description' => $item['description'],
+                                'images' => $item['images'],
+                                'price' => $item['price'],
+                                'start_time' => $item['start_time'],
+                                'end_time' => $item['end_time'],
+                                'auctionable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
+                                'auctionable_id' => empty($item['sponsor']) ? $activity->charity_id : $item['sponsor']['id'],
+                            ]
+                        );
+                    });
+                } else {
+                    $activity->auctions()->delete();
                 }
                 if (!empty($arr['gifts'])) {
                     $gift_ids = collect($arr['gifts'])->whereNotNull('id')->pluck('id');

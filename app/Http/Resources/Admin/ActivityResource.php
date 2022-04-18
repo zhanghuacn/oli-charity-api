@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Models\Auction;
 use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
@@ -76,6 +77,22 @@ class ActivityResource extends JsonResource
                     'images' => $goods->images,
                     'description' => $goods->description,
                     'content' => $goods->content,
+                ];
+            }),
+            'auctions' => $this->auctions->transform(function (Auction $auction) {
+                return [
+                    'id' => $auction->id,
+                    'name' => $auction->name,
+                    'images' => $auction->images,
+                    'description' => $auction->description,
+                    'price' => floatval($auction->price),
+                    'start_time' => $auction->start_time,
+                    'end_time' => $auction->end_time,
+                    'sponsor' => optional($auction->auctionable)->getMorphClass() != Sponsor::class ? [] : [
+                        'id' => $auction->goodsable->id,
+                        'name' => $auction->goodsable->name,
+                        'logo' => $auction->goodsable->logo,
+                    ],
                 ];
             }),
             'gifts' => $this->gifts->transform(function (Gift $gift) {

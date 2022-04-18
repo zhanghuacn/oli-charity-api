@@ -191,6 +191,11 @@ class Activity extends Model
         return $this->hasMany(Group::class);
     }
 
+    public function auctions(): HasMany
+    {
+        return $this->hasMany(Auction::class);
+    }
+
     protected static function booted()
     {
         static::saving(
