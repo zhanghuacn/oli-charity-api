@@ -1,6 +1,6 @@
 <?php
 
-use App\Events\BidSuccessEvent;
+use App\Events\AuctionBidEvent;
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
 use App\Http\Controllers\Api\V1\AuctionController;
@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 Route::post('/put-msg', function (Request $request) {
-    broadcast(new BidSuccessEvent($request->get('msg')));
+    broadcast(new AuctionBidEvent($request->get('msg')));
     return 'success';
 });
 
@@ -219,6 +219,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
         Route::get('/events/{activity}/auctions', 'index');
         Route::get('/auctions/{auction}', 'show');
         Route::get('/auctions/{auction}/history', 'history');
+        Route::post('/auctions/{auction}/bid', 'bid');
     });
 });
 
