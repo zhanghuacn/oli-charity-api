@@ -218,8 +218,10 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::controller(AuctionController::class)->group(function () {
         Route::get('/events/{activity}/auctions', 'index');
         Route::get('/auctions/{auction}', 'show');
+        Route::get('/auction/orders', 'orders');
         Route::get('/auctions/{auction}/history', 'history');
         Route::post('/auctions/{auction}/bid', 'bid');
+        Route::post('/auction/order/payment', 'payment');
     });
 });
 

@@ -15,7 +15,6 @@ class AuctionChannel
 
     public function join(User $user, Auction $auction): bool
     {
-//        return Ticket::where(['user_id' => $user->id, 'activity_id' => $auction->activity_id])->exists();
-        return true;
+        return Ticket::where(['user_id' => $user->id, 'activity_id' => $auction->activity_id])->exists();
     }
 }

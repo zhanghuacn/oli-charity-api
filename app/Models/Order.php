@@ -24,6 +24,7 @@ class Order extends Model
     public const TYPE_ACTIVITY = 'ACTIVITY';
     public const TYPE_BAZAAR = 'BAZAAR';
     public const TYPE_TICKETS = 'TICKETS';
+    public const TYPE_AUCTION = 'AUCTION';
 
     public const ORDER_PAY_STRIPE = 'STRIPE';
     public const ORDER_PAY_BANK = 'BANK';

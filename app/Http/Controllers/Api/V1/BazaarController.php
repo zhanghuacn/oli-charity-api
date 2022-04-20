@@ -7,10 +7,10 @@ use App\Http\Resources\Api\BazaarCollection;
 use App\Http\Resources\Api\WarehouseCollection;
 use App\Models\Activity;
 use App\Models\Bazaar;
-use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 

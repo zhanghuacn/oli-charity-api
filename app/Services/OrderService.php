@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Activity;
+use App\Models\Auction;
 use App\Models\Charity;
 use App\Models\Goods;
 use App\Models\Order;
@@ -44,20 +45,20 @@ class OrderService
                     $data['payment_method'] = $payment_method->id;
                 }
                 $payment_intent = PaymentIntent::create($data, ['stripe_account' => $activity->charity->stripe_account_id]);
-                $order = new Order([
-                    'user_id' => $user->id,
-                    'type' => Order::TYPE_BAZAAR,
-                    'charity_id' => $activity->charity->id,
-                    'activity_id' => $activity->id,
-                    'currency' => Str::lower(Config::get('cashier.currency')),
-                    'amount' => $goods->price,
-                    'fee_amount' => 0,
-                    'total_amount' => $goods->price,
-                    'payment_no' => $payment_intent->id,
-                    'extends' => [
-                        'client_secret' => $payment_intent->client_secret,
-                    ]
-                ]);
+                $order = new Order();
+                $order->user_id = $user->id;
+                $order->type = Order::TYPE_BAZAAR;
+                $order->charity_id = $activity->charity_id;
+                $order->activity_id = $activity->id;
+                $order->currency = Str::lower(Config::get('cashier.currency'));
+                $order->amount = $goods->price;
+                $order->fee_amount = 0;
+                $order->total_amount = $goods->price;
+                $order->payment_no = $payment_intent->id;
+                $order->extends = [
+                    'client_secret' => $payment_intent->client_secret,
+                    'payment_method' => $payment_method->id ?? null,
+                ];
                 $order->orderable()->associate($goods);
                 $order->save();
                 return $order;
@@ -86,20 +87,20 @@ class OrderService
                     $data['payment_method'] = $payment_method->id;
                 }
                 $payment_intent = PaymentIntent::create($data, ['stripe_account' => $activity->charity->stripe_account_id]);
-                $order = new Order([
-                    'user_id' => $user->id,
-                    'type' => Order::TYPE_ACTIVITY,
-                    'charity_id' => $activity->charity_id,
-                    'activity_id' => $activity->id,
-                    'currency' => Str::lower(Config::get('cashier.currency')),
-                    'amount' => $amount,
-                    'fee_amount' => 0,
-                    'total_amount' => $amount,
-                    'payment_no' => $payment_intent->id,
-                    'extends' => [
-                        'client_secret' => $payment_intent->client_secret,
-                    ]
-                ]);
+                $order = new Order();
+                $order->user_id = $user->id;
+                $order->type = Order::TYPE_ACTIVITY;
+                $order->charity_id = $activity->charity_id;
+                $order->activity_id = $activity->id;
+                $order->currency = Str::lower(Config::get('cashier.currency'));
+                $order->amount = $amount;
+                $order->fee_amount = 0;
+                $order->total_amount = $amount;
+                $order->payment_no = $payment_intent->id;
+                $order->extends = [
+                    'client_secret' => $payment_intent->client_secret,
+                    'payment_method' => $payment_method->id ?? null,
+                ];
                 $order->orderable()->associate($activity);
                 $order->save();
                 return $order;
@@ -128,20 +129,20 @@ class OrderService
                     $data['payment_method'] = $payment_method->id;
                 }
                 $payment_intent = PaymentIntent::create($data, ['stripe_account' => $activity->charity->stripe_account_id]);
-                $order = new Order([
-                    'user_id' => $user->id,
-                    'type' => Order::TYPE_TICKETS,
-                    'charity_id' => $activity->charity_id,
-                    'activity_id' => $activity->id,
-                    'currency' => Str::lower(Config::get('cashier.currency')),
-                    'amount' => $activity->price,
-                    'fee_amount' => 0,
-                    'total_amount' => $activity->price,
-                    'payment_no' => $payment_intent->id,
-                    'extends' => [
-                        'client_secret' => $payment_intent->client_secret,
-                    ]
-                ]);
+                $order = new Order();
+                $order->user_id = $user->id;
+                $order->type = Order::TYPE_TICKETS;
+                $order->charity_id = $activity->charity_id;
+                $order->activity_id = $activity->id;
+                $order->currency = Str::lower(Config::get('cashier.currency'));
+                $order->amount = $activity->price;
+                $order->fee_amount = 0;
+                $order->total_amount = $activity->price;
+                $order->payment_no = $payment_intent->id;
+                $order->extends = [
+                    'client_secret' => $payment_intent->client_secret,
+                    'payment_method' => $payment_method->id ?? null,
+                ];
                 $order->orderable()->associate($activity);
                 $order->save();
                 return $order;
@@ -170,20 +171,19 @@ class OrderService
                     $data['payment_method'] = $payment_method->id;
                 }
                 $payment_intent = PaymentIntent::create($data, ['stripe_account' => $charity->stripe_account_id]);
-                $order = new Order([
-                    'user_id' => $user->id,
-                    'type' => Order::TYPE_CHARITY,
-                    'charity_id' => $charity->id,
-                    'currency' => Str::lower(Config::get('cashier.currency')),
-                    'amount' => $amount,
-                    'fee_amount' => 0,
-                    'total_amount' => $amount,
-                    'payment_no' => $payment_intent->id,
-                    'extends' => [
-                        'client_secret' => $payment_intent->client_secret,
-                        'payment_method' => $payment_method->id ?? null,
-                    ]
-                ]);
+                $order = new Order();
+                $order->user_id = $user->id;
+                $order->type = Order::TYPE_CHARITY;
+                $order->charity_id = $charity->id;
+                $order->currency = Str::lower(Config::get('cashier.currency'));
+                $order->amount = $amount;
+                $order->fee_amount = 0;
+                $order->total_amount = $amount;
+                $order->payment_no = $payment_intent->id;
+                $order->extends = [
+                    'client_secret' => $payment_intent->client_secret,
+                    'payment_method' => $payment_method->id ?? null,
+                ];
                 $order->orderable()->associate($charity);
                 $order->save();
                 return $order;
@@ -207,18 +207,16 @@ class OrderService
                 $transfer->status = Transfer::STATUS_WAIT;
                 $transfer->save();
 
-                $order = new Order([
-                    'user_id' => Auth::id(),
-                    'type' => Order::TYPE_ACTIVITY,
-                    'charity_id' => $activity->charity_id,
-                    'activity_id' => $activity->id,
-                    'currency' => Str::lower(Config::get('cashier.currency')),
-                    'amount' => $amount,
-                    'fee_amount' => 0,
-                    'total_amount' => $amount,
-                    'payment_type' => Order::PAYMENT_OFFLINE,
-                    'payment_no' => $transfer->code,
-                ]);
+                $order = new Order();
+                $order->user_id = $ticket->user_id;
+                $order->type = Order::TYPE_ACTIVITY;
+                $order->charity_id = $activity->charity_id;
+                $order->currency = Str::lower(Config::get('cashier.currency'));
+                $order->amount = $amount;
+                $order->fee_amount = 0;
+                $order->total_amount = $amount;
+                $order->payment_type = Order::PAYMENT_OFFLINE;
+                $order->payment_no =$transfer->code;
                 $order->orderable()->associate($activity);
                 $order->save();
                 return $order;

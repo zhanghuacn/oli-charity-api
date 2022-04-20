@@ -20,7 +20,12 @@ class AuctionResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'thumb' => $this->thumb,
+            'keyword' => $this->keyword,
+            'content' => $this->content,
+            'trait' => $this->trait,
             'images' => $this->images,
+            'is_online' => $this->is_online,
             'description' => $this->description,
             'price' => $this->price,
             'bid_count' => $this->bidRecord()->count(),

@@ -83,15 +83,19 @@ class ActivityResource extends JsonResource
                 return [
                     'id' => $auction->id,
                     'name' => $auction->name,
-                    'images' => $auction->images,
                     'description' => $auction->description,
+                    'thumb' => $auction->thumb,
+                    'keyword' => $auction->keyword,
+                    'content' => $auction->content,
+                    'trait' => $auction->trait,
+                    'images' => $auction->images,
                     'price' => floatval($auction->price),
                     'start_time' => $auction->start_time,
                     'end_time' => $auction->end_time,
                     'sponsor' => optional($auction->auctionable)->getMorphClass() != Sponsor::class ? [] : [
-                        'id' => $auction->goodsable->id,
-                        'name' => $auction->goodsable->name,
-                        'logo' => $auction->goodsable->logo,
+                        'id' => $auction->auctionable->id,
+                        'name' => $auction->auctionable->name,
+                        'logo' => $auction->auctionable->logo,
                     ],
                 ];
             }),

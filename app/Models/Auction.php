@@ -32,7 +32,12 @@ class Auction extends Model
         'charity_id',
         'activity_id',
         'name',
+        'thumb',
+        'keyword',
+        'content',
+        'trait',
         'description',
+        'is_online',
         'images',
         'content',
         'price',
@@ -60,10 +65,13 @@ class Auction extends Model
     ];
 
     protected $casts = [
+        'keyword' => 'array',
+        'trait' => 'array',
         'price' => 'float',
         'current_bid_price' => 'float',
         'images' => 'array',
         'extends' => 'array',
+        'is_online' => 'bool'
     ];
 
     public function auctionable(): MorphTo

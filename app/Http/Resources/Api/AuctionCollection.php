@@ -21,6 +21,11 @@ class AuctionCollection extends ResourceCollection
             return [
                 'id' => $item->id,
                 'name' => $item->name,
+                'thumb' => $item->thumb,
+                'keyword' => $item->keyword,
+                'content' => $item->content,
+                'trait' => $item->trait,
+                'is_online' => $item->is_online,
                 'images' => $item->images,
                 'description' => $item->description,
                 'bid_count' => $item->bid_record_count,

@@ -171,8 +171,13 @@ class ActivityService
                             [
                                 'name' => $item['name'],
                                 'description' => $item['description'],
+                                'thumb' => $item['thumb'],
+                                'keyword' => $item['keyword'],
+                                'content' => $item['content'],
+                                'trait' => $item['trait'],
                                 'images' => $item['images'],
                                 'price' => $item['price'],
+                                'is_online' => $item['is_online'],
                                 'start_time' => $item['start_time'],
                                 'end_time' => $item['end_time'],
                                 'auctionable_type' => empty($item['sponsor']) ? Charity::class : Sponsor::class,
