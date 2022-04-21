@@ -12,7 +12,7 @@ class AuctionResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return array|Arrayable|JsonSerializable
      */
     public function toArray($request): array|JsonSerializable|Arrayable
@@ -30,13 +30,19 @@ class AuctionResource extends JsonResource
             'price' => $this->price,
             'bid_count' => $this->bidRecord()->count(),
             'current_bid_price' => $this->current_bid_price,
-            'current_bid_user' => [
+            'current_bid_user' => $this->current_bid_user_id ? [
                 'id' => $this->user->id,
                 'name' => $this->user->username,
                 'avatar' => $this->user->avatar,
-            ],
+            ] : null,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
+            'visits' => $this->visits()->count(),
+            'sponsor' => [
+                'id' => optional($this->auctionable)->id,
+                'name' => optional($this->auctionable)->name,
+                'logo' => optional($this->auctionable)->logo,
+            ],
         ];
     }
 }

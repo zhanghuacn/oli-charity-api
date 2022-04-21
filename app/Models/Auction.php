@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Auction extends Model
@@ -38,6 +39,7 @@ class Auction extends Model
         'trait',
         'description',
         'is_online',
+        'is_receive',
         'images',
         'content',
         'price',
@@ -107,5 +109,10 @@ class Auction extends Model
     public function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    public function visits(): Relation
+    {
+        return visits($this)->relation();
     }
 }

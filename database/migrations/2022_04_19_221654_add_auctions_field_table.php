@@ -18,6 +18,7 @@ return new class extends Migration
             $table->json('keyword')->nullable()->comment('关键词');
             $table->text('content')->nullable()->comment('商品介绍');
             $table->json('trait')->nullable()->comment('商品特点');
+            $table->boolean('is_receive')->default(false)->comment('是否领取');
         });
     }
 

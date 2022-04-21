@@ -56,6 +56,9 @@ class WebhookController extends CashierController
                     case Order::TYPE_ACTIVITY:
                         $this->handleActivity($order);
                         break;
+                    case Order::TYPE_AUCTION:
+                        $this->handleAuction($order);
+                        break;
                     default:
                 }
             });
@@ -83,13 +86,12 @@ class WebhookController extends CashierController
 
     public function handleTickets(Order $order): void
     {
-        $ticket = new Ticket([
-            'charity_id' => $order->charity_id,
-            'activity_id' => $order->activity_id,
-            'user_id' => $order->user_id,
-            'type' => Ticket::TYPE_DONOR,
-            'price' => floatval($order->amount),
-        ]);
+        $ticket = new Ticket;
+        $ticket->charity_id = $order->charity_id;
+        $ticket->activity_id = $order->activity_id;
+        $ticket->user_id = $order->user_id;
+        $ticket->type = Ticket::TYPE_DONOR;
+        $ticket->price = floatval($order->amount);
         if (!$order->activity->is_verification) {
             do {
                 $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
@@ -127,6 +129,16 @@ class WebhookController extends CashierController
             'goods_id' => $order->orderable->id,
             'user_id' => $order->user_id,
             'price' => $order->orderable->price,
+        ]);
+    }
+
+    private static function handleAuction(Order $order): void
+    {
+        $order->activity()->update([
+            'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
+        ]);
+        $order->charity()->update([
+            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
         ]);
     }
 

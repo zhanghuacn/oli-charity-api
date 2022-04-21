@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -36,6 +37,7 @@ class AuctionController extends Controller
     public function show(Auction $auction): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $auction->activity);
+        visits($auction)->increment();
         return Response::success(new AuctionResource($auction));
     }
 
@@ -55,24 +57,30 @@ class AuctionController extends Controller
     {
         Gate::authorize('check-ticket', $auction->activity);
         $request->validate([
-            'amount' => 'required|numeric|gt:' . $auction->current_bid_price,
+            'amount' => 'required|numeric|min:1|not_in:0',
         ]);
+        $key = sprintf('AUCTION_%d_%d_AMOUNT', $auction->activity_id, $auction->id);
+        if (Cache::has($key)) {
+            abort_if($request->get('amount') <= Cache::get($key), 422, 'Must be greater than the last auction price');
+        } else {
+            abort_if($request->get('amount') <= $auction->current_bid_price ?? $auction->price, 422, 'Must be greater than the last auction price');
+        }
         abort_if($auction->end_time < now(), 422, 'Auction is over');
         abort_if($auction->is_online != true, 422, 'Offline auction');
         if ($auction->is_auction) {
-            $amount = $request->get('amount');
-            DB::transaction(function () use ($amount, $auction) {
-                $record = new AuctionBidRecord();
+            DB::transaction(function () use ($key, $request, $auction) {
+                $record = new AuctionBidRecord;
                 $record->price = $auction->current_bid_price;
-                $record->bid_price = $amount;
+                $record->bid_price = $request->get('amount');
                 $record->user_id = Auth::id();
                 $auction->bidRecord()->save($record);
-                $auction->current_bid_price = $amount;
+                $auction->current_bid_price = $request->get('amount');
                 $auction->current_bid_user_id = Auth::id();
                 $auction->current_bid_time = now();
                 $auction->save();
+                AuctionBidEvent::dispatch($record);
+                Cache::put($key, $request->get('amount'), $auction->end_time);
             });
-            AuctionBidEvent::dispatch(AuctionBidRecord::first());
         }
         return Response::success();
     }
@@ -139,5 +147,17 @@ class AuctionController extends Controller
             'client_secret' => $order->extends['client_secret'],
             'payment_method' => $order->extends['payment_method'] ?? null
         ]);
+    }
+
+    public function affirm(Request $request, Auction $auction): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'remark' => 'nullable|string',
+        ]);
+        Gate::authorize('check-staff', $auction->activity);
+        abort_if($auction->is_receive, 422, 'Please do not repeat the confirmation');
+        $auction->is_receive = true;
+        $auction->save();
+        return Response::success();
     }
 }

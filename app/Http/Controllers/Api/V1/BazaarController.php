@@ -46,6 +46,7 @@ class BazaarController extends Controller
         $request->validate([
             'remark' => 'nullable|string',
         ]);
+        Gate::authorize('check-staff', $bazaar->activity);
         abort_if($bazaar->is_receive, 422, 'Please do not repeat the confirmation');
         $bazaar->is_receive = true;
         $bazaar->save();

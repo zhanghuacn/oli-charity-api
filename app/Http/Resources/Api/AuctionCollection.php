@@ -33,6 +33,12 @@ class AuctionCollection extends ResourceCollection
                 'price' => $item->price,
                 'start_time' => $item->start_time,
                 'end_time' => $item->end_time,
+                'visits' => $item->visits()->count(),
+                'sponsor' => [
+                    'id' => optional($item->auctionable)->id,
+                    'name' => optional($item->auctionable)->name,
+                    'logo' => optional($item->auctionable)->logo,
+                ],
             ];
         });
     }

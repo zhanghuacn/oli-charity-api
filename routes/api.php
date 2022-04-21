@@ -222,6 +222,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
         Route::get('/auctions/{auction}/history', 'history');
         Route::post('/auctions/{auction}/bid', 'bid');
         Route::post('/auction/order/payment', 'payment');
+        Route::post('/auctions/{auction}/affirm', 'affirm');
     });
 });
 
