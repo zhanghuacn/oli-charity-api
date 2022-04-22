@@ -64,7 +64,7 @@ class AuctionController extends Controller
             abort_if($request->get('amount') <= Cache::get($key), 422, 'Must be greater than the last auction price');
         } else {
             abort_if(
-                $request->get('amount') <= $auction->current_bid_price ?? $auction->price,
+                floatval($request->get('amount')) <= floatval($auction->current_bid_price) ?? $auction->price,
                 422,
                 'Must be greater than the last auction price'
             );
@@ -75,10 +75,10 @@ class AuctionController extends Controller
             DB::transaction(function () use ($key, $request, $auction) {
                 $record = new AuctionBidRecord();
                 $record->price = $auction->current_bid_price ?? 0;
-                $record->bid_price = $request->get('amount');
+                $record->bid_price = floatval($request->get('amount'));
                 $record->user_id = Auth::id();
                 $auction->bidRecord()->save($record);
-                $auction->current_bid_price = $request->get('amount');
+                $auction->current_bid_price = floatval($request->get('amount'));
                 $auction->current_bid_user_id = Auth::id();
                 $auction->current_bid_time = now();
                 $auction->save();
