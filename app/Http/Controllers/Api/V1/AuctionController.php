@@ -63,13 +63,17 @@ class AuctionController extends Controller
         if (Cache::has($key)) {
             abort_if($request->get('amount') <= Cache::get($key), 422, 'Must be greater than the last auction price');
         } else {
-            abort_if($request->get('amount') <= $auction->current_bid_price ?? $auction->price, 422, 'Must be greater than the last auction price');
+            abort_if(
+                $request->get('amount') <= $auction->current_bid_price ?? $auction->price,
+                422,
+                'Must be greater than the last auction price'
+            );
         }
         abort_if($auction->end_time < now(), 422, 'Auction is over');
         abort_if($auction->is_online != true, 422, 'Offline auction');
         if ($auction->is_auction) {
             DB::transaction(function () use ($key, $request, $auction) {
-                $record = new AuctionBidRecord;
+                $record = new AuctionBidRecord();
                 $record->price = $auction->current_bid_price;
                 $record->bid_price = $request->get('amount');
                 $record->user_id = Auth::id();
@@ -92,7 +96,10 @@ class AuctionController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = Order::filter($request->all())->where(['user_id' => Auth::id(), 'type' => Order::TYPE_AUCTION])->paginate($request->input('per_page', 15));
+        $data = Order::filter($request->all())->where([
+                'user_id' => Auth::id(),
+                'type' => Order::TYPE_AUCTION]
+        )->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function (Order $order) {
             return [
                 'order_sn' => $order->order_sn,
