@@ -74,7 +74,7 @@ class AuctionController extends Controller
         if ($auction->is_auction) {
             DB::transaction(function () use ($key, $request, $auction) {
                 $record = new AuctionBidRecord();
-                $record->price = $auction->current_bid_price;
+                $record->price = $auction->current_bid_price ?? 0;
                 $record->bid_price = $request->get('amount');
                 $record->user_id = Auth::id();
                 $auction->bidRecord()->save($record);
