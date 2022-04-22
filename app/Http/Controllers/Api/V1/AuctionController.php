@@ -73,17 +73,18 @@ class AuctionController extends Controller
         abort_if($auction->is_online != true, 422, 'Offline auction');
         if ($auction->is_auction) {
             DB::transaction(function () use ($key, $request, $auction) {
+                $amount = floatval($request->get('amount'));
                 $record = new AuctionBidRecord();
                 $record->price = $auction->current_bid_price ?? 0;
-                $record->bid_price = floatval($request->get('amount'));
+                $record->bid_price = $amount;
                 $record->user_id = Auth::id();
                 $auction->bidRecord()->save($record);
-                $auction->current_bid_price = floatval($request->get('amount'));
+                $auction->current_bid_price = $amount;
                 $auction->current_bid_user_id = Auth::id();
                 $auction->current_bid_time = now();
                 $auction->save();
                 AuctionBidEvent::dispatch($record);
-                Cache::put($key, $request->get('amount'), $auction->end_time);
+                Cache::put($key, $amount);
             });
         }
         return Response::success();
