@@ -53,6 +53,10 @@ class AuctionController extends Controller
         return Response::success(new AuctionBidRecordCollection($data));
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Throwable
+     */
     public function bid(Request $request, Auction $auction): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $auction->activity);
