@@ -86,7 +86,7 @@ class WebhookController extends CashierController
 
     public function handleTickets(Order $order): void
     {
-        $ticket = new Ticket;
+        $ticket = new Ticket();
         $ticket->charity_id = $order->charity_id;
         $ticket->activity_id = $order->activity_id;
         $ticket->user_id = $order->user_id;

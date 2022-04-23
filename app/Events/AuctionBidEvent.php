@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Http\Resources\Api\AuctionBidRecordCollection;
 use App\Models\AuctionBidRecord;
 use Carbon\Carbon;
 use Illuminate\Broadcasting\Channel;
@@ -14,7 +13,9 @@ use Illuminate\Queue\SerializesModels;
 
 class AuctionBidEvent implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public AuctionBidRecord $auctionBidRecord;
 

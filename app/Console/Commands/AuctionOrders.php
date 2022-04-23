@@ -19,6 +19,10 @@ class AuctionOrders extends Command
 
     protected $description = '生成竞拍订单';
 
+    /**
+     * @return void
+     * @throws \Throwable
+     */
     public function handle()
     {
         Auction::where([['is_auction', '=', true], ['end_time', '<', now()]])->get()->each(function (Auction $auction) {
@@ -37,8 +41,8 @@ class AuctionOrders extends Command
                 $auction->is_auction = false;
                 $auction->save();
             });
-            if(!empty($auction->user->email)){
-                Mail::to($auction->user->email)->send(new AuctionOrderCreated());
+            if (!empty($auction->user->email)) {
+                Mail::to($auction->user->email)->send(new AuctionOrderCreated($auction));
             }
         });
     }
