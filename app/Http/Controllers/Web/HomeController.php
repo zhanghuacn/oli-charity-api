@@ -13,4 +13,9 @@ class HomeController
     {
         return Response::success();
     }
+
+    public function channel()
+    {
+        return view('broadcasting');
+    }
 }

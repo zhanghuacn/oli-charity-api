@@ -99,8 +99,7 @@ class AuctionController extends Controller
         ]);
         $data = Order::filter($request->all())->where([
                 'user_id' => Auth::id(),
-                'type' => Order::TYPE_AUCTION]
-        )->paginate($request->input('per_page', 15));
+                'type' => Order::TYPE_AUCTION])->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function (Order $order) {
             return [
                 'order_sn' => $order->order_sn,
@@ -122,7 +121,11 @@ class AuctionController extends Controller
             'order_sn' => 'sometimes|string|exists:orders',
             'payment_method' => 'sometimes|string'
         ]);
-        $order = Order::where(['user_id' => Auth::id(), 'type' => Order::TYPE_AUCTION, 'order_sn' => $request->get('order_sn')])->firstOrFail();
+        $order = Order::where([
+            'user_id' => Auth::id(),
+            'type' => Order::TYPE_AUCTION,
+            'order_sn' => $request->get('order_sn')
+        ])->firstOrFail();
         abort_if($order->type != Order::TYPE_AUCTION, 422, 'Order source exception');
         abort_if($order->status == Order::STATUS_CLOSED, 422, 'Order closed');
         if (empty($order->payment_no)) {

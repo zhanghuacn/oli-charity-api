@@ -14,7 +14,6 @@
         "aws/aws-sdk-php": "^3.208",
         "aws/aws-sdk-php-laravel": "^3.6",
         "awssat/laravel-visits": "^3.0",
-        "friendsofphp/php-cs-fixer": "^3.3",
         "fruitcake/laravel-cors": "^2.0",
         "google/recaptcha": "^1.2",
         "gregwar/captcha": "^1.1",
@@ -62,7 +61,9 @@
         "laravel/telescope": "^4.7",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.5.10"
+        "phpunit/phpunit": "^9.5.10",
+        "friendsofphp/php-cs-fixer": "^3.7",
+        "squizlabs/php_codesniffer": "3.*"
     },
     "autoload": {
         "psr-4": {

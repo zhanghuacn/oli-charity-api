@@ -2093,9 +2093,9 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: "app-key",
-  wsHost: '159.75.71.224',
-  wsPort: "6001",
-  wssPort: "6001",
+  wsHost: "socket.imagine2080.com.au",
+  wsPort: "6002",
+  wssPort: "6002",
   forceTLS: false,
   encrypted: true,
   disableStats: true,
@@ -2103,11 +2103,11 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   authEndpoint: '/api/broadcasting/auth',
   auth: {
     headers: {
-      Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZmNlODQxM2I5M2FkYjFhMjdkMDlhODdiYTk4NGYwOWRmM2M4ZDgzYjUxYTdhNDU4MTlkZmExMTBmY2Q4NjY0M2U1Yzg0MzE2MmRkNmMxM2IiLCJpYXQiOjE2NTA0NjU4MzIuMTUyNjEsIm5iZiI6MTY1MDQ2NTgzMi4xNTI2MzcsImV4cCI6MTY4MjAwMTgzMi4wMzA3MDcsInN1YiI6IjQwMSIsInNjb3BlcyI6WyJwbGFjZS1hcHAiXX0.n3MkGGjPKWK2plX8IEsMXX1FpvKXW4SwOvfvPdGk37Qv2GUZPpU2UbOK1McrDTy5_85sPtSb9BpQETtSjXz9iwFuptmpLYMXZfLe4bWFgKorJEOb_4eiNaQuCLm_lm-AbrnMHdooCIV_OGfs41BL4uTCBzZjelOL-zTP23U93pEkANU0NG6gsTvPVSxi9aeveQazbBXTXxyA2WMvgyze1NCG-qgCH6VqAI_tGbW-5m6X0AAwAKMzjYP3UUlv6TnKsYvjXpB6-OI3gAEGTA6x1BfeWhvrXQLDZx99fHRgF1tLxOv7key1Vn6Vt3vL-X5EKJMRBZdNk-To12dFnXw2Qz8VSIt-uSc0v_ahG7LfeHfy0GPUcfkjtuKQ3jbvX_1mcrMzbceKcoDVZhMgLq5S9AbuSRysBYhLwrC3S9rBKUwMR_90e7CsAPvGeXv5WjqzySjVHbdiKApmh2mdngBP-jhSaxbKiGS41whWBrNDMdd5xV5Z532DOUNLdmDxbaHrabEXgjBhDIgVvu2DIGlfXkQ7PHbE0oTSH9pIYcyPvuIEq9G5JAYuN6ngizb47Xxmq5mo_Vl4CCYYkg7FZnuWgs3JY0PyNPP79H7YHH0gbJVsStzkXeSGrMoA_IsWXmJw9cIV-YX1gevVGvEofBnE0e68ora_-tC0lFcmhI82cR8'
+      Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMDMwMzk3YjNiOGZlODBjNDZiOTA2N2NhZDJhYmM1ZDgzNjc1MDA0ZGE3ZTFlNzFhZjViYTBmMTc2MjVjZjE5N2Y0YzA1MGU0NDMyNjE0ODciLCJpYXQiOjE2NTA2MzI5MjQuNTI3NjE5LCJuYmYiOjE2NTA2MzI5MjQuNTI3NjIyLCJleHAiOjE2ODIxNjg5MjQuMTY4ODg4LCJzdWIiOiIzNzUiLCJzY29wZXMiOlsicGxhY2UtYXBwIl19.qCL7ymOd7GdhT_hlUrLA_GJ062CrKkiU7FXW_3b8JQxzl3HKAZmIPwkwc2Ns27Kd7LzHJneFHwmeNiyzfxMAC6MEsW0_XTSX010Fv1Ns60bYhRN9zRHoUeT0LsAuZjkqVkctomgnzaW8rCXGXXMuLKabtFemr7c-iEfDse5QOzeFla8zNJjJRKIyH6N8mN3iamQKYBz7Gps8H3n1dZDe0Te2nwbgw67YAYmN8XouJ6JrcZ4_RW809YUx-tkWYdOPu0iBoNsDJSRipeslykCUOrQ9FdNwD9w4hspJXyb_Fbr_tWxmfuQaAjW_rEtePleq8hGBObwZB2jNyOuWvTT5M-ZVdcRI7h-vJeDXq-CgsNot4sDB1ZIME7w1K3ZVhls_-UcC1fY2A9sRrL3E_vJdFS35sXNmJVbt4tUX3ns-xKmWJarmoV3B0Qx4X5HHiu880ZaFPfQB3ovs2ccow0jT-5MXWPL0gr81DozWSz6JKgFYGpohmFskDclzMtr62yjbscQRxYcpwkH-x1xGUqtVmBvdMowvK_0tsrg46Kj5pe0IAXwaA92-g8XVfWobKOFP0auH7XA5Kb2GlUIZ3SEyOdou0ZapkFU-6TNSQCSkMueXlgdToso2sFX9UWpaYmnzpJbXH7MyofiHjLHX4fOzmB3FJ4kjOzLhVNyu7najGZ0'
     }
   }
 });
-window.Echo["private"]('auction.1').listen('AuctionBidEvent', function (e) {
+window.Echo["private"]('auction.3').listen('AuctionBidEvent', function (e) {
   console.log(e);
 });
 
