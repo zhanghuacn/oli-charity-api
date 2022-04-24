@@ -102,8 +102,8 @@ class AuctionController extends Controller
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
         $data = Order::filter($request->all())->where([
-                'user_id' => Auth::id(),
-                'type' => Order::TYPE_AUCTION])->paginate($request->input('per_page', 15));
+            'user_id' => Auth::id(),
+            'type' => Order::TYPE_AUCTION])->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function (Order $order) {
             return [
                 'order_sn' => $order->order_sn,
@@ -114,6 +114,7 @@ class AuctionController extends Controller
                 'status' => $order->payment_status,
                 'expired_at' => Carbon::parse($order->created_at)->addDays(15)->format('Y-m-d H:i:s'),
                 'created_at' => $order->created_at->format('Y-m-d H:i:s'),
+                'charity' => $order->charity()->first(['id', 'name', 'logo', 'description'])
             ];
         });
         return Response::success($data);
