@@ -109,6 +109,7 @@ class AuctionController extends Controller
                 'order_sn' => $order->order_sn,
                 'name' => $order->orderable->name,
                 'images' => $order->orderable->images,
+                'description' => $order->orderable->description,
                 'start_price' => $order->orderable->price,
                 'amount' => $order->total_amount,
                 'status' => $order->payment_status,
