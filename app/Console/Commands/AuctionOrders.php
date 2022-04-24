@@ -30,7 +30,7 @@ class AuctionOrders extends Command
                 $order = new Order();
                 $order->user_id = $auction->current_bid_user_id;
                 $order->type = Order::TYPE_AUCTION;
-                $order->charity_id = $auction->id;
+                $order->charity_id = $auction->charity_id;
                 $order->activity_id = $auction->activity_id;
                 $order->currency = Str::lower(Config::get('cashier.currency'));
                 $order->amount = $auction->current_bid_price;
