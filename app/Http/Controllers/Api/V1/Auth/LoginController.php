@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessStripeCustomer;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -32,6 +33,9 @@ class LoginController extends Controller
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             abort(422, 'The provided credentials are incorrect.');
         }
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
@@ -52,6 +56,9 @@ class LoginController extends Controller
             }
         }
         $user = User::where(['phone' => $request->get('phone')])->firstOrFail();
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         Cache::forget($key);
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
@@ -71,6 +78,9 @@ class LoginController extends Controller
             }
         }
         $user = User::where(['email' => $request->get('email')])->firstOrFail();
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         Cache::forget($key);
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
@@ -99,6 +109,9 @@ class LoginController extends Controller
                 'extends->' . $provider => $socialite->id,
             ]
         );
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
@@ -127,6 +140,9 @@ class LoginController extends Controller
         $user = User::whereEmail($email)->firstOrFail();
         $user->forceFill(['password' => Hash::make($request->get('password')),])->save();
         $user->tokens()->delete();
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         Cache::forget($key);
         return Response::success();
     }
@@ -152,6 +168,9 @@ class LoginController extends Controller
         $user = User::wherePhone($phone)->firstOrFail();
         $user->forceFill(['password' => Hash::make($request->get('password'))])->save();
         $user->tokens()->delete();
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         Cache::forget($key);
         return Response::success();
     }
