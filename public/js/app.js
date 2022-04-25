@@ -2093,8 +2093,8 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: "app-key",
-  wsHost: "socket.imagine2080.com.au",
-  wsPort: "6002",
+  wsHost: "socket.valsn.com",
+  wsPort: "6003",
   wssPort: "6002",
   forceTLS: false,
   encrypted: true,
