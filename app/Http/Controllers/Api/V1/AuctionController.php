@@ -113,6 +113,7 @@ class AuctionController extends Controller
                 'start_price' => $order->orderable->price,
                 'amount' => $order->total_amount,
                 'status' => $order->payment_status,
+                'is_receive' => $order->orderable->is_receive,
                 'expired_at' => Carbon::parse($order->created_at)->addDays(15)->format('Y-m-d H:i:s'),
                 'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                 'charity' => $order->charity()->first(['id', 'name', 'logo', 'description'])
@@ -176,5 +177,39 @@ class AuctionController extends Controller
         $auction->is_receive = true;
         $auction->save();
         return Response::success();
+    }
+
+    public function warehouse(Request $request, Activity $activity): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'sort' => 'sometimes|string|in:ASC,DESC',
+            'page' => 'sometimes|numeric|min:1|not_in:0',
+            'per_page' => 'sometimes|numeric|min:1|not_in:0',
+        ]);
+        Gate::authorize('check-staff', $activity);
+        $data = Order::filter($request->all())->where([
+            'activity_id' => $activity->id,
+            'type' => Order::TYPE_AUCTION])->paginate($request->input('per_page', 15));
+        $data->getCollection()->transform(function (Order $order) {
+            return [
+                'order_sn' => $order->order_sn,
+                'name' => $order->orderable->name,
+                'images' => $order->orderable->images,
+                'description' => $order->orderable->description,
+                'start_price' => $order->orderable->price,
+                'amount' => $order->total_amount,
+                'status' => $order->payment_status,
+                'is_receive' => $order->orderable->is_receive,
+                'expired_at' => Carbon::parse($order->created_at)->addDays(15)->format('Y-m-d H:i:s'),
+                'created_at' => $order->created_at->format('Y-m-d H:i:s'),
+                'charity' => $order->charity()->first(['id', 'name', 'logo', 'description']),
+                'user' => [
+                    'id' => $order->user->id,
+                    'username' => $order->user->username,
+                    'avatar' => $order->user->avatar,
+                ]
+            ];
+        });
+        return Response::success($data);
     }
 }
