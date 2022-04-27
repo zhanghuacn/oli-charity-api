@@ -107,6 +107,7 @@ class AuctionController extends Controller
         $data->getCollection()->transform(function (Order $order) {
             return [
                 'order_sn' => $order->order_sn,
+                'id' => $order->orderable->id,
                 'name' => $order->orderable->name,
                 'images' => $order->orderable->images,
                 'description' => $order->orderable->description,
@@ -193,6 +194,7 @@ class AuctionController extends Controller
         $data->getCollection()->transform(function (Order $order) {
             return [
                 'order_sn' => $order->order_sn,
+                'id' => $order->orderable->id,
                 'name' => $order->orderable->name,
                 'images' => $order->orderable->images,
                 'description' => $order->orderable->description,
