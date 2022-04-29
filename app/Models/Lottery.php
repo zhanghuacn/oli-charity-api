@@ -88,4 +88,11 @@ class Lottery extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    public function getImagesAttribute($value): array
+    {
+        return collect($value)->transform(function ($item) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
+        })->toArray();
+    }
 }

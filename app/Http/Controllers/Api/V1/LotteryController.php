@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\LotteryCollection;
-use App\Http\Resources\Api\LotteryResource;
 use App\Models\Activity;
 use App\Models\Lottery;
+use App\Models\Prize;
+use App\Models\Sponsor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +30,23 @@ class LotteryController extends Controller
                 'standard_oli_register' => $item->extends['standard_oli_register'] ?? false,
                 'is_standard_oli_register' => Auth::user()->sync ?? false,
                 'is_standard' => floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
-                'lottery_code' => $activity->my_ticket->lottery_code
+                'lottery_code' => $activity->my_ticket->lottery_code,
+                'prizes' => $item->prizes->transform(function (Prize $prize) {
+                    return [
+                        'id' => $prize->id,
+                        'name' => $prize->name,
+                        'stock' => $prize->num,
+                        'price' => floatval($prize->price),
+                        'sponsor' => optional($prize->prizeable)->getMorphClass() != Sponsor::class ? [] : [
+                            'id' => $prize->prizeable->id,
+                            'name' => $prize->prizeable->name,
+                            'logo' => $prize->prizeable->logo,
+                        ],
+                        'images' => $prize->images,
+                        'description' => $prize->description,
+                        'winners' => $prize->winners,
+                    ];
+                }),
             ];
         });
         return Response::success($data);

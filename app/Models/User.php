@@ -323,4 +323,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'type_name' => $this->charities()->exists() ? $this->charities()->first()->name : ($this->sponsors()->exists() ? $this->sponsors()->first()->name : ''),
         ];
     }
+
+    public function getAvatarAttribute($value): string
+    {
+        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+    }
 }
