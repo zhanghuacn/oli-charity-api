@@ -123,7 +123,7 @@ class Sponsor extends Model
 
     public function getImagesAttribute($value): array
     {
-        return collect($value)->transform(function ($item) {
+        return collect(json_decode($value, true))->transform(function ($item) {
             return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
         })->toArray();
     }
@@ -140,14 +140,14 @@ class Sponsor extends Model
 
     public function getCredentialsAttribute($value): array
     {
-        return collect($value)->transform(function ($item) {
+        return collect(json_decode($value, true))->transform(function ($item) {
             return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
         })->toArray();
     }
 
     public function getDocumentsAttribute($value): array
     {
-        return collect($value)->transform(function ($item) {
+        return collect(json_decode($value, true))->transform(function ($item) {
             return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
         })->toArray();
     }

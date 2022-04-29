@@ -221,7 +221,7 @@ class Activity extends Model
 
     public function getImagesAttribute($value): array
     {
-        return collect($value)->transform(function ($item) {
+        return collect(json_decode($value, true))->transform(function ($item) {
             return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
         })->toArray();
     }
