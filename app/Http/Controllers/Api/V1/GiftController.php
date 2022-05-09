@@ -16,7 +16,7 @@ class GiftController extends Controller
 {
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         return Response::success($activity->gifts->transform(function ($item) {
             return [
                 'id' => $item->id,

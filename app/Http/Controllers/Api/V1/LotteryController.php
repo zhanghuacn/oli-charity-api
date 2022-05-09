@@ -18,7 +18,7 @@ class LotteryController extends Controller
 {
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         $data = $activity->lotteries()->get()->map(function ($item) use ($activity) {
             return [
                 'id' => $item->id,

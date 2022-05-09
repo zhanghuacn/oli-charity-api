@@ -94,6 +94,12 @@ Route::get('/events', [ActivityController::class, 'index']);
 Route::get('/events/{activity}', [ActivityController::class, 'show']);
 Route::get('/users/{user}', [UserController::class, 'show']);
 
+
+Route::get('/events/{activity}/lotteries',  [LotteryController::class, 'index']);
+Route::get('/events/{activity}/auctions',  [AuctionController::class, 'index']);
+Route::get('/events/{activity}/gifts',  [GiftController::class, 'index']);
+Route::get('/events/{activity}/goods', [GoodsController::class, 'index']);
+
 Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::post('/auth/logout', [LoginController::class, 'logout']);
 
@@ -149,19 +155,19 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     });
 
     Route::controller(LotteryController::class)->group(function () {
-        Route::get('/events/{activity}/lotteries', 'index');
+//        Route::get('/events/{activity}/lotteries', 'index');
         Route::get('/events/{activity}/lotteries/{lottery}', 'show');
         Route::get('/events/{activity}/lotteries/{lottery}/qualification', 'qualification');
     });
 
     Route::controller(GoodsController::class)->group(function () {
-        Route::get('/events/{activity}/goods', 'index');
+//        Route::get('/events/{activity}/goods', 'index');
         Route::get('/events/{activity}/goods/{goods}', 'show');
         Route::post('/events/{activity}/goods/{goods}/actions/order', 'order');
     });
 
     Route::controller(GiftController::class)->group(function () {
-        Route::get('/events/{activity}/gifts', 'index');
+//        Route::get('/events/{activity}/gifts', 'index');
         Route::get('/events/{activity}/gifts/{gift}', 'show');
         Route::post('/events/{activity}/gifts/{gift}/actions/like', 'like');
     });
@@ -211,7 +217,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     });
 
     Route::controller(AuctionController::class)->group(function () {
-        Route::get('/events/{activity}/auctions', 'index');
+//        Route::get('/events/{activity}/auctions', 'index');
         Route::get('/auctions/{auction}', 'show');
         Route::get('/auction/orders', 'orders');
         Route::get('/events/{activity}/auction_orders', 'warehouse');
