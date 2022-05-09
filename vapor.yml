@@ -16,6 +16,7 @@ environments:
     timeout: 300
     build:
       - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader --no-dev'
+      - 'php artisan telescope:publish'
       - 'php artisan event:cache'
     deploy:
       - 'php artisan migrate --force'
@@ -34,6 +35,7 @@ environments:
     timeout: 300
     build:
       - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --optimize-autoloader'
+      - 'php artisan telescope:publish'
       - 'php artisan event:cache'
     deploy:
       - 'php artisan migrate --force'
