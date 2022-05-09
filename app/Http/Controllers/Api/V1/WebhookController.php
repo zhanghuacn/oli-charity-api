@@ -103,23 +103,28 @@ class WebhookController extends CashierController
             } while (true);
         }
         $ticket->save();
+        $activity_total_amount = !empty($order->activity->extends['total_amount']) ? $order->activity->extends['total_amount'] : 0;
+        $charity_total_amount = !empty($order->charity->extends['total_amount']) ? $order->charity->extends['total_amount'] : 0;
+        $participates =!empty($order->charity->extends['participates']) ? $order->activity->extends['participates'] : 0;
         $order->activity()->update([
-            'extends->participates' => bcadd(intval($order->activity->extends['participates']) ?? 0, 1),
-            'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
+            'extends->participates' => bcadd(intval($participates) ?? 0, 1),
+            'extends->total_amount' => bcadd(floatval($activity_total_amount), $order->amount)
         ]);
         $order->charity()->update([
-            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
+            'extends->total_amount' => bcadd(floatval($charity_total_amount), $order->amount)
         ]);
         $order->activity()->decrement('stocks');
     }
 
     private static function handleBazaar(Order $order): void
     {
+        $activity_total_amount = !empty($order->activity->extends['total_amount']) ? $order->activity->extends['total_amount'] : 0;
+        $charity_total_amount = !empty($order->charity->extends['total_amount']) ? $order->charity->extends['total_amount'] : 0;
         $order->activity()->update([
-            'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
+            'extends->total_amount' => bcadd(floatval($activity_total_amount), $order->amount)
         ]);
         $order->charity()->update([
-            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
+            'extends->total_amount' => bcadd(floatval($charity_total_amount), $order->amount)
         ]);
         $order->orderable()->decrement('stock');
         Bazaar::create([
@@ -134,29 +139,34 @@ class WebhookController extends CashierController
 
     private static function handleAuction(Order $order): void
     {
+        $activity_total_amount = !empty($order->activity->extends['total_amount']) ? $order->activity->extends['total_amount'] : 0;
+        $charity_total_amount = !empty($order->charity->extends['total_amount']) ? $order->charity->extends['total_amount'] : 0;
         $order->activity()->update([
-            'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
+            'extends->total_amount' => bcadd(floatval($activity_total_amount), $order->amount)
         ]);
         $order->charity()->update([
-            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
+            'extends->total_amount' => bcadd(floatval($charity_total_amount), $order->amount)
         ]);
     }
 
     private static function handleActivity(Order $order): void
     {
-        $order->activity->update([
-            'extends->total_amount' => bcadd(floatval($order->activity->extends['total_amount']) ?? 0, $order->amount)
+        $activity_total_amount = !empty($order->activity->extends['total_amount']) ? $order->activity->extends['total_amount'] : 0;
+        $charity_total_amount = !empty($order->charity->extends['total_amount']) ? $order->charity->extends['total_amount'] : 0;
+        $order->activity()->update([
+            'extends->total_amount' => bcadd(floatval($activity_total_amount), $order->amount)
         ]);
-        $order->charity->update([
-            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
+        $order->charity()->update([
+            'extends->total_amount' => bcadd(floatval($charity_total_amount), $order->amount)
         ]);
         Ticket::where(['activity_id' => $order->activity_id, 'user_id' => $order->user_id])->increment('amount', $order->amount);
     }
 
     private static function handleCharity(Order $order): void
     {
+        $charity_total_amount = !empty($order->charity->extends['total_amount']) ? $order->charity->extends['total_amount'] : 0;
         $order->charity()->update([
-            'extends->total_amount' => bcadd(floatval($order->charity->extends['total_amount']) ?? 0, $order->amount)
+            'extends->total_amount' => bcadd(floatval($charity_total_amount), $order->amount)
         ]);
     }
 }
