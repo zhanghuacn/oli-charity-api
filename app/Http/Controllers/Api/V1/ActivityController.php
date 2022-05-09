@@ -97,7 +97,10 @@ class ActivityController extends Controller
                 };
                 $data['is_anonymous'] = $activity->my_ticket->anonymous;
                 $data['is_group'] = !empty($activity->my_ticket->group);
-                $data['is_sign'] = !empty($activity->my_ticket->verified_at);
+                if (!$activity->is_verification) {
+                    $activity->my_ticket->update(['verified_at' => now()]);
+                }
+                $data['is_sign'] = $activity->is_verification == false && !empty($activity->my_ticket->verified_at);
             }
         }
         visits($activity)->increment();
