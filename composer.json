@@ -21,7 +21,7 @@
         "jiannei/laravel-response": "^4.0",
         "kra8/laravel-snowflake": "^2.0",
         "laravel-notification-channels/aws-sns": "^1.4",
-        "laravel/cashier": "^13.6",
+        "laravel/cashier": "^13.10",
         "laravel/framework": "^9.4",
         "laravel/octane": "^1.2",
         "laravel/passport": "^10.2",
@@ -115,7 +115,7 @@
         "sort-packages": true,
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
-            "captainhook/plugin-composer": true
+            "captainhook/plugin-composer": false
         }
     },
     "minimum-stability": "dev",
