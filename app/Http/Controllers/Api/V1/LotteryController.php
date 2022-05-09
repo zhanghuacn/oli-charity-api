@@ -29,8 +29,8 @@ class LotteryController extends Controller
                 'standard_amount' => floatval($item->standard_amount),
                 'standard_oli_register' => $item->extends['standard_oli_register'] ?? false,
                 'is_standard_oli_register' => Auth::user()->sync ?? false,
-                'is_standard' => floatval($activity->my_ticket->amount) >= floatval($item->standard_amount) ?? false,
-                'lottery_code' => $activity->my_ticket->lottery_code,
+                'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
+                'lottery_code' => $activity->my_ticket != null ? $activity->my_ticket->lottery_code : null,
                 'prizes' => $item->prizes->transform(function (Prize $prize) {
                     return [
                         'id' => $prize->id,
