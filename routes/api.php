@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
+Route::any('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 Route::controller(HomeController::class)->group(function () {
     Route::get('/explore', 'explore');
