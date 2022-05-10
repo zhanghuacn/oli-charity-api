@@ -89,6 +89,7 @@ class ActivityResource extends JsonResource
                     'content' => $auction->content,
                     'trait' => $auction->trait,
                     'images' => $auction->images,
+                    'is_online' => $auction->is_online,
                     'price' => floatval($auction->price),
                     'start_time' => $auction->start_time,
                     'end_time' => $auction->end_time,
