@@ -100,6 +100,7 @@ Route::get('/events/{activity}/lotteries/{lottery}', [LotteryController::class, 
 
 Route::get('/events/{activity}/auctions', [AuctionController::class, 'index']);
 Route::get('/auctions/{auction}', [AuctionController::class, 'show']);
+Route::get('/auctions/{auction}/history', [AuctionController::class, 'history']);
 
 Route::get('/events/{activity}/gifts', [GiftController::class, 'index']);
 Route::get('/events/{activity}/gifts/{gift}', [GiftController::class, 'show']);
@@ -228,7 +229,7 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
 //        Route::get('/auctions/{auction}', 'show');
         Route::get('/auction/orders', 'orders');
         Route::get('/events/{activity}/auction_orders', 'warehouse');
-        Route::get('/auctions/{auction}/history', 'history');
+//        Route::get('/auctions/{auction}/history', 'history');
         Route::post('/auctions/{auction}/bid', 'bid');
         Route::post('/auction/order/payment', 'payment');
         Route::post('/auctions/{auction}/affirm', 'affirm');
