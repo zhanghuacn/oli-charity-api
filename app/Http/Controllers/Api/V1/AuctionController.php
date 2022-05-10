@@ -36,7 +36,7 @@ class AuctionController extends Controller
 
     public function show(Auction $auction): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $auction->activity);
+//        Gate::authorize('check-ticket', $auction->activity);
         visits($auction)->increment();
         return Response::success(new AuctionResource($auction));
     }

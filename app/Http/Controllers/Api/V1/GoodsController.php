@@ -47,7 +47,7 @@ class GoodsController extends Controller
 
     public function show(Activity $activity, Goods $goods): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404);
         return Response::success(new GoodsResource($goods));
     }

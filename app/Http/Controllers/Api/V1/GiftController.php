@@ -35,7 +35,7 @@ class GiftController extends Controller
 
     public function show(Activity $activity, Gift $gift): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         abort_if($activity->gifts()->where(['id' => $gift->id])->doesntExist(), 404);
         return Response::success(new GiftResource($gift));
     }
