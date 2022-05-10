@@ -97,6 +97,7 @@ class ActivityResource extends JsonResource
                     'price' => floatval($auction->price),
                     'start_time' => $auction->start_time,
                     'end_time' => $auction->end_time,
+                    'is_online' => $auction->is_online,
                     'sponsor' => optional($auction->auctionable)->getMorphClass() != Sponsor::class ? [] : [
                         'id' => $auction->auctionable->id,
                         'name' => $auction->auctionable->name,
