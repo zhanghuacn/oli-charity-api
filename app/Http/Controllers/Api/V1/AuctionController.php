@@ -43,7 +43,7 @@ class AuctionController extends Controller
 
     public function history(Request $request, Auction $auction): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $auction->activity);
+//        Gate::authorize('check-ticket', $auction->activity);
         $request->validate([
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
