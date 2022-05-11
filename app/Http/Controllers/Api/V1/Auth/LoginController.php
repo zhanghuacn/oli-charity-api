@@ -30,9 +30,8 @@ class LoginController extends Controller
             $account = Str::substr($account, 0, 2) != '61' ? sprintf('61%s', $account) : $account;
         }
         $user = User::where('phone', $account)->orWhere('email', $account)->orWhere('username', $account)->first();
-        if (!$user || !Hash::check($request->input('password'), $user->password)) {
-            abort(422, 'The provided credentials are incorrect.');
-        }
+        abort_if(!$user || !Hash::check($request->input('password'), $user->password), 422, 'The provided credentials are incorrect.');
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
         }
@@ -56,6 +55,7 @@ class LoginController extends Controller
             }
         }
         $user = User::where(['phone' => $request->get('phone')])->firstOrFail();
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
         }
@@ -78,6 +78,7 @@ class LoginController extends Controller
             }
         }
         $user = User::where(['email' => $request->get('email')])->firstOrFail();
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
         }
@@ -109,6 +110,7 @@ class LoginController extends Controller
                 'extends->' . $provider => $socialite->id,
             ]
         );
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
         }
@@ -138,6 +140,7 @@ class LoginController extends Controller
             }
         }
         $user = User::whereEmail($email)->firstOrFail();
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         $user->forceFill(['password' => Hash::make($request->get('password')),])->save();
         $user->tokens()->delete();
         if (!$user->hasStripeId()) {
@@ -166,6 +169,7 @@ class LoginController extends Controller
             }
         }
         $user = User::wherePhone($phone)->firstOrFail();
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         $user->forceFill(['password' => Hash::make($request->get('password'))])->save();
         $user->tokens()->delete();
         if (!$user->hasStripeId()) {
