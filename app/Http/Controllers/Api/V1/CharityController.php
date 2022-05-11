@@ -99,7 +99,7 @@ class CharityController extends Controller
 
     public function history(Charity $charity): JsonResponse|JsonResource
     {
-        $data = $charity->orders()->where(['payment_status' => Order::STATUS_PAID])->transform(function (Order $order) {
+        $data = $charity->orders()->where(['payment_status' => Order::STATUS_PAID])->get()->transform(function (Order $order) {
             return [
                 'type' => $order->type,
                 'name' => Str::random(10),
