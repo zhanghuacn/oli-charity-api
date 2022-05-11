@@ -29,6 +29,7 @@ class CharityController extends Controller
 
     public function __construct(OrderService $orderService)
     {
+        parent::__construct();
         $this->orderService = $orderService;
     }
 
@@ -98,12 +99,12 @@ class CharityController extends Controller
 
     public function history(Charity $charity): JsonResponse|JsonResource
     {
-        $data = $charity->activities->transform(function (Activity $activity) {
+        $data = $charity->orders()->where(['payment_status' => Order::STATUS_PAID])->transform(function (Order $order) {
             return [
-                'event_id' => $activity->id,
+                'type' => $order->type,
                 'name' => Str::random(10),
-                'date' => Carbon::parse($activity->begin_time)->toDateString(),
-                'amount' => floatval($activity->extends['total_amount']) ?? 0,
+                'date' => Carbon::parse($order->payment_time)->toDateString(),
+                'amount' => floatval($order->amount) ?? 0,
             ];
         });
         return Response::success($data);
