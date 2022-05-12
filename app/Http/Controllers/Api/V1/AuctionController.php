@@ -30,7 +30,7 @@ class AuctionController extends Controller
     public function index(Activity $activity): JsonResponse|JsonResource
     {
 //        Gate::authorize('check-ticket', $activity);
-        $data = $activity->auctions()->withCount('bidRecord')->get();
+        $data = $activity->auctions()->with('visits')->withCount('bidRecord')->get();
         return Response::success(new AuctionCollection($data));
     }
 
