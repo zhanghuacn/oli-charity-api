@@ -28,8 +28,8 @@ class ApiPolicy
 
     public function purchase(User $user, Activity $activity)
     {
-        return optional($activity->my_ticket)->activity_id == $activity->id
-            ? Response::allow() : abort(403, 'You must buy event tickets.');
+        abort_if(optional($activity->my_ticket)->activity_id != $activity->id, 403, 'You must buy event tickets.');
+        return true;
     }
 
     public function staff(User $user, Activity $activity): bool
