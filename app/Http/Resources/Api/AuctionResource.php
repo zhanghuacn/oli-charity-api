@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Models\Auction;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -37,7 +38,7 @@ class AuctionResource extends JsonResource
             ] : null,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
-            'visits' => $this->visits()->count(),
+            'visits' => visits(Auction::find($this->id))->count(),
             'sponsor' => [
                 'id' => optional($this->auctionable)->id,
                 'name' => optional($this->auctionable)->name,
