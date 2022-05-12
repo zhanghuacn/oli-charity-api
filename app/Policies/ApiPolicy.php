@@ -8,6 +8,7 @@ use App\Models\Group;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class ApiPolicy
 {
@@ -15,7 +16,7 @@ class ApiPolicy
 
     public function apply(User $user, Activity $activity): bool
     {
-        if ($activity->is_private == true) {
+        if ($activity->is_private) {
             if ($activity->applies()->where(['user_id' => $user->id, 'status' => Apply::STATUS_PASSED])->exists()) {
                 return true;
             } else {
@@ -25,9 +26,10 @@ class ApiPolicy
         return true;
     }
 
-    public function purchase(User $user, Activity $activity): bool
+    public function purchase(User $user, Activity $activity)
     {
-        return optional($activity->my_ticket)->activity_id == $activity->id;
+        return optional($activity->my_ticket)->activity_id == $activity->id
+            ? Response::allow() : Response::deny('You must buy event tickets.');
     }
 
     public function staff(User $user, Activity $activity): bool
