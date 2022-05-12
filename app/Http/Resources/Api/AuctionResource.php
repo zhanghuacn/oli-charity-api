@@ -39,6 +39,7 @@ class AuctionResource extends JsonResource
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'visits' => visits(Auction::find($this->id))->count(),
+            'is_payment_method' => \Auth::check() ? \Auth::user()->hasPaymentMethod() : false,
             'sponsor' => [
                 'id' => optional($this->auctionable)->id,
                 'name' => optional($this->auctionable)->name,
