@@ -44,7 +44,7 @@ return [
     | Will count only one visit of an IP during this specified time.
     |
     */
-    'remember_ip' => 15 * 60,
+    'remember_ip' => 1,
 
     /*
     |--------------------------------------------------------------------------
