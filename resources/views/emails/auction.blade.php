@@ -3,7 +3,7 @@
 # Dear user
 
 <p>Congratulations! You've won the auction with an AU <font size="5">{{ $auction->current_bid_price }}</font>  Next, please make a payment to receive your item.</p>
-<p>You placed {{ $bid_num }} bids and beat {{ $user_num }} bidders.</p>
+<p>You placed {{ $bid_num }} bids and beat {{ $user_count }} bidders.</p>
 <center><img src="{{ collect($auction->images)->first }}" alt="{{ $auction->name }}" width="300" height="300"/></center>
 <p>If you have any questions, please contact the administrator of the WeChat group.</p>
 
