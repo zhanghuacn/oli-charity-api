@@ -55,11 +55,11 @@ class AuctionOrders extends Command
                 }
                 if (!empty($user->phone)) {
                     $bid_num = $auction->bidRecord()->where(['user_id' => $auction->current_bid_user_id])->count();
-                    $user_count = $auction->bidRecord()->groupBy('user_id')->count();
+                    $user_count = $auction->bidRecord()->groupBy('user_id')->distinct()->count();
 
                     $this->snsClient->publish([
                         'Message' => sprintf(
-                            "【%s】Congratulations! You've won the auction with an AU %s. Next, please make a payment to receive your item. You placed %s bids and beat %s bidders.",
+                            "【%s】Congratulations! You've won the auction with an AU $%s. Next, please make a payment to receive your item. You placed %s bids and beat %s bidders.",
                             config('app.name'),
                             $auction->current_bid_price,
                             $bid_num,
