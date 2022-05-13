@@ -36,11 +36,10 @@ class AuctionOrderCreated extends Mailable implements ShouldQueue
         $user_count = $this->auction->bidRecord()->groupBy('user_id')->count();
         return $this->subject(sprintf('You won! Pay now to receive %s.', $this->auction->name))
             ->markdown('emails.auction', [
-                'price' => $this->auction->price,
-                'images' => collect($this->auction->images)->first,
-                'auction_name' => $this->auction->name,
+                'auction' => $this->auction,
                 'bid_num' => $bid_num,
-                'user_count' => $user_count > 1 ? $user_count - 1 : 0,
+                'image' => collect($this->auction->images)->first(),
+                'user_num' => $user_count > 1 ? $user_count - 1 : 0,
             ]);
     }
 }
