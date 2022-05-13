@@ -121,7 +121,8 @@ class ActivityController extends Controller
     public function personRanks(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $ranks = $activity->tickets()->with('user')->orderByDesc('amount')->get()
+        $ranks = $activity->tickets()->whereNotIn('type', [Ticket::TYPE_HOST, Ticket::TYPE_STAFF])
+            ->with('user')->orderByDesc('amount')->get()
             ->map(function (Ticket $ticket) {
                 return [
                     'id' => $ticket->user->id,
