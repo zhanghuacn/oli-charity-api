@@ -6,6 +6,7 @@ use App\Mail\AuctionOrderCreated;
 use App\Mail\CaptchaShipped;
 use App\Models\Auction;
 use App\Models\Order;
+use App\Models\User;
 use Aws\Sns\SnsClient;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
@@ -40,13 +41,14 @@ class AuctionOrders extends Command
                         $order->total_amount = $auction->current_bid_price;
                         $order->orderable()->associate($auction);
                         $order->save();
+                        $user = User::findOrFail($auction->current_bid_user_id);
+                        if (!empty($user)) {
+                            Mail::to($user->email)->send(new AuctionOrderCreated($auction));
+                        }
                     }
                     $auction->is_auction = false;
                     $auction->save();
                 });
-                if (!empty($auction->user->email)) {
-                    Mail::to($auction->user->email)->send(new AuctionOrderCreated($auction));
-                }
             });
     }
 }
