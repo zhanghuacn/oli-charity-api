@@ -25,25 +25,28 @@ class AuctionOrders extends Command
      */
     public function handle()
     {
-        Auction::where([['is_auction', '=', true], ['end_time', '<', now()]])->get()->each(function (Auction $auction) {
-            DB::transaction(function () use ($auction) {
-                $order = new Order();
-                $order->user_id = $auction->current_bid_user_id;
-                $order->type = Order::TYPE_AUCTION;
-                $order->charity_id = $auction->charity_id;
-                $order->activity_id = $auction->activity_id;
-                $order->currency = Str::lower(Config::get('cashier.currency'));
-                $order->amount = $auction->current_bid_price;
-                $order->fee_amount = 0;
-                $order->total_amount = $auction->current_bid_price;
-                $order->orderable()->associate($auction);
-                $order->save();
-                $auction->is_auction = false;
-                $auction->save();
+        Auction::where([['is_auction', '=', true], ['end_time', '<', now()]])->get()
+            ->each(function (Auction $auction) {
+                DB::transaction(function () use ($auction) {
+                    if (!empty($auction->current_bid_user_id)) {
+                        $order = new Order();
+                        $order->user_id = $auction->current_bid_user_id;
+                        $order->type = Order::TYPE_AUCTION;
+                        $order->charity_id = $auction->charity_id;
+                        $order->activity_id = $auction->activity_id;
+                        $order->currency = Str::lower(Config::get('cashier.currency'));
+                        $order->amount = $auction->current_bid_price;
+                        $order->fee_amount = 0;
+                        $order->total_amount = $auction->current_bid_price;
+                        $order->orderable()->associate($auction);
+                        $order->save();
+                    }
+                    $auction->is_auction = false;
+                    $auction->save();
+                });
+                if (!empty($auction->user->email)) {
+                    Mail::to($auction->user->email)->send(new AuctionOrderCreated($auction));
+                }
             });
-            if (!empty($auction->user->email)) {
-                Mail::to($auction->user->email)->send(new AuctionOrderCreated($auction));
-            }
-        });
     }
 }
