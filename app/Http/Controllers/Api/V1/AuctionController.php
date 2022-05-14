@@ -207,7 +207,7 @@ class AuctionController extends Controller
                 'charity' => $order->charity()->first(['id', 'name', 'logo', 'description']),
                 'user' => [
                     'id' => $order->user->id,
-                    'username' => $order->user->username,
+                    'username' => $order->user->name,
                     'avatar' => $order->user->avatar,
                 ]
             ];

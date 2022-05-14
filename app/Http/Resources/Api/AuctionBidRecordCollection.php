@@ -25,7 +25,7 @@ class AuctionBidRecordCollection extends ResourceCollection
                 'bid_price' => $item->bid_price,
                 'user' => [
                     'id' => $item->user->id,
-                    'name' => $item->user->username,
+                    'name' => $item->user->name,
                     'avatar' => $item->user->avatar,
                 ],
                 'created_at' => Carbon::parse($item->created_at)->format('Y-m-d H:i:s'),

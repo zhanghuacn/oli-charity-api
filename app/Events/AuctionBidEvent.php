@@ -42,7 +42,7 @@ class AuctionBidEvent implements ShouldBroadcast
             'bid_price' => $this->auctionBidRecord->bid_price,
             'user' => [
                 'id' => $this->auctionBidRecord->user->id,
-                'name' => $this->auctionBidRecord->user->username,
+                'name' => $this->auctionBidRecord->user->name,
                 'avatar' => $this->auctionBidRecord->user->avatar,
             ],
             'created_at' => Carbon::parse($this->auctionBidRecord->created_at)->format('Y-m-d H:i:s'),

@@ -55,7 +55,7 @@ class AuctionOrders extends Command
                 }
                 if (!empty($user->phone)) {
                     $bid_num = $auction->bidRecord()->where(['user_id' => $auction->current_bid_user_id])->count();
-                    $user_count = $auction->bidRecord()->groupBy('user_id')->distinct()->count();
+                    $user_count = $auction->bidRecord()->distinct('user_id')->count();
 
                     $this->snsClient->publish([
                         'Message' => sprintf(
