@@ -123,9 +123,6 @@ class ActivityController extends Controller
         Gate::authorize('check-ticket', $activity);
         $ranks = $activity->tickets()->whereNotIn('type', [Ticket::TYPE_HOST, Ticket::TYPE_STAFF])
             ->with('user')->orderByDesc('amount')->get()
-            ->filter(function (Ticket $ticket) {
-                return floatval($ticket->amount) > 0;
-            })
             ->map(function (Ticket $ticket) {
                 return [
                     'id' => $ticket->user->id,
