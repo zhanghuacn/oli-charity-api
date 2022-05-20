@@ -28,7 +28,7 @@ class ApiPolicy
 
     public function purchase(User $user, Activity $activity): bool
     {
-        abort_if(optional($activity->my_ticket)->activity_id != $activity->id, 403, 'You must buy event tickets.');
+        abort_if(optional($activity->my_ticket)->activity_id != $activity->id, 403, 'All guests are required to purchase event tickets before entering.');
         return true;
     }
 

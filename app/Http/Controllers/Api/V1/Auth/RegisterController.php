@@ -19,6 +19,8 @@ class RegisterController extends Controller
             'email' => 'required|email|unique:users',
             'code' => 'required|digits:4',
             'password' => ['required', Pwd::min(8)],
+        ], [
+            'email.unique' => 'The email is not registered or disabled',
         ]);
         $key = 'email:register:code:' . $request->get('email');
         if (config('app.env') == 'production') {
@@ -39,7 +41,7 @@ class RegisterController extends Controller
             'code' => 'required|digits:4',
             'password' => ['required', Pwd::min(8)],
         ], [
-            'phone.exists' => 'The phone number is not registered or disabled'
+            'phone.unique' => 'The phone number is not registered or disabled'
         ]);
         $key = 'phone:register:code:' . $request->get('phone');
         if (config('app.env') == 'production') {
