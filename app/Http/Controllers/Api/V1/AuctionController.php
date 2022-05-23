@@ -61,7 +61,7 @@ class AuctionController extends Controller
     {
         Gate::authorize('check-ticket', $auction->activity);
         $request->validate([
-            'amount' => 'required|numeric|min:1|not_in:0',
+            'amount' => 'required|numeric|min:1|max:999999999|not_in:0',
         ]);
         $key = sprintf('AUCTION_%d_%d_AMOUNT', $auction->activity_id, $auction->id);
         if (Cache::has($key)) {

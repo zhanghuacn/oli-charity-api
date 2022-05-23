@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+
 use function abort;
 use function abort_if;
 use function visits;
@@ -30,6 +31,7 @@ class ActivityController extends Controller
 
     public function __construct(OrderService $orderService)
     {
+        parent::__construct();
         $this->orderService = $orderService;
     }
 

@@ -23,6 +23,7 @@ class TicketController extends Controller
 
     public function __construct(OrderService $orderService)
     {
+        parent::__construct();
         $this->orderService = $orderService;
     }
 
