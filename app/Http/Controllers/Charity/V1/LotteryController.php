@@ -32,7 +32,7 @@ class LotteryController extends Controller
             Log::info('tickets:' . json_encode($tickets));
             $money = collect($tickets)->values();
             $ids = array_keys($tickets);
-            $n = min($lottery->prizes()->sum('num'), count(array_keys($tickets)));
+            $n = intval($lottery->prizes()->sum('num'));
             $param = ['money' => $money, 'ids' => $ids, 'n' => $n, 'min_requirement' => $lottery->standard_amount];
             Log::info('data:' . json_encode($param));
             abort_if(empty($money) || empty($ids) || empty($n), 500, 'Abnormal lottery conditions');
