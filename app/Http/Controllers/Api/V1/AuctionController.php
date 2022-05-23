@@ -65,12 +65,16 @@ class AuctionController extends Controller
         ]);
         $key = sprintf('AUCTION_%d_%d_AMOUNT', $auction->activity_id, $auction->id);
         if (Cache::has($key)) {
-            abort_if($request->get('amount') <= Cache::get($key), 422, 'Must be greater than the last auction price');
+            abort_if(
+                $request->get('amount') <= Cache::get($key),
+                422,
+                'Must be greater than the last auction price $' . floatval($auction->current_bid_price) ?? $auction->price
+            );
         } else {
             abort_if(
                 floatval($request->get('amount')) <= floatval($auction->current_bid_price) ?? $auction->price,
                 422,
-                'Must be greater than the last auction price'
+                'Must be greater than the last auction price $' . floatval($auction->current_bid_price) ?? $auction->price
             );
         }
         abort_if($auction->end_time < now(), 422, 'Auction is over');
