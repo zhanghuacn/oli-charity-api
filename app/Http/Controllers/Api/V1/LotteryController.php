@@ -30,7 +30,7 @@ class LotteryController extends Controller
                 'standard_oli_register' => $item->extends['standard_oli_register'] ?? false,
                 'is_standard_oli_register' => Auth::user()->sync ?? false,
                 'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
-                'lottery_code' => $activity->my_ticket != null ? $activity->my_ticket->lottery_code : null,
+                'lottery_code' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($item->standard_amount) ? $activity->my_ticket->lottery_code : null,
                 'prizes' => $item->prizes->transform(function (Prize $prize) {
                     return [
                         'id' => $prize->id,
@@ -65,7 +65,7 @@ class LotteryController extends Controller
             'standard_oli_register' => $lottery->extends['standard_oli_register'] ?? false,
             'is_standard_oli_register' => Auth::user()->sync ?? false,
             'is_standard' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount),
-            'lottery_code' => optional($activity->my_ticket)->lottery_code
+            'lottery_code' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount) ? optional($activity->my_ticket)->lottery_code : ''
         ];
         return Response::success($data);
     }
@@ -77,7 +77,7 @@ class LotteryController extends Controller
             $lottery->toArray(),
             [
                 'prizes' => $lottery->prizes,
-                'lottery_code' => optional($activity->my_ticket)->lottery_code,
+                'lottery_code' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount) ? optional($activity->my_ticket)->lottery_code : '',
                 'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($lottery->standard_amount),
                 'winner' => $lottery->prizes()->whereJsonContains('winners', ['id' => Auth::id()])->first(['id', 'name']),
             ]
