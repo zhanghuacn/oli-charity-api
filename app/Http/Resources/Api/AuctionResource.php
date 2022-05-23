@@ -33,7 +33,7 @@ class AuctionResource extends JsonResource
             'current_bid_price' => $this->current_bid_price,
             'current_bid_user' => $this->current_bid_user_id ? [
                 'id' => $this->user->id,
-                'name' => $this->user->username,
+                'name' => $this->user->name,
                 'avatar' => $this->user->avatar,
             ] : null,
             'start_time' => $this->start_time,
