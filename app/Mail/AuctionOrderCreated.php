@@ -38,7 +38,7 @@ class AuctionOrderCreated extends Mailable implements ShouldQueue
             ->markdown('emails.auction', [
                 'auction' => $this->auction,
                 'bid_num' => $bid_num,
-                'username' => optional($this->auction->user)->name,
+                'name' => optional($this->auction->user)->name,
                 'image' => collect($this->auction->images)->first(),
                 'user_num' => $user_count > 1 ? $user_count - 1 : 0,
             ]);

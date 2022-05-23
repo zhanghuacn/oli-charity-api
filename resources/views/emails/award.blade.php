@@ -1,6 +1,6 @@
 @component('mail::message')
 ### <center><img src="https://s3.imagine2080.com.au/public/email/imagine2080Logo.svg" alt="{{ config('app.name') }}"></center>
-# Dear user
+# Dear {{ $name }},
 
 <p>Congratulations, you've won the <font size="5">{{ $prize }}</font>  in our <font size="5">{{ $event }}</font>!</p>
 <p>You can claim your prize on the day of the banquet.</p>

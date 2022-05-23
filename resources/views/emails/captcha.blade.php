@@ -1,6 +1,6 @@
 @component('mail::message')
 ### <center><img src="https://s3.imagine2080.com.au/public/email/imagine2080Logo.svg" alt="{{ config('app.name') }}"></center>
-# Dear user
+# Dear User,
 Your verification code is valid for 15 minutes.
 <center><font size="16">{{ $code }}</font></center>
 
