@@ -46,7 +46,7 @@ class LotteryController extends Controller
                     $users = User::whereIn('id', $ids)->get(['id', 'name', 'avatar']);
                     $prize->update(['winners' => $users->toArray()]);
                     foreach ($users as $user) {
-                        $user->notify(new LotteryPaid($prize));
+                        $user->notify(new LotteryPaid($prize, $user));
                     }
                 }
                 $start += $prize->num;
