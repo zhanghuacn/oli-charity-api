@@ -21,22 +21,22 @@ class LotteryController extends Controller
     {
         abort_if($lottery->status, 422, 'Please do not repeat the lottery');
         DB::transaction(function () use ($lottery) {
-            $result = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
-            if ($lottery->extends['standard_oli_register'] == true) {
-                $result->whereHas('user', function ($query) {
+            $data = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
+            if ($lottery->extends['standard_oli_register']) {
+                $data->whereHas('user', function ($query) {
                     $query->where('sync', '=', true);
                 });
             }
-            abort_if($result->doesntExist(), 500, 'Too few participants in the lottery');
-            $tickets = $result->pluck('amount', 'user_id')->toArray();
+            abort_if($data->doesntExist(), 500, 'Too few participants in the lottery');
+            $tickets = $data->get()->pluck('amount', 'user_id')->toArray();
             Log::info('tickets:' . json_encode($tickets));
             $money = collect($tickets)->values();
             $ids = array_keys($tickets);
             $n = min($lottery->prizes()->sum('num'), count(array_keys($tickets)));
-            $data = ['money' => $money, 'ids' => $ids, 'n' => $n];
-            Log::info('data:' . json_encode($data));
+            $param = ['money' => $money, 'ids' => $ids, 'n' => $n, 'min_requirement' => $lottery->standard_amount];
+            Log::info('data:' . json_encode($param));
             abort_if(empty($money) || empty($ids) || empty($n), 500, 'Abnormal lottery conditions');
-            $body = Http::post(config('services.custom.lottery_url'), $data)->body();
+            $body = Http::post(config('services.custom.lottery_url'), $param)->body();
             $result = json_decode($body, true);
             abort_if(!is_array($result), 500, 'Lottery algorithm exception');
             $start = 0;
