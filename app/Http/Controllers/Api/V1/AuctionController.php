@@ -11,6 +11,7 @@ use App\Models\Activity;
 use App\Models\Auction;
 use App\Models\AuctionBidRecord;
 use App\Models\Order;
+use App\Rules\Price;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
