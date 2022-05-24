@@ -7,10 +7,10 @@ use App\Http\Resources\Api\BazaarCollection;
 use App\Http\Resources\Api\WarehouseCollection;
 use App\Models\Activity;
 use App\Models\Bazaar;
-use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
@@ -25,7 +25,8 @@ class BazaarController extends Controller
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = Bazaar::filter($request->all())->where(['user_id' => Auth::id()])->paginate($request->input('per_page', 15));
+        $data = Bazaar::filter($request->all())->where(['user_id' => Auth::id()])
+            ->paginate($request->input('per_page', 15));
         return Response::success(new BazaarCollection($data));
     }
 
@@ -46,6 +47,7 @@ class BazaarController extends Controller
         $request->validate([
             'remark' => 'nullable|string',
         ]);
+        Gate::authorize('check-staff', $bazaar->activity);
         abort_if($bazaar->is_receive, 422, 'Please do not repeat the confirmation');
         $bazaar->is_receive = true;
         $bazaar->save();

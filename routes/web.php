@@ -15,5 +15,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [HomeController::class, 'index']);
-Route::get('/recaptcha', [HomeController::class, 'reCaptcha']);
-Route::post('/store', [HomeController::class, 'store']);
+Route::get('/channel', [HomeController::class, 'channel']);

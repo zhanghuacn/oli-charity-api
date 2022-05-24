@@ -15,7 +15,7 @@ class GiftResource extends JsonResource
             'images' => $this->images,
             'description' => $this->description,
             'content' => $this->content,
-            'is_like' => $this->isLikedBy(Auth::user()),
+            'is_like' => Auth::check() ? $this->isLikedBy(Auth::user()) : false,
             'sponsor' => [
                 'id' => optional($this->giftable)->id,
                 'name' => optional($this->giftable)->name,

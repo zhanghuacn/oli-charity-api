@@ -1,6 +1,6 @@
 @component('mail::message')
-### <center><img src="https://vapor-ap-southeast-2-storage-1641439528.s3.ap-southeast-2.amazonaws.com/public/email/imagine2080Logo.svg" alt="{{ config('app.name') }}"></center>
-# Dear user
+### <center><img src="https://s3.imagine2080.com.au/public/email/imagine2080Logo.svg" alt="{{ config('app.name') }}"></center>
+# Dear {{ $name }},
 
 The lucky draw of <font size="5">{{ $event }}</font> will be held as scheduled after <font size="5">{{ $days }}</font> days.
 

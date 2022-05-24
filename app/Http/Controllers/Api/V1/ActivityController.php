@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+
 use function abort;
 use function abort_if;
 use function visits;
@@ -30,6 +31,7 @@ class ActivityController extends Controller
 
     public function __construct(OrderService $orderService)
     {
+        parent::__construct();
         $this->orderService = $orderService;
     }
 
@@ -97,7 +99,10 @@ class ActivityController extends Controller
                 };
                 $data['is_anonymous'] = $activity->my_ticket->anonymous;
                 $data['is_group'] = !empty($activity->my_ticket->group);
-                $data['is_sign'] = !empty($activity->my_ticket->verified_at);
+                if (!$activity->is_verification) {
+                    $activity->my_ticket->update(['verified_at' => now()]);
+                }
+                $data['is_sign'] = $activity->is_verification == false && !empty($activity->my_ticket->verified_at);
             }
         }
         visits($activity)->increment();
@@ -118,7 +123,8 @@ class ActivityController extends Controller
     public function personRanks(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-ticket', $activity);
-        $ranks = $activity->tickets()->with('user')->orderByDesc('amount')->get()
+        $ranks = $activity->tickets()->whereNotIn('type', [Ticket::TYPE_HOST, Ticket::TYPE_STAFF])
+            ->with('user')->orderByDesc('amount')->get()
             ->map(function (Ticket $ticket) {
                 return [
                     'id' => $ticket->user->id,
@@ -178,16 +184,22 @@ class ActivityController extends Controller
     public function order(Activity $activity, Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'method' => 'sometimes|in:STRIPE',
+            'payment_method' => 'nullable|string',
             'amount' => 'required|numeric|min:1|not_in:0',
         ]);
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
         abort_if(Carbon::parse($activity->end_time)->lt(Carbon::now()), 422, 'Event ended');
-        $order = $this->orderService->activity(Auth::user(), $activity, $request->get('amount'));
+        $order = $this->orderService->activity(
+            Auth::user(),
+            $activity,
+            $request->get('amount'),
+            $request->get('payment_method')
+        );
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,
-            'client_secret' => $order->extends['client_secret']
+            'client_secret' => $order->extends['client_secret'],
+            'payment_method' => $order->extends['payment_method'] ?? null
         ]);
     }
 

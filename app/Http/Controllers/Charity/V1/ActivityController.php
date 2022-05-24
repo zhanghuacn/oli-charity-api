@@ -7,6 +7,7 @@ use App\Http\Resources\Charity\ActivityCollection;
 use App\Http\Resources\Charity\ActivityResource;
 use App\Models\Activity;
 use App\Models\Album;
+use App\Models\Auction;
 use App\Models\Gift;
 use App\Models\Goods;
 use App\Models\Lottery;
@@ -30,6 +31,7 @@ class ActivityController extends Controller
 
     public function __construct(ActivityService $activityService)
     {
+        parent::__construct();
         $this->activityService = $activityService;
     }
 
@@ -46,12 +48,18 @@ class ActivityController extends Controller
         return Response::success(new ActivityCollection($activities));
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function views(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
         return Response::success($this->getDetails($activity));
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function tickets(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
@@ -76,6 +84,9 @@ class ActivityController extends Controller
         return Response::success($data);
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function seatAllocation(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
@@ -98,11 +109,15 @@ class ActivityController extends Controller
         return Response::success();
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function seatConfig(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
-        $data = ['seat_config' => $activity->settings['seat_config'], 'tickets' => $activity->tickets()->with(['group', 'user'])->get()
-            ->transform(function (Ticket $ticket) {
+        $data = [
+            'seat_config' => $activity->settings['seat_config'],
+            'tickets' => $activity->tickets()->with(['group', 'user'])->get()->transform(function (Ticket $ticket) {
                 return [
                     'id' => $ticket->id,
                     'avatar' => optional($ticket->user)->avatar,
@@ -128,6 +143,9 @@ class ActivityController extends Controller
         ]);
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function show(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
@@ -138,6 +156,9 @@ class ActivityController extends Controller
         }
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function details(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
@@ -148,6 +169,9 @@ class ActivityController extends Controller
     }
 
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function update(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
@@ -160,6 +184,9 @@ class ActivityController extends Controller
         ]);
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function destroy(Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
@@ -167,6 +194,9 @@ class ActivityController extends Controller
         return Response::success();
     }
 
+    /**
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function submit(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         Gate::authorize('check-charity-source', $activity);
@@ -178,14 +208,15 @@ class ActivityController extends Controller
         return Response::success();
     }
 
-    public function albumsIndex(Request $request, Activity $activity)
+    public function albumsIndex(Request $request, Activity $activity): JsonResponse|JsonResource
     {
         $request->validate([
             'sort' => 'sometimes|string|in:ASC,DESC',
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = $activity->albums()->filter($request->all())->select(['id', 'path'])->paginate($request->input('per_page', 15));
+        $data = $activity->albums()->filter($request->all())
+            ->select(['id', 'path'])->paginate($request->input('per_page', 15));
         return Response::success($data);
     }
 
@@ -203,7 +234,7 @@ class ActivityController extends Controller
         return Response::success();
     }
 
-    public function albumsDelete(Request $request, Activity $activity, Album $album)
+    public function albumsDelete(Activity $activity, Album $album): JsonResponse|JsonResource
     {
         $activity->albums()->where(['id' => $album->id])->delete();
         return Response::success();
@@ -262,6 +293,20 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'auctions' => 'sometimes|array',
+            'auctions.*.name' => 'required|string',
+            'auctions.*.description' => 'nullable|string',
+            'auctions.*.keyword' => 'nullable|array',
+            'auctions.*.thumb' => 'nullable|string',
+            'auctions.*.content' => 'nullable|string',
+            'auctions.*.trait' => 'nullable|array',
+            'auctions.*.images' => 'required|array',
+            'auctions.*.price' => 'required|numeric|min:0|not_in:0',
+            'auctions.*.start_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.end_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.is_online' => 'required|boolean',
+            'auctions.*.sponsor' => 'sometimes',
+            'auctions.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'gifts' => 'sometimes|array',
             'gifts.*.name' => 'required|string',
             'gifts.*.description' => 'required|string',
@@ -333,6 +378,21 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'auctions' => 'sometimes|array',
+            'auctions.*.id' => 'sometimes|integer|exists:auctions,id',
+            'auctions.*.name' => 'required|string',
+            'auctions.*.description' => 'nullable|string',
+            'auctions.*.keyword' => 'nullable|array',
+            'auctions.*.thumb' => 'nullable|string',
+            'auctions.*.content' => 'nullable|string',
+            'auctions.*.trait' => 'nullable|array',
+            'auctions.*.images' => 'required|array',
+            'auctions.*.price' => 'required|numeric|min:0|not_in:0',
+            'auctions.*.start_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.end_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.is_online' => 'required|boolean',
+            'auctions.*.sponsor' => 'sometimes',
+            'auctions.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'gifts' => 'sometimes|array',
             'gifts.*.name' => 'required|string',
             'gifts.*.description' => 'required|string',
@@ -405,6 +465,21 @@ class ActivityController extends Controller
             'sales.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'sales.*.images' => 'required|array',
             'sales.*.images.*' => 'required|url',
+            'auctions' => 'sometimes|array',
+            'auctions.*.id' => 'sometimes|integer|exists:auctions,id',
+            'auctions.*.name' => 'required|string',
+            'auctions.*.description' => 'nullable|string',
+            'auctions.*.keyword' => 'nullable|array',
+            'auctions.*.thumb' => 'nullable|string',
+            'auctions.*.content' => 'nullable|string',
+            'auctions.*.trait' => 'nullable|array',
+            'auctions.*.images' => 'required|array',
+            'auctions.*.price' => 'required|numeric|min:0|not_in:0',
+            'auctions.*.start_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.end_time' => 'required|date|date_format:Y-m-d H:i:s',
+            'auctions.*.is_online' => 'required|boolean',
+            'auctions.*.sponsor' => 'sometimes',
+            'auctions.*.sponsor.id' => 'sometimes|required|integer|exists:sponsors,id',
             'gifts' => 'sometimes|array',
             'gifts.*.name' => 'required|string',
             'gifts.*.description' => 'required|string',
@@ -460,13 +535,38 @@ class ActivityController extends Controller
                     'image' => collect($goods->images)->first(),
                     'sale_num' => $goods->extends['sale_num'],
                     'income' => $goods->extends['sale_income'],
-                    'order' => $goods->orders()->where(['payment_status' => Order::STATUS_PAID])->with('user')->get()->transform(function ($item) {
-                        return [
-                            'id' => optional($item->user)->id,
-                            'name' => optional($item->user)->name,
-                            'avatar' => optional($item->user)->avatar,
-                        ];
-                    }),
+                    'order' => $goods->orders()->where(['payment_status' => Order::STATUS_PAID])
+                        ->with('user')->get()->transform(function ($item) {
+                            return [
+                                'id' => optional($item->user)->id,
+                                'name' => optional($item->user)->name,
+                                'avatar' => optional($item->user)->avatar,
+                            ];
+                        }),
+                ];
+            }),
+            'auctions' => $activity->auctions->transform(function (Auction $auction) {
+                return [
+                    'id' => $auction->id,
+                    'name' => $auction->name,
+                    'description' => $auction->description,
+                    'thumb' => $auction->thumb,
+                    'keyword' => $auction->keyword,
+                    'content' => $auction->content,
+                    'trait' => $auction->trait,
+                    'is_online' => $auction->is_online,
+                    'images' => $auction->images,
+                    'price' => $auction->price,
+                    'start_time' => $auction->start_time,
+                    'end_time' => $auction->end_time,
+                    'order' => $auction->orders()->where(['payment_status' => Order::STATUS_PAID])
+                        ->with('user')->get()->transform(function ($item) {
+                            return [
+                                'id' => optional($item->user)->id,
+                                'name' => optional($item->user)->name,
+                                'avatar' => optional($item->user)->avatar,
+                            ];
+                        }),
                 ];
             }),
             'gifts' => $activity->gifts->transform(function (Gift $gift) {

@@ -1,9 +1,12 @@
 <?php
 
+use App\Events\AuctionBidEvent;
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AlbumController;
+use App\Http\Controllers\Api\V1\AuctionController;
 use App\Http\Controllers\Api\V1\Auth\CaptchaController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\PaymentMethodController;
 use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\Auth\UcenterController;
 use App\Http\Controllers\Api\V1\BazaarController;
@@ -19,10 +22,11 @@ use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TransferController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WebhookController;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facute;
 
 /*
-|--------------------------------------------------------------------------
+|----------------------------------ades\Ro----------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
@@ -32,7 +36,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
+Route::any('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 Route::controller(HomeController::class)->group(function () {
     Route::get('/explore', 'explore');
@@ -90,8 +94,35 @@ Route::get('/events', [ActivityController::class, 'index']);
 Route::get('/events/{activity}', [ActivityController::class, 'show']);
 Route::get('/users/{user}', [UserController::class, 'show']);
 
+
+Route::get('/events/{activity}/lotteries', [LotteryController::class, 'index']);
+Route::get('/events/{activity}/lotteries/{lottery}', [LotteryController::class, 'show']);
+
+Route::get('/events/{activity}/auctions', [AuctionController::class, 'index']);
+Route::get('/auctions/{auction}', [AuctionController::class, 'show']);
+Route::get('/auctions/{auction}/history', [AuctionController::class, 'history']);
+
+Route::get('/events/{activity}/gifts', [GiftController::class, 'index']);
+Route::get('/events/{activity}/gifts/{gift}', [GiftController::class, 'show']);
+
+Route::get('/events/{activity}/goods', [GoodsController::class, 'index']);
+Route::get('/events/{activity}/goods/{goods}', [GoodsController::class, 'show']);
+
 Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     Route::post('/auth/logout', [LoginController::class, 'logout']);
+
+    Route::apiResource('/payment-method', PaymentMethodController::class);
+    Route::any('/intent-payment-method', [PaymentMethodController::class, 'createSetupIntent']);
+
+    Route::controller(UcenterController::class)->group(function () {
+        Route::any('/payment-method/intent', [PaymentMethodController::class, 'createSetupIntent']);
+        Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+        Route::post('/payment-method', [PaymentMethodController::class, 'store']);
+        Route::put('/payment-method', [PaymentMethodController::class, 'update']);
+        Route::get('/payment-method', [PaymentMethodController::class, 'show']);
+        Route::delete('/payment-method', [PaymentMethodController::class, 'destroy']);
+        Route::get('/default-payment-method', [PaymentMethodController::class, 'default']);
+    });
 
     Route::controller(UcenterController::class)->group(function () {
         Route::get('/ucenter/notifications', 'notifications');
@@ -132,20 +163,20 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
     });
 
     Route::controller(LotteryController::class)->group(function () {
-        Route::get('/events/{activity}/lotteries', 'index');
-        Route::get('/events/{activity}/lotteries/{lottery}', 'show');
+//        Route::get('/events/{activity}/lotteries', 'index');
+//        Route::get('/events/{activity}/lotteries/{lottery}', 'show');
         Route::get('/events/{activity}/lotteries/{lottery}/qualification', 'qualification');
     });
 
     Route::controller(GoodsController::class)->group(function () {
-        Route::get('/events/{activity}/goods', 'index');
-        Route::get('/events/{activity}/goods/{goods}', 'show');
+//        Route::get('/events/{activity}/goods', 'index');
+//        Route::get('/events/{activity}/goods/{goods}', 'show');
         Route::post('/events/{activity}/goods/{goods}/actions/order', 'order');
     });
 
     Route::controller(GiftController::class)->group(function () {
-        Route::get('/events/{activity}/gifts', 'index');
-        Route::get('/events/{activity}/gifts/{gift}', 'show');
+//        Route::get('/events/{activity}/gifts', 'index');
+//        Route::get('/events/{activity}/gifts/{gift}', 'show');
         Route::post('/events/{activity}/gifts/{gift}/actions/like', 'like');
     });
 
@@ -191,6 +222,17 @@ Route::middleware(['auth:api', 'scopes:place-app'])->group(function () {
         Route::get('/bazaars', 'index');
         Route::get('/events/{activity}/warehouse', 'warehouse');
         Route::post('/bazaars/{bazaar}/affirm', 'affirm');
+    });
+
+    Route::controller(AuctionController::class)->group(function () {
+//        Route::get('/events/{activity}/auctions', 'index');
+//        Route::get('/auctions/{auction}', 'show');
+        Route::get('/auction/orders', 'orders');
+        Route::get('/events/{activity}/auction_orders', 'warehouse');
+//        Route::get('/auctions/{auction}/history', 'history');
+        Route::post('/auctions/{auction}/bid', 'bid');
+        Route::post('/auction/order/payment', 'payment');
+        Route::post('/auctions/{auction}/affirm', 'affirm');
     });
 });
 

@@ -16,14 +16,14 @@ class GiftController extends Controller
 {
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         return Response::success($activity->gifts->transform(function ($item) {
             return [
                 'id' => $item->id,
                 'name' => $item->name,
                 'image' => collect($item->images)->first(),
                 'description' => $item->description,
-                'is_like' => $item->isLikedBy(Auth::user()),
+                'is_like' => Auth::check() ? $item->isLikedBy(Auth::user()) : false,
                 'sponsor' => [
                     'id' => optional($item->giftable)->id,
                     'name' => optional($item->giftable)->name,
@@ -35,7 +35,7 @@ class GiftController extends Controller
 
     public function show(Activity $activity, Gift $gift): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         abort_if($activity->gifts()->where(['id' => $gift->id])->doesntExist(), 404);
         return Response::success(new GiftResource($gift));
     }

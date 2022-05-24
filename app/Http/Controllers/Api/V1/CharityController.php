@@ -10,6 +10,7 @@ use App\Models\Activity;
 use App\Models\Charity;
 use App\Models\News;
 use App\Models\Order;
+use App\Models\User;
 use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -28,6 +29,7 @@ class CharityController extends Controller
 
     public function __construct(OrderService $orderService)
     {
+        parent::__construct();
         $this->orderService = $orderService;
     }
 
@@ -52,15 +54,17 @@ class CharityController extends Controller
     public function order(Charity $charity, Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'method' => 'sometimes|in:STRIPE',
+            'payment_method' => 'nullable|string',
             'amount' => 'required|numeric|min:1|not_in:0',
         ]);
         abort_if(empty($charity->stripe_account_id), 500, 'No stripe connect account opened');
-        $order = $this->orderService->charity(Auth::user(), $charity, $request->amount);
+        $user = User::findOrFail(Auth::id());
+        $order = $this->orderService->charity($user, $charity, $request->amount, $request->payment_method);
         return Response::success([
             'stripe_account_id' => $charity->stripe_account_id,
             'order_sn' => $order->order_sn,
-            'client_secret' => $order->extends['client_secret']
+            'client_secret' => $order->extends['client_secret'],
+            'payment_method' => $order->extends['payment_method'] ?? null
         ]);
     }
 
@@ -85,7 +89,8 @@ class CharityController extends Controller
             'payment_status' => Order::STATUS_PAID,
         ]);
         $data['total_amount'] = Order::filter($request->all())->sum('amount');
-        $received = Order::filter($request->all())->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
+        $received = Order::filter($request->all())
+            ->selectRaw('DATE_FORMAT(payment_time, "%m") as date, sum(amount) as total_amount')
             ->groupBy('date')->pluck('total_amount', 'date')->toArray();
         for ($i = 1; $i <= 12; $i++) {
             $data['received'][] = $received[str_pad($i, 2, '0', STR_PAD_LEFT)] ?? 0;
@@ -95,14 +100,16 @@ class CharityController extends Controller
 
     public function history(Charity $charity): JsonResponse|JsonResource
     {
-        $data = $charity->activities->transform(function (Activity $activity) {
-            return [
-                'event_id' => $activity->id,
-                'name' => Str::random(10),
-                'date' => Carbon::parse($activity->begin_time)->toDateString(),
-                'amount' => floatval($activity->extends['total_amount']) ?? 0,
-            ];
-        });
+        $data = Order::where(['payment_status' => Order::STATUS_PAID, 'charity_id' => $charity->id])
+            ->orderByDesc('created_at')->limit(15)->get()
+            ->transform(function (Order $order) {
+                return [
+                    'type' => $order->type,
+                    'name' => Str::random(10),
+                    'date' => Carbon::parse($order->payment_time)->toDateString(),
+                    'amount' => floatval($order->amount) ?? 0,
+                ];
+            });
         return Response::success($data);
     }
 

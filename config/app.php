@@ -178,7 +178,6 @@ return [
         EloquentFilter\ServiceProvider::class,
         Aws\Laravel\AwsServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        Mavinoo\Batch\BatchServiceProvider::class,
         \App\Providers\RecaptchaServiceProvider::class,
         \App\Providers\SnsServiceProvider::class,
         Laravolt\Avatar\ServiceProvider::class,
@@ -238,7 +237,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'AWS' => Aws\Laravel\AwsFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'Batch' => Mavinoo\Batch\BatchFacade::class,
         'Avatar' => Laravolt\Avatar\Facade::class,
     ],
 

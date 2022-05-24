@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Activity;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -14,12 +15,14 @@ class RemindPaid extends Notification implements ShouldQueue
     use Queueable;
 
     private Activity $activity;
+    private User $user;
     private int $days;
 
-    public function __construct(Activity $activity, int $days)
+    public function __construct(Activity $activity, int $days, User $user)
     {
         $this->activity = $activity;
         $this->days = $days;
+        $this->user = $user;
     }
 
     public function via($notifiable): array
@@ -33,7 +36,10 @@ class RemindPaid extends Notification implements ShouldQueue
         return (new MailMessage())
             ->subject(sprintf('%s Event Reminder！', config('app.name')))
             ->markdown('emails.remind', [
-                'event' => $this->activity->name, 'days' => $this->days, 'url' => $url,
+                'name'=> $this->user->name,
+                'event' => $this->activity->name,
+                'days' => $this->days,
+                'url' => $url,
             ]);
     }
 

@@ -22,12 +22,13 @@ class GoodsController extends Controller
 
     public function __construct(OrderService $orderService)
     {
+        parent::__construct();
         $this->orderService = $orderService;
     }
 
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         return Response::success($activity->goods->transform(function ($item) {
             return [
                 'id' => $item->id,
@@ -47,25 +48,27 @@ class GoodsController extends Controller
 
     public function show(Activity $activity, Goods $goods): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404);
         return Response::success(new GoodsResource($goods));
     }
 
     public function order(Activity $activity, Goods $goods, Request $request): JsonResponse|JsonResource
     {
+        Gate::authorize('check-ticket', $activity);
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
         abort_if(Carbon::parse($activity->end_time)->lt(Carbon::now()), 422, 'Event ended');
         abort_if($activity->goods()->where(['id' => $goods->id])->doesntExist(), 404, 'Goods is not found');
         abort_if($goods->stock <= 0, 422, 'Goods sold out');
         $request->validate([
-            'method' => 'required|in:STRIPE',
+            'payment_method' => 'nullable|string',
         ]);
-        $order = $this->orderService->bazaar(Auth::user(), $activity, $goods);
+        $order = $this->orderService->bazaar(Auth::user(), $activity, $goods, $request->get('payment_method'));
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,
-            'client_secret' => $order->extends['client_secret']
+            'client_secret' => $order->extends['client_secret'],
+            'payment_method' => $order->extends['payment_method'] ?? null
         ]);
     }
 }

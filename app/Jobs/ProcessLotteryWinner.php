@@ -45,20 +45,20 @@ class ProcessLotteryWinner implements ShouldQueue
         DB::transaction(function () {
             Lottery::where('status', '=', false)->where('draw_time', '<=', Carbon::now())->whereNotNull('draw_time')->get()
                 ->each(function (Lottery $lottery) {
-                    $result = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
-                    if ($lottery->extends['standard_oli_register'] == true) {
-                        $result->whereHas('user', function ($query) {
+                    $data = $lottery->activity->tickets()->where([['amount', '>=', $lottery->standard_amount], ['type', '=', Ticket::TYPE_DONOR]]);
+                    if ($lottery->extends['standard_oli_register']) {
+                        $data->whereHas('user', function ($query) {
                             $query->where('sync', '=', true);
                         });
                     }
-                    if ($result->exists()) {
-                        $tickets = $result->pluck('amount', 'user_id')->toArray();
+                    if ($data->exists()) {
+                        $tickets = $data->get()->pluck('amount', 'user_id')->toArray();
                         Log::info('tickets:' . json_encode($tickets));
                         $money = collect($tickets)->values();
                         $ids = array_keys($tickets);
-                        $n = min($lottery->prizes()->sum('num'), count(array_keys($tickets)));
+                        $n = $lottery->prizes()->sum('num');
                         if (!empty($money) && !empty($ids) && !empty($n)) {
-                            $data = ['money' => $money, 'ids' => $ids, 'n' => $n];
+                            $data = ['money' => $money, 'ids' => $ids, 'n' => $n, 'min_requirement' => $lottery->standard_amount];
                             $body = Http::post(config('services.custom.lottery_url'), $data)->body();
                             $result = json_decode($body, true);
                             if (is_array($result)) {
@@ -69,7 +69,7 @@ class ProcessLotteryWinner implements ShouldQueue
                                         $users = User::whereIn('id', $ids)->get(['id', 'name', 'avatar']);
                                         $prize->update(['winners' => $users->toArray()]);
                                         foreach ($users as $user) {
-                                            $user->notify(new LotteryPaid($prize));
+                                            $user->notify(new LotteryPaid($prize, $user));
                                         }
                                     }
                                     $start += $prize->num;

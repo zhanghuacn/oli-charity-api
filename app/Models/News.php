@@ -58,4 +58,14 @@ class News extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    public function getThumbAttribute($value): string
+    {
+        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+    }
+
+    public function getBannerAttribute($value): string
+    {
+        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+    }
 }

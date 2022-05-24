@@ -11,6 +11,7 @@
 |
 */
 
-//Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-//    return (int) $user->id === (int) $id;
-//});
+use App\Broadcasting\AuctionChannel;
+use Illuminate\Support\Facades\Broadcast;
+
+Broadcast::channel('auction.{auction}', AuctionChannel::class);

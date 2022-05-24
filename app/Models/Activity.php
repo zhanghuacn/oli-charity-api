@@ -191,6 +191,11 @@ class Activity extends Model
         return $this->hasMany(Group::class);
     }
 
+    public function auctions(): HasMany
+    {
+        return $this->hasMany(Auction::class);
+    }
+
     protected static function booted()
     {
         static::saving(
@@ -212,5 +217,12 @@ class Activity extends Model
     public function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    public function getImagesAttribute($value): array
+    {
+        return collect(json_decode($value, true))->transform(function ($item) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
+        })->toArray();
     }
 }

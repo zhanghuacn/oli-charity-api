@@ -18,8 +18,14 @@
         ]
     },
     "pre-push": {
-        "enabled": false,
-        "actions": []
+        "enabled": true,
+        "actions": [
+            {
+                "action": "composer check-style",
+                "options": [],
+                "conditions": []
+            }
+        ]
     },
     "pre-commit": {
         "enabled": true,
