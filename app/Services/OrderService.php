@@ -86,7 +86,10 @@ class OrderService
                     ]);
                     $data['payment_method'] = $payment_method->id;
                 }
-                $payment_intent = PaymentIntent::create($data, ['stripe_account' => $activity->charity->stripe_account_id]);
+                $payment_intent = PaymentIntent::create(
+                    $data,
+                    ['stripe_account' => $activity->charity->stripe_account_id]
+                );
                 $order = new Order();
                 $order->user_id = $user->id;
                 $order->type = Order::TYPE_ACTIVITY;
@@ -216,7 +219,7 @@ class OrderService
                 $order->fee_amount = 0;
                 $order->total_amount = $amount;
                 $order->payment_type = Order::PAYMENT_OFFLINE;
-                $order->payment_no =$transfer->code;
+                $order->payment_no = $transfer->code;
                 $order->orderable()->associate($activity);
                 $order->save();
                 return $order;
