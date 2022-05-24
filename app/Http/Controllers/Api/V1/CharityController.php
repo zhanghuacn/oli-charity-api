@@ -11,6 +11,7 @@ use App\Models\Charity;
 use App\Models\News;
 use App\Models\Order;
 use App\Models\User;
+use App\Rules\Price;
 use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -55,7 +56,7 @@ class CharityController extends Controller
     {
         $request->validate([
             'payment_method' => 'nullable|string',
-            'amount' => 'required|numeric|min:1|not_in:0',
+            'amount' => ['required', 'numeric', new Price()],
         ]);
         abort_if(empty($charity->stripe_account_id), 500, 'No stripe connect account opened');
         $user = User::findOrFail(Auth::id());
