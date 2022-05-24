@@ -82,7 +82,7 @@ class LotteryController extends Controller
                 'winner' => $lottery->prizes()->whereJsonContains('winners', ['id' => Auth::id()])->first(['id', 'name']),
             ]
         );
-        $data['prizes '] = $lottery->prizes->map(function (Prize $prize) {
+        $data['prizes'] = $lottery->prizes->map(function (Prize $prize) {
             $prize->winners = array_map(function ($item) use ($prize) {
                 $ticket = Ticket::where(['activity_id' => $prize->activity_id, 'user_id' => $item['id']])->first();
                 $item['lottery_code'] = $ticket->lottery_code;
