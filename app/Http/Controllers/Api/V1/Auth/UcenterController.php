@@ -205,13 +205,13 @@ EOF;
     {
         $request->validate([
             'email' => 'required|email|unique:users',
-            'code' => 'required|digits:6',
+            'code' => 'required|digits:4',
         ]);
         $key = 'email:register:code:' . $request->get('email');
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
-            if ($request->get('code') != '888888') {
+            if ($request->get('code') != '8888') {
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }
@@ -223,7 +223,7 @@ EOF;
     {
         $request->validate([
             'phone' => 'required|phone:AU,mobile|unique:users',
-            'code' => 'required|digits:6',
+            'code' => 'required|digits:4',
         ], [
             'phone.exists' => 'The phone number is not registered or disabled'
         ]);
@@ -231,7 +231,7 @@ EOF;
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
-            if ($request->get('code') != '666666') {
+            if ($request->get('code') != '6666') {
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }

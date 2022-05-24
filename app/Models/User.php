@@ -311,13 +311,21 @@ class User extends Authenticatable implements MustVerifyEmail
             'middle_name' => $this->middle_name,
             'last_name' => $this->last_name,
             'gender' => $this->gender,
-            'email' => $this->email ? hide_email($this->email) : null,
-            'phone' => $this->phone ? substr_replace($this->phone, '****', 3, 5) : null,
+            // 'email' => $this->email ? hide_email($this->email) : null,
+            // 'phone' => $this->phone ? substr_replace($this->phone, '****', 3, 5) : null,
+            'email' => $this->email,
+            'phone' => $this->phone,
             'birthday' => Carbon::parse($this->birthday)->toDateString(),
             'is_public_records' => $this->extends['records'],
             'is_public_portfolio' => $this->extends['portfolio'],
+            'is_payment_method' => $this->hasPaymentMethod(),
             'type' => $this->charities()->exists() ? 'CHARITY' : ($this->sponsors()->exists() ? 'SPONSOR' : 'USER'),
             'type_name' => $this->charities()->exists() ? $this->charities()->first()->name : ($this->sponsors()->exists() ? $this->sponsors()->first()->name : ''),
         ];
+    }
+
+    public function getAvatarAttribute($value): string
+    {
+        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
     }
 }

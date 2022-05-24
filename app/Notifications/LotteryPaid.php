@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Prize;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,10 +17,12 @@ class LotteryPaid extends Notification implements ShouldQueue
     use Queueable;
 
     private Prize $prize;
+    private User $user;
 
-    public function __construct(Prize $prize)
+    public function __construct(Prize $prize, User $user)
     {
         $this->prize = $prize;
+        $this->user = $user;
     }
 
     public function via($notifiable): array
@@ -43,7 +46,11 @@ class LotteryPaid extends Notification implements ShouldQueue
     {
         return (new MailMessage())->subject(sprintf('%s Congratulations！', config('app.name')))
             ->markdown('emails.award', [
-                'prize' => $this->prize->name, 'event' => $this->prize->activity->name, 'image' => collect($this->prize->images)->first()
+                'name' => $this->user->name,
+                'prize' => $this->prize->name,
+                'event' => $this->prize->activity->name,
+                'image' => collect($this->prize->images)->first(),
+                'url' => sprintf('%s/events/lottery/result/%d?eventsId=%d', config('services.custom.app_spa_url'), $this->prize->id, $this->prize->activity_id),
             ]);
     }
 
@@ -51,9 +58,10 @@ class LotteryPaid extends Notification implements ShouldQueue
     {
         $event = $this->prize->activity->name;
         $prize = $this->prize->name;
+        $name = $this->user->name;
         $date = Carbon::parse($this->prize->activity->end_time)->toFormattedDateString();
         $message = <<<EOF
-Dear user
+Dear $name
 Congratulations, you've won the $prize in our $event,
 You can claim your prize on the day of the banquet on $date.
 If you have any questions, please contact the administrator of the WeChat group and check the details by email.

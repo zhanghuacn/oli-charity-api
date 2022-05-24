@@ -14,6 +14,11 @@ class OrderFilter extends ModelFilter
      */
     public $relations = [];
 
+    public function orderSn($orderSn): OrderFilter
+    {
+        return $this->where('order_sn', 'like', $orderSn . '%');
+    }
+
     public function charity($id): OrderFilter
     {
         return $this->where('charity_id', '=', $id);

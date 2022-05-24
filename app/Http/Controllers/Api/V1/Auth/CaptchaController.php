@@ -47,7 +47,7 @@ class CaptchaController extends Controller
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
         try {
-            $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
+            $code = str_pad(random_int(1, 9999), 4, 0, STR_PAD_LEFT);
             $email = $request->get('email');
             $key = 'email:login:code:' . $request->get('email');
             Mail::to($email)->send(new CaptchaShipped($code));
@@ -69,7 +69,7 @@ class CaptchaController extends Controller
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
         try {
-            $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
+            $code = str_pad(random_int(1, 9999), 4, 0, STR_PAD_LEFT);
             $email = $request->get('email');
             $key = 'email:register:code:' . $email;
             Mail::to($email)->send(new CaptchaShipped($code));
@@ -93,7 +93,7 @@ class CaptchaController extends Controller
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
         try {
-            $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
+            $code = str_pad(random_int(1, 9999), 4, 0, STR_PAD_LEFT);
             $phone = $request->get('phone');
             $key = 'phone:register:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->addMinutes(15));
@@ -118,7 +118,7 @@ class CaptchaController extends Controller
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
         try {
-            $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
+            $code = str_pad(random_int(1, 9999), 4, 0, STR_PAD_LEFT);
             $phone = $request->get('phone');
             $key = 'phone:login:code:' . $phone;
             Cache::put($key, $code, Carbon::now()->addMinutes(15));

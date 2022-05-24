@@ -72,5 +72,6 @@ return [
     'custom' => [
         'lottery_url' => env('LOTTERY_URL', 'https://4omu1zxuba.execute-api.ap-southeast-2.amazonaws.com/default/lottery'),
         'oli_register_url' => env('OLI_REGISTER_URL', 'https://api.olicapital.com/login/existUser'),
+        'app_spa_url' => env('APP_SPA_URL')
     ],
 ];

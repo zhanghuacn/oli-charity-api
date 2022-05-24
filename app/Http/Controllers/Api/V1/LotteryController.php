@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\LotteryCollection;
-use App\Http\Resources\Api\LotteryResource;
 use App\Models\Activity;
 use App\Models\Lottery;
+use App\Models\Prize;
+use App\Models\Sponsor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +18,7 @@ class LotteryController extends Controller
 {
     public function index(Activity $activity): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+//        Gate::authorize('check-ticket', $activity);
         $data = $activity->lotteries()->get()->map(function ($item) use ($activity) {
             return [
                 'id' => $item->id,
@@ -29,8 +29,24 @@ class LotteryController extends Controller
                 'standard_amount' => floatval($item->standard_amount),
                 'standard_oli_register' => $item->extends['standard_oli_register'] ?? false,
                 'is_standard_oli_register' => Auth::user()->sync ?? false,
-                'is_standard' => floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
-                'lottery_code' => $activity->my_ticket->lottery_code
+                'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
+                'lottery_code' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($item->standard_amount) ? $activity->my_ticket->lottery_code : null,
+                'prizes' => $item->prizes->transform(function (Prize $prize) {
+                    return [
+                        'id' => $prize->id,
+                        'name' => $prize->name,
+                        'stock' => $prize->num,
+                        'price' => floatval($prize->price),
+                        'sponsor' => optional($prize->prizeable)->getMorphClass() != Sponsor::class ? [] : [
+                            'id' => $prize->prizeable->id,
+                            'name' => $prize->prizeable->name,
+                            'logo' => $prize->prizeable->logo,
+                        ],
+                        'images' => $prize->images,
+                        'description' => $prize->description,
+                        'winners' => $prize->winners,
+                    ];
+                }),
             ];
         });
         return Response::success($data);
@@ -49,19 +65,20 @@ class LotteryController extends Controller
             'standard_oli_register' => $lottery->extends['standard_oli_register'] ?? false,
             'is_standard_oli_register' => Auth::user()->sync ?? false,
             'is_standard' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount),
-            'lottery_code' => optional($activity->my_ticket)->lottery_code
+            'lottery_code' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount) ? optional($activity->my_ticket)->lottery_code : ''
         ];
         return Response::success($data);
     }
 
     public function show(Activity $activity, Lottery $lottery): JsonResponse|JsonResource
     {
-        Gate::authorize('check-ticket', $activity);
+        //Gate::authorize('check-ticket', $activity);
         $data = array_merge(
             $lottery->toArray(),
             [
                 'prizes' => $lottery->prizes,
-                'lottery_code' => $activity->my_ticket->lottery_code,
+                'lottery_code' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount) ? optional($activity->my_ticket)->lottery_code : '',
+                'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($lottery->standard_amount),
                 'winner' => $lottery->prizes()->whereJsonContains('winners', ['id' => Auth::id()])->first(['id', 'name']),
             ]
         );

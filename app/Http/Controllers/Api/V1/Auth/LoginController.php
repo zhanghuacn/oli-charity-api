@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessStripeCustomer;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -29,8 +30,10 @@ class LoginController extends Controller
             $account = Str::substr($account, 0, 2) != '61' ? sprintf('61%s', $account) : $account;
         }
         $user = User::where('phone', $account)->orWhere('email', $account)->orWhere('username', $account)->first();
-        if (!$user || !Hash::check($request->input('password'), $user->password)) {
-            abort(422, 'The provided credentials are incorrect.');
+        abort_if(!$user || !Hash::check($request->input('password'), $user->password), 422, 'The provided credentials are incorrect.');
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
         }
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
@@ -39,7 +42,7 @@ class LoginController extends Controller
     {
         $request->validate([
             'phone' => 'required|phone:AU,mobile|exists:users',
-            'code' => 'required|digits:6',
+            'code' => 'required|digits:4',
         ], [
             'phone.exists' => 'The phone number is not registered or disabled'
         ]);
@@ -47,11 +50,15 @@ class LoginController extends Controller
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
-            if ($request->get('code') != '666666') {
+            if ($request->get('code') != '6666') {
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }
         $user = User::where(['phone' => $request->get('phone')])->firstOrFail();
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         Cache::forget($key);
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
@@ -60,17 +67,21 @@ class LoginController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:users',
-            'code' => 'required|digits:6',
+            'code' => 'required|digits:4',
         ]);
         $key = 'email:login:code:' . $request->get('email');
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
-            if ($request->get('code') != '888888') {
+            if ($request->get('code') != '8888') {
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }
         $user = User::where(['email' => $request->get('email')])->firstOrFail();
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         Cache::forget($key);
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
@@ -99,6 +110,10 @@ class LoginController extends Controller
                 'extends->' . $provider => $socialite->id,
             ]
         );
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
@@ -120,13 +135,17 @@ class LoginController extends Controller
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
-            if ($request->get('code') != '888888') {
+            if ($request->get('code') != '8888') {
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }
         $user = User::whereEmail($email)->firstOrFail();
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         $user->forceFill(['password' => Hash::make($request->get('password')),])->save();
         $user->tokens()->delete();
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         Cache::forget($key);
         return Response::success();
     }
@@ -145,13 +164,17 @@ class LoginController extends Controller
         if (config('app.env') == 'production') {
             abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
         } else {
-            if ($request->get('code') != '666666') {
+            if ($request->get('code') != '6666') {
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }
         $user = User::wherePhone($phone)->firstOrFail();
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         $user->forceFill(['password' => Hash::make($request->get('password'))])->save();
         $user->tokens()->delete();
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
         Cache::forget($key);
         return Response::success();
     }
