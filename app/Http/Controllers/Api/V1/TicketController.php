@@ -41,7 +41,8 @@ class TicketController extends Controller
         return Response::success([
             'stripe_account_id' => $activity->charity->stripe_account_id,
             'order_sn' => $order->order_sn,
-            'client_secret' => $order->extends['client_secret']
+            'client_secret' => $order->extends['client_secret'],
+            'payment_method' => $order->extends['payment_method'] ?? null
         ]);
     }
 

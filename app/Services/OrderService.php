@@ -44,7 +44,10 @@ class OrderService
                     ]);
                     $data['payment_method'] = $payment_method->id;
                 }
-                $payment_intent = PaymentIntent::create($data, ['stripe_account' => $activity->charity->stripe_account_id]);
+                $payment_intent = PaymentIntent::create(
+                    $data,
+                    ['stripe_account' => $activity->charity->stripe_account_id]
+                );
                 $order = new Order();
                 $order->user_id = $user->id;
                 $order->type = Order::TYPE_BAZAAR;
