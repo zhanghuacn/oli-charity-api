@@ -249,7 +249,7 @@ class ActivityController extends Controller
             'basic.location' => 'required|string',
             'basic.begin_time' => 'required|date|date_format:Y-m-d H:i:s',
             'basic.end_time' => 'required|date|date_format:Y-m-d H:i:s|after:basic.begin_time',
-            'basic.price' => 'required|numeric|min:0',
+            'basic.price' => 'required|numeric|min:0|new MonetaryFigure',
             'basic.stock' => 'required|integer|min:1|not_in:0',
             'basic.is_private' => 'required|boolean',
             'basic.is_albums' => 'required|boolean',

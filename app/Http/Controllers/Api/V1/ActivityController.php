@@ -10,6 +10,7 @@ use App\Models\Apply;
 use App\Models\GroupInvite;
 use App\Models\Order;
 use App\Models\Ticket;
+use App\Rules\Price;
 use App\Services\OrderService;
 use Carbon\Carbon;
 use Exception;
@@ -185,7 +186,7 @@ class ActivityController extends Controller
     {
         $request->validate([
             'payment_method' => 'nullable|string',
-            'amount' => 'required|numeric|min:1|not_in:0',
+            'amount' => ['required', 'numeric', new Price()],
         ]);
         abort_if(empty($activity->charity->stripe_account_id), 500, 'No stripe connect account opened');
         abort_if(Carbon::parse($activity->end_time)->lt(Carbon::now()), 422, 'Event ended');

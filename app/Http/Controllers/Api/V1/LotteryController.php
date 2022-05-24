@@ -77,19 +77,19 @@ class LotteryController extends Controller
         $data = array_merge(
             $lottery->toArray(),
             [
-                'prizes' => $lottery->prizes->map(function (Prize $prize) {
-                    $prize->winners = array_map(function ($item) use ($prize) {
-                        $ticket = Ticket::where(['activity_id' => $prize->activity_id, 'user_id' => $item['id']])->first();
-                        $item['lottery_code'] = $ticket->lottery_code;
-                        return $item;
-                    }, $prize->winners->toArray());
-                    return $prize;
-                })->toArray(),
                 'lottery_code' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount) ? optional($activity->my_ticket)->lottery_code : '',
                 'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($lottery->standard_amount),
                 'winner' => $lottery->prizes()->whereJsonContains('winners', ['id' => Auth::id()])->first(['id', 'name']),
             ]
         );
+        $data['prizes '] = $lottery->prizes->map(function (Prize $prize) {
+            $prize->winners = array_map(function ($item) use ($prize) {
+                $ticket = Ticket::where(['activity_id' => $prize->activity_id, 'user_id' => $item['id']])->first();
+                $item['lottery_code'] = $ticket->lottery_code;
+                return $item;
+            }, $prize->winners->toArray());
+            return $prize;
+        })->toArray();
         return Response::success($data);
     }
 }
