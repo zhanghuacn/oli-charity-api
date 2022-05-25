@@ -22,4 +22,3 @@ jobs:
         run: vapor deploy staging
         env:
           VAPOR_API_TOKEN: ${{ secrets.VAPOR_API_TOKEN }}
-
