@@ -11,6 +11,8 @@ use App\Models\Activity;
 use App\Models\Auction;
 use App\Models\AuctionBidRecord;
 use App\Models\Order;
+use App\Rules\Price;
+use Axiom\Rules\MonetaryFigure;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -61,8 +63,9 @@ class AuctionController extends Controller
     {
         Gate::authorize('check-ticket', $auction->activity);
         $request->validate([
-            'amount' => 'required|numeric|min:1|max:999999999|not_in:0',
+            'amount' => ['required', 'numeric', new Price()],
         ]);
+        abort_if(!$auction->is_auction, 422, 'This item has been successfully auctioned.');
         $key = sprintf('AUCTION_%d_%d_AMOUNT', $auction->activity_id, $auction->id);
         if (Cache::has($key)) {
             abort_if(

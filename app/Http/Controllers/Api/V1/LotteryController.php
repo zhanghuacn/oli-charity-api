@@ -7,6 +7,7 @@ use App\Models\Activity;
 use App\Models\Lottery;
 use App\Models\Prize;
 use App\Models\Sponsor;
+use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -29,8 +30,8 @@ class LotteryController extends Controller
                 'standard_amount' => floatval($item->standard_amount),
                 'standard_oli_register' => $item->extends['standard_oli_register'] ?? false,
                 'is_standard_oli_register' => Auth::user()->sync ?? false,
-                'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($item->standard_amount),
-                'lottery_code' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($item->standard_amount) ? $activity->my_ticket->lottery_code : null,
+                'is_standard' => $activity->my_ticket != null && floatval(optional($activity->my_ticket)->amount) >= floatval($item->standard_amount),
+                'lottery_code' => $activity->my_ticket != null && floatval(optional($activity->my_ticket)->amount) >= floatval($item->standard_amount) ? optional($activity->my_ticket)->lottery_code : null,
                 'prizes' => $item->prizes->transform(function (Prize $prize) {
                     return [
                         'id' => $prize->id,
@@ -76,12 +77,34 @@ class LotteryController extends Controller
         $data = array_merge(
             $lottery->toArray(),
             [
-                'prizes' => $lottery->prizes,
-                'lottery_code' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount) ? optional($activity->my_ticket)->lottery_code : '',
+                'lottery_code' => Auth::check() ?
+                    (floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount) ? optional($activity->my_ticket)->lottery_code : '') : '',
                 'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($lottery->standard_amount),
+                'difference' => Auth::check() ? (floatval($lottery->standard_amount) > floatval(optional($activity->my_ticket)->amount) ?
+                    floatval($lottery->standard_amount) - floatval(optional($activity->my_ticket)->amount) : 0) : $lottery->standard_amount,
                 'winner' => $lottery->prizes()->whereJsonContains('winners', ['id' => Auth::id()])->first(['id', 'name']),
             ]
         );
+        $data['prizes'] = $lottery->prizes->transform(function (Prize $prize) {
+            return [
+                'id' => $prize->id,
+                'name' => $prize->name,
+                'stock' => $prize->num,
+                'price' => floatval($prize->price),
+                'sponsor' => optional($prize->prizeable)->getMorphClass() != Sponsor::class ? [] : [
+                    'id' => $prize->prizeable->id,
+                    'name' => $prize->prizeable->name,
+                    'logo' => $prize->prizeable->logo,
+                ],
+                'images' => $prize->images,
+                'description' => $prize->description,
+                'winners' => array_map(function ($item) use ($prize) {
+                    $ticket = Ticket::where(['activity_id' => $prize->activity_id, 'user_id' => $item['id']])->first();
+                    $item['lottery_code'] = $ticket->lottery_code;
+                    return $item;
+                }, $prize->winners->toArray()),
+            ];
+        });
         return Response::success($data);
     }
 }
