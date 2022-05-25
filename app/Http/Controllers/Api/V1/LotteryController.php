@@ -85,14 +85,27 @@ class LotteryController extends Controller
                 'winner' => $lottery->prizes()->whereJsonContains('winners', ['id' => Auth::id()])->first(['id', 'name']),
             ]
         );
-        $data['prizes'] = $lottery->prizes->map(function (Prize $prize) {
-            $prize->winners = array_map(function ($item) use ($prize) {
-                $ticket = Ticket::where(['activity_id' => $prize->activity_id, 'user_id' => $item['id']])->first();
-                $item['lottery_code'] = $ticket->lottery_code;
-                return $item;
-            }, $prize->winners->toArray());
-            return $prize;
-        })->toArray();
+
+        $data['prizes'] = $lottery->prizes->transform(function (Prize $prize) {
+            return [
+                'id' => $prize->id,
+                'name' => $prize->name,
+                'stock' => $prize->num,
+                'price' => floatval($prize->price),
+                'sponsor' => optional($prize->prizeable)->getMorphClass() != Sponsor::class ? [] : [
+                    'id' => $prize->prizeable->id,
+                    'name' => $prize->prizeable->name,
+                    'logo' => $prize->prizeable->logo,
+                ],
+                'images' => $prize->images,
+                'description' => $prize->description,
+                'winners' => array_map(function ($item) use ($prize) {
+                    $ticket = Ticket::where(['activity_id' => $prize->activity_id, 'user_id' => $item['id']])->first();
+                    $item['lottery_code'] = $ticket->lottery_code;
+                    return $item;
+                }, $prize->winners->toArray()),
+            ];
+        });
         return Response::success($data);
     }
 }
