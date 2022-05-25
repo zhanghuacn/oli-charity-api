@@ -87,6 +87,7 @@ class LotteryController extends Controller
                 'winner' => $lottery->prizes()->whereJsonContains('winners', ['id' => Auth::id()])->first(['id', 'name']),
             ]
         );
+
         $data['prizes'] = $lottery->prizes->transform(function (Prize $prize) {
             return [
                 'id' => $prize->id,
