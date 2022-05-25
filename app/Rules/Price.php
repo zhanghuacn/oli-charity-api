@@ -23,7 +23,7 @@ class Price implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $value): bool
     {
         return preg_match('/^\d+(?:\.\d{1,2})?$/', $value);
     }
@@ -33,8 +33,8 @@ class Price implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
-        return 'The validation error message.';
+        return 'The :attribute presentation error.';
     }
 }

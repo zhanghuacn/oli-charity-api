@@ -141,6 +141,7 @@ class AuctionController extends Controller
             'order_sn' => $request->get('order_sn')
         ])->firstOrFail();
         abort_if($order->type != Order::TYPE_AUCTION, 422, 'Order source exception');
+        abort_if($order->status == Order::STATUS_PAID, 422, 'Order paid successfully');
         abort_if($order->status == Order::STATUS_CLOSED, 422, 'Order closed');
         if (empty($order->payment_no)) {
             $data = [

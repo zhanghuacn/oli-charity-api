@@ -34,7 +34,6 @@
         "laravolt/avatar": "^4.1",
         "league/flysystem-aws-s3-v3": "^3.0",
         "maatwebsite/excel": "^3.1",
-        "mattkingshott/axiom": "^3.2",
         "nubs/random-name-generator": "^2.2",
         "overtrue/laravel-favorite": "^5.0",
         "overtrue/laravel-follow": "^4.0",
