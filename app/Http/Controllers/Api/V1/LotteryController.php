@@ -79,6 +79,8 @@ class LotteryController extends Controller
             [
                 'lottery_code' => floatval(optional($activity->my_ticket)->amount) >= floatval($lottery->standard_amount) ? optional($activity->my_ticket)->lottery_code : '',
                 'is_standard' => $activity->my_ticket != null && floatval($activity->my_ticket->amount) >= floatval($lottery->standard_amount),
+                'difference' => floatval($lottery->standard_amount) > floatval($activity->my_ticket->amount) ?
+                    floatval($lottery->standard_amount) - floatval($activity->my_ticket->amount) : 0,
                 'winner' => $lottery->prizes()->whereJsonContains('winners', ['id' => Auth::id()])->first(['id', 'name']),
             ]
         );
