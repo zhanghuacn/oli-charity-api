@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8626e2f5d7771d9d39daf821b1e9ea0",
+    "content-hash": "fe1103cae36b14ac4a999012c777fe56",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4535,52 +4535,6 @@
                 "source": "https://github.com/MarkBaker/PHPMatrix/tree/3.0.0"
             },
             "time": "2021-07-01T19:01:15+00:00"
-        },
-        {
-            "name": "mattkingshott/axiom",
-            "version": "v3.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mattkingshott/axiom.git",
-                "reference": "c96c97fcd0913a9b64f47f0ed63adc21543dabd2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mattkingshott/axiom/zipball/c96c97fcd0913a9b64f47f0ed63adc21543dabd2",
-                "reference": "c96c97fcd0913a9b64f47f0ed63adc21543dabd2",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.4|^8.0"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^6.0",
-                "phpunit/phpunit": "^9.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Axiom\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "A package that provides a library of reusable Laravel validation rules.",
-            "homepage": "https://github.com/mattkingshott/axiom",
-            "keywords": [
-                "axiom",
-                "laravel",
-                "php",
-                "rules",
-                "validation"
-            ],
-            "support": {
-                "issues": "https://github.com/mattkingshott/axiom/issues",
-                "source": "https://github.com/mattkingshott/axiom/tree/v3.2.1"
-            },
-            "time": "2021-03-25T12:05:06+00:00"
         },
         {
             "name": "moneyphp/money",
@@ -14969,5 +14923,5 @@
         "ext-pdo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
