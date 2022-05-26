@@ -66,12 +66,10 @@ Route::controller(LoginController::class)->group(function () {
 
 Route::controller(CaptchaController::class)->group(function () {
     Route::post('/auth/captcha', 'captcha');
-    Route::middleware(['throttle:5,1'])->group(function () {
-        Route::post('/auth/phone-register-code', 'sendRegisterCodeByPhone');
-        Route::post('/auth/email-register-code', 'sendRegisterCodeByEmail');
-        Route::post('/auth/phone-login-code', 'sendLoginCodeByPhone');
-        Route::post('/auth/email-login-code', 'sendLoginCodeByEmail');
-    });
+    Route::post('/auth/phone-register-code', 'sendRegisterCodeByPhone');
+    Route::post('/auth/email-register-code', 'sendRegisterCodeByEmail');
+    Route::post('/auth/phone-login-code', 'sendLoginCodeByPhone');
+    Route::post('/auth/email-login-code', 'sendLoginCodeByEmail');
 });
 
 Route::controller(CharityController::class)->group(function () {
