@@ -73,6 +73,7 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
     Route::get('/events/{activity}/seat-config', [ActivityController::class, 'seatConfig']);
     Route::post('/events/{activity}/seat-allocation', [ActivityController::class, 'seatAllocation']);
     Route::post('/lotteries/{lottery}/draw', [LotteryController::class, 'draw']);
+    Route::post('/lotteries/{lottery}/appoint', [LotteryController::class, 'appoint']);
 
     Route::get('/events/{activity}/tickets/export', [TicketController::class, 'export']);
     Route::post('/events/{activity}/tickets/import', [TicketController::class, 'import']);
