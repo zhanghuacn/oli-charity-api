@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Charity\V1;
 use App\Http\Controllers\Controller;
 use App\Jobs\BulkSMS;
 use App\Models\Activity;
+use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,7 +26,8 @@ class NotifyController extends Controller
         $request->validate([
             'content' => 'required|string|max:256',
         ]);
-        $userIds = $activity->tickets()->get()->pluck('user_id')->toArray();
+        $userIds = $activity->tickets()->whereNotIn('type', [Ticket::TYPE_STAFF, Ticket::TYPE_HOST])->get()
+            ->pluck('user_id')->toArray();
         BulkSMS::dispatch($userIds, $request->get('content'));
         return Response::success();
     }
