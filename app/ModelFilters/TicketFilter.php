@@ -35,6 +35,20 @@ class TicketFilter extends ModelFilter
         return $this->where('activity_id', '=', $value);
     }
 
+    public function phone($phone): TicketFilter
+    {
+        return $this->whereHas('user', function (Builder $query) use ($phone) {
+            $query->where('phone', 'like', $phone . '%');
+        });
+    }
+
+    public function email($email): TicketFilter
+    {
+        return $this->whereHas('user', function (Builder $query) use ($email) {
+            $query->where('email', 'like', $email . '%');
+        });
+    }
+
     public function name($name): Builder|TicketFilter
     {
         return $this->whereHas('user', function (Builder $query) use ($name) {
