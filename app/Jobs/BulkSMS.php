@@ -39,7 +39,7 @@ class BulkSMS implements ShouldQueue
     public function handle(): void
     {
         if (!empty($this->ids)) {
-            User::whereIn('id', $this->ids)->get()->each(function (User $user) {
+            User::whereIn('id', $this->ids)->whereNotNull('phone')->get()->each(function (User $user) {
                 $user->notify(new SmsNotify($this->content));
             });
         }

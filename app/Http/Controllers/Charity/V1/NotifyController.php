@@ -25,7 +25,7 @@ class NotifyController extends Controller
         $request->validate([
             'content' => 'required|string|max:256',
         ]);
-        $userIds = $activity->tickets()->whereNotNull('phone')->get()->pluck('user_id');
+        $userIds = $activity->tickets()->get()->pluck('user_id');
         BulkSMS::dispatch($userIds, $request->get('content'));
         return Response::success();
     }
