@@ -34,6 +34,7 @@ class LotteryController extends Controller
                 'lottery_code' => $activity->my_ticket != null && floatval(optional($activity->my_ticket)->amount) >= floatval($item->standard_amount) ? optional($activity->my_ticket)->lottery_code : null,
                 'difference' => Auth::check() ? (floatval($item->standard_amount) > floatval(optional($activity->my_ticket)->amount) ?
                     floatval($item->standard_amount) - floatval(optional($activity->my_ticket)->amount) : 0) : $item->standard_amount,
+                'is_draw' => $item->status,
                 'prizes' => $item->prizes->transform(function (Prize $prize) {
                     return [
                         'id' => $prize->id,

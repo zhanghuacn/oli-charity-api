@@ -9,6 +9,7 @@ use App\Http\Controllers\Charity\V1\HistoryController;
 use App\Http\Controllers\Charity\V1\HomeController;
 use App\Http\Controllers\Charity\V1\LotteryController;
 use App\Http\Controllers\Charity\V1\NewsController;
+use App\Http\Controllers\Charity\V1\NotifyController;
 use App\Http\Controllers\Charity\V1\PermissionController;
 use App\Http\Controllers\Charity\V1\RoleController;
 use App\Http\Controllers\Charity\V1\SponsorController;
@@ -55,6 +56,7 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
     Route::post('/events/{activity}/submit', [ActivityController::class, 'submit']);
     Route::put('/events/{activity}', [ActivityController::class, 'update']);
     Route::delete('/events/{activity}', [ActivityController::class, 'destroy']);
+    Route::post('/events/{activity}/bulk-sms', [NotifyController::class, 'send']);
 
     Route::get('/events/{activity}/applies', [ApplyController::class, 'index']);
     Route::post('/events/{activity}/applies/{apply}/audit', [ApplyController::class, 'audit']);
@@ -71,6 +73,7 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
     Route::get('/events/{activity}/seat-config', [ActivityController::class, 'seatConfig']);
     Route::post('/events/{activity}/seat-allocation', [ActivityController::class, 'seatAllocation']);
     Route::post('/lotteries/{lottery}/draw', [LotteryController::class, 'draw']);
+    Route::post('/lotteries/{lottery}/appoint', [LotteryController::class, 'appoint']);
 
     Route::get('/events/{activity}/tickets/export', [TicketController::class, 'export']);
     Route::post('/events/{activity}/tickets/import', [TicketController::class, 'import']);

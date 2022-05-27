@@ -64,18 +64,23 @@ class ActivityController extends Controller
     {
         Gate::authorize('check-charity-source', $activity);
         $request->validate([
+            'email' => 'nullable|string',
+            'phone' => 'nullable|string',
             'code' => 'nullable|string',
             'sort' => 'sometimes|string|in:ASC,DESC',
             'page' => 'sometimes|numeric|min:1|not_in:0',
             'per_page' => 'sometimes|numeric|min:1|not_in:0',
         ]);
-        $data = $activity->tickets()->filter($request->all())->with(['user', 'group'])->paginate($request->input('per_page', 15));
+        $data = $activity->tickets()->filter($request->all())->with(['user', 'group'])
+            ->paginate($request->input('per_page', 15));
         $data->getCollection()->transform(function (Ticket $ticket) {
             return [
                 'id' => $ticket->id,
                 'uid' => $ticket->user->id,
                 'avatar' => $ticket->user->avatar,
                 'name' => $ticket->user->name,
+                'email' => $ticket->user->email,
+                'phone' => $ticket->user->phone,
                 'group' => optional($ticket->group)->name,
                 'ticket' => $ticket->code,
                 'amount' => $ticket->amount,
