@@ -1,7 +1,7 @@
  name: Deploy
  on:
    push:
-     branches: [ testing ]
+     branches: [ oliview ]
  jobs:
    deploy:
      runs-on: ubuntu-latest
@@ -19,6 +19,6 @@
        - name: Install Project Dependencies
          run: composer install --no-interaction --prefer-dist --optimize-autoloader
        - name: Deploy Environment
-         run: vapor deploy testing
+         run: vapor deploy production
          env:
            VAPOR_API_TOKEN: ${{ secrets.VAPOR_API_TOKEN }}
