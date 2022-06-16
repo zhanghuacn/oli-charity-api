@@ -174,6 +174,7 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
         App\Providers\VaporUiServiceProvider::class,
         EloquentFilter\ServiceProvider::class,
         Aws\Laravel\AwsServiceProvider::class,
@@ -181,6 +182,7 @@ return [
         \App\Providers\RecaptchaServiceProvider::class,
         \App\Providers\SnsServiceProvider::class,
         Laravolt\Avatar\ServiceProvider::class,
+        \Laravel\Telescope\TelescopeServiceProvider::class,
     ],
 
     /*

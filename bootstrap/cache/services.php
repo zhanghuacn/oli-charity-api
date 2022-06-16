@@ -67,6 +67,7 @@
     63 => 'App\\Providers\\RecaptchaServiceProvider',
     64 => 'App\\Providers\\SnsServiceProvider',
     65 => 'Laravolt\\Avatar\\ServiceProvider',
+    66 => 'Laravel\\Telescope\\TelescopeServiceProvider',
   ),
   'eager' => 
   array (
@@ -119,6 +120,7 @@
     46 => 'App\\Providers\\RecaptchaServiceProvider',
     47 => 'App\\Providers\\SnsServiceProvider',
     48 => 'Laravolt\\Avatar\\ServiceProvider',
+    49 => 'Laravel\\Telescope\\TelescopeServiceProvider',
   ),
   'deferred' => 
   array (
