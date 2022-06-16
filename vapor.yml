@@ -9,6 +9,7 @@ environments:
         octane-database-session-persist: true
         octane-database-session-ttl: 10
         scheduler: true
+        storage: oliview-charity-s3
         memory: 1024
         cli-memory: 1024
         runtime: docker
