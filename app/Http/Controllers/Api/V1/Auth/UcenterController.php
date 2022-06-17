@@ -183,7 +183,7 @@ EOF;
             'user_id' => Auth::id(),
         ];
         return Response::success([
-            'token' => Crypt::encryptString(json_encode($data)),
+            'token' => base64_encode(json_encode($data)),
         ]);
     }
 
@@ -197,7 +197,7 @@ EOF;
             'user_id' => Auth::id(),
         ];
         return Response::success([
-            'token' => Crypt::encryptString(json_encode($data)),
+            'token' => base64_encode(json_encode($data)),
         ]);
     }
 
