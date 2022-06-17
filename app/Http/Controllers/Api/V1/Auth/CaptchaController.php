@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -39,10 +40,14 @@ class CaptchaController extends Controller
     public function sendLoginCodeByEmail(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'email' => 'required|email|exists:users',
+            'email' => 'required|email',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
         ]);
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
+            'email' => $request->get('email')
+        ]);
+        abort_if($response['status'] != 1, 422, 'The email is not registered or disabled.');
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
@@ -61,10 +66,14 @@ class CaptchaController extends Controller
     public function sendRegisterCodeByEmail(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
         ]);
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
+            'email' => $request->get('email')
+        ]);
+        abort_if($response['status'] != 1, 422, 'The email is not registered or disabled.');
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
@@ -83,12 +92,14 @@ class CaptchaController extends Controller
     public function sendRegisterCodeByPhone(Request $request, SnsClient $snsClient): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|phone:AU,mobile|unique:users',
+            'phone' => 'required|phone:AU,mobile',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
-        ], [
-            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
+            'phone' => $request->get('phone')
+        ]);
+        abort_if($response['status'] != 1, 422, 'The phone number is not registered or disabled.');
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
@@ -108,12 +119,14 @@ class CaptchaController extends Controller
     public function sendLoginCodeByPhone(Request $request, SnsClient $snsClient): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|phone:AU,mobile|exists:users',
+            'phone' => 'required|phone:AU,mobile',
             'captcha_key' => 'required|string',
             'captcha_code' => 'required|string',
-        ], [
-            'phone.exists' => 'The phone number is not registered or disabled'
         ]);
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
+            'phone' => $request->get('phone')
+        ]);
+        abort_if($response['status'] != 1, 422, 'The phone number is not registered or disabled.');
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');

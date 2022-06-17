@@ -73,7 +73,7 @@ class LoginController extends Controller
         $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
             'phone' => $request->get('phone')
         ]);
-        abort_if($response['status'] != 1, 422, 'Phone not registered.');
+        abort_if($response['status'] != 1, 422, 'The phone number is not registered or disabled.');
         $user = User::updateOrCreate([
             'phone' => $request->get('phone'),
             'password' => $request->get('phone')
@@ -89,7 +89,7 @@ class LoginController extends Controller
     public function loginByEmail(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'email' => 'required|email|exists:users',
+            'email' => 'required|email',
             'code' => 'required|digits:4',
         ]);
         $key = 'email:login:code:' . $request->get('email');
@@ -103,7 +103,7 @@ class LoginController extends Controller
         $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
             'email' => $request->get('email')
         ]);
-        abort_if($response['status'] != 1, 422, 'Email not registered.');
+        abort_if($response['status'] != 1, 422, 'The email is not registered or disabled.');
         $user = User::updateOrCreate([
             'email' => $request->get('email'),
             'password' => $request->get('email')
