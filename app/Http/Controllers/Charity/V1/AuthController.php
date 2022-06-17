@@ -48,7 +48,7 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse|JsonResource
     {
         $this->checkRegister($request);
-        $signature = json_decode(Crypt::decryptString($request->get('token')), true);
+        $signature = json_decode(base64_decode($request->get('token')), true);
         abort_if($signature['type'] != Charity::class, 422, 'Invalid token.');
         abort_if(Carbon::parse($signature['expires'])->lt(Carbon::now()), 422, 'The token has expired.');
         try {
