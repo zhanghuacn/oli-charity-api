@@ -32,7 +32,6 @@ class LoginController extends Controller
             'email' => $account,
             'password' => $password,
         ]);
-        dd($response);
         abort_if($response['status'] != 1, 422, 'The provided credentials are incorrect.');
         $user = User::where('phone', $account)->orWhere('email', $account)->orWhere('username', $account)->first();
         if (empty($user)) {
