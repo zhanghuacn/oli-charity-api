@@ -42,7 +42,7 @@ class ProcessRegOliView implements ShouldQueue
             'username' => '匿名',
             'password' => $this->user['password'] ?? 888888,
             'phone' => $this->user['phone'],
-            'url' => 'oliview2080',
+            'url' => 'https://oliview2080',
         ];
         Log::info(sprintf('请求参数：%s', json_encode($data)));
         $body = Http::asForm()->post(config('services.custom.oli_api_url') . '/login/existUser', $data)->body();
