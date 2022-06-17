@@ -73,7 +73,7 @@ class CaptchaController extends Controller
         $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
             'email' => $request->get('email')
         ]);
-        abort_if($response['status'] != 1, 422, 'The email is not registered or disabled.');
+        abort_if($response['status'] == 1, 422, 'The email is registered.');
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
@@ -99,7 +99,7 @@ class CaptchaController extends Controller
         $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
             'phone' => $request->get('phone')
         ]);
-        abort_if($response['status'] != 1, 422, 'The phone number is not registered or disabled.');
+        abort_if($response['status'] == 1, 422, 'The phone is registered.');
         $captcha = Cache::get($request->get('captcha_key'));
         abort_if(!$captcha, 403, 'Graphic verification code is invalid');
         abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
