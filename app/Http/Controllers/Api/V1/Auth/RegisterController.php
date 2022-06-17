@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rules\Password as Pwd;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
@@ -15,6 +16,10 @@ class RegisterController extends Controller
 {
     public function registerEmail(Request $request): JsonResponse|JsonResource
     {
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
+            'email' => $request->get('email')
+        ]);
+        abort_if($response['status'] == 1, 422, 'Email is registered.');
         $request->validate([
             'email' => 'required|email|unique:users',
             'code' => 'required|digits:4',
@@ -36,6 +41,10 @@ class RegisterController extends Controller
 
     public function registerPhone(Request $request): JsonResponse|JsonResource
     {
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
+            'phone' => $request->get('phone')
+        ]);
+        abort_if($response['status'] == 1, 422, 'Phone is registered.');
         $request->validate([
             'phone' => 'required|phone:AU,mobile|unique:users',
             'code' => 'required|digits:4',

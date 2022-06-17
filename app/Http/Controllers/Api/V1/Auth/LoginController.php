@@ -101,7 +101,7 @@ class LoginController extends Controller
             }
         }
         $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
-            'email' => $request->get('phone')
+            'email' => $request->get('email')
         ]);
         abort_if($response['status'] != 1, 422, 'Email not registered.');
         $user = User::updateOrCreate([
