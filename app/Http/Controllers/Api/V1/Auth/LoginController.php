@@ -74,10 +74,13 @@ class LoginController extends Controller
             'phone' => $request->get('phone')
         ]);
         abort_if($response['status'] != 1, 422, 'The phone number is not registered or disabled.');
-        $user = User::updateOrCreate([
-            'phone' => $request->get('phone'),
-            'password' => $request->get('phone')
-        ]);
+        $user = User::wherePhone($request->get('phone'))->first();
+        if ($user->doesntExist()) {
+            $user = User::create([
+                'phone' => $request->get('phone'),
+                'password' => $request->get('phone')
+            ]);
+        }
         abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
@@ -104,10 +107,13 @@ class LoginController extends Controller
             'email' => $request->get('email')
         ]);
         abort_if($response['status'] != 1, 422, 'The email is not registered or disabled.');
-        $user = User::updateOrCreate([
-            'email' => $request->get('email'),
-            'password' => $request->get('email')
-        ]);
+        $user = User::whereEmail($request->get('email'))->first();
+        if ($user->doesntExist()) {
+            $user = User::create([
+                'email' => $request->get('email'),
+                'password' => $request->get('phone')
+            ]);
+        }
         abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
