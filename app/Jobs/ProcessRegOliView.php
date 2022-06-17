@@ -45,7 +45,7 @@ class ProcessRegOliView implements ShouldQueue
             'url' => config('app.url'),
         ];
         Log::info(sprintf('请求参数：%s', json_encode($data)));
-        $body = Http::asForm()->post(config('services.custom.oli_register_url'), $data)->body();
+        $body = Http::asForm()->post(config('services.custom.oli_api_url') . '/login/existUser', $data)->body();
         Log::info(sprintf('响应参数：%s', $body));
         $result = json_decode($body, true);
         if ($result['status'] == 1 && $result['data']['ischecklogin'] == true) {

@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as Pwd;
 use Jiannei\Response\Laravel\Support\Facades\Response;
@@ -26,12 +27,28 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
         $account = $request->get('account');
-        if (!filter_var($account, FILTER_VALIDATE_EMAIL)) {
-            $account = Str::substr($account, 0, 2) != '61' ? sprintf('61%s', $account) : $account;
-        }
+        $password = $request->get('password');
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/emailLogin', [
+            'email' => $account,
+            'password' => $password,
+        ]);
+        dd($response);
+        abort_if($response['status'] != 1, 422, 'The provided credentials are incorrect.');
         $user = User::where('phone', $account)->orWhere('email', $account)->orWhere('username', $account)->first();
-        abort_if(!$user || !Hash::check($request->input('password'), $user->password), 422, 'The provided credentials are incorrect.');
-        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
+        if (empty($user)) {
+            if (!filter_var($account, FILTER_VALIDATE_EMAIL)) {
+                $account = Str::substr($account, 0, 2) != '61' ? sprintf('61%s', $account) : $account;
+                $user = User::updateOrCreate([
+                    'phone' => $account,
+                    'password' => $password
+                ]);
+            } else {
+                $user = User::updateOrCreate([
+                    'email' => $account,
+                    'password' => $password
+                ]);
+            }
+        }
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
         }
@@ -41,7 +58,7 @@ class LoginController extends Controller
     public function loginByPhone(Request $request): JsonResponse|JsonResource
     {
         $request->validate([
-            'phone' => 'required|phone:AU,mobile|exists:users',
+            'phone' => 'required|phone:AU,mobile',
             'code' => 'required|digits:4',
         ], [
             'phone.exists' => 'The phone number is not registered or disabled'
@@ -54,7 +71,14 @@ class LoginController extends Controller
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }
-        $user = User::where(['phone' => $request->get('phone')])->firstOrFail();
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
+            'phone' => $request->get('phone')
+        ]);
+        abort_if($response['status'] != 1, 422, 'Phone not registered.');
+        $user = User::updateOrCreate([
+            'phone' => $request->get('phone'),
+            'password' => $request->get('phone')
+        ]);
         abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
@@ -77,7 +101,14 @@ class LoginController extends Controller
                 abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
             }
         }
-        $user = User::where(['email' => $request->get('email')])->firstOrFail();
+        $response = Http::asForm()->timeout(10)->post(config('services.custom.oli_api_url') . '/login/checkRegister', [
+            'email' => $request->get('phone')
+        ]);
+        abort_if($response['status'] != 1, 422, 'Email not registered.');
+        $user = User::updateOrCreate([
+            'email' => $request->get('email'),
+            'password' => $request->get('email')
+        ]);
         abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
         if (!$user->hasStripeId()) {
             ProcessStripeCustomer::dispatch($user);
