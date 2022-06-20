@@ -75,7 +75,7 @@ class LoginController extends Controller
         ]);
         abort_if($response['status'] != 1, 422, 'The phone number is not registered or disabled.');
         $user = User::wherePhone($request->get('phone'))->first();
-        if ($user->doesntExist()) {
+        if (empty($user)) {
             $user = User::create([
                 'phone' => $request->get('phone'),
                 'password' => $request->get('phone')
@@ -108,7 +108,7 @@ class LoginController extends Controller
         ]);
         abort_if($response['status'] != 1, 422, 'The email is not registered or disabled.');
         $user = User::whereEmail($request->get('email'))->first();
-        if ($user->doesntExist()) {
+        if (empty($user)) {
             $user = User::create([
                 'email' => $request->get('email'),
                 'password' => $request->get('phone')
