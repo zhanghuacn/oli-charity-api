@@ -14,6 +14,7 @@ class ApplyCollection extends ResourceCollection
         return $this->collection->map(function ($item) {
             return [
                 'id' => $item->id,
+                'user_id' => $item->user->id,
                 'name' => $item->user->name,
                 'email' => $item->user->email,
                 'phone' => $item->user->phone,
