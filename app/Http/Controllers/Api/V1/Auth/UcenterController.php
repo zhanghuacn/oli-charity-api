@@ -71,9 +71,10 @@ class UcenterController extends Controller
             'name' => 'nullable|string',
             'profile' => 'nullable|string',
             'backdrop' => 'nullable|url',
+            'email' => 'nullable|email|unique:users,email,' . Auth::id(),
         ]);
         $user = Auth::user();
-        $user->update($request->only(['avatar', 'backdrop', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile']));
+        $user->update($request->only(['avatar', 'backdrop', 'first_name', 'middle_name', 'last_name', 'birthday', 'name', 'profile', 'email']));
         $user->refresh();
         return Response::success($user->info());
     }
