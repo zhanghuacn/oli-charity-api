@@ -21,4 +21,4 @@
        - name: Deploy Environment
          run: vapor deploy production
          env:
-           VAPOR_API_TOKEN: ${{ secrets.VAPOR_API_TOKEN }}
+           VAPOR_API_TOKEN: ${{ secrets.VAPOR_API_OLIVIEW_TOKEN }}
