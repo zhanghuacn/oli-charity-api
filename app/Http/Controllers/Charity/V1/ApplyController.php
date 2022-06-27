@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Charity\ApplyCollection;
 use App\Models\Activity;
 use App\Models\Apply;
+use App\Models\Ticket;
 use App\Notifications\ApplyPaid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class ApplyController extends Controller
@@ -35,6 +37,32 @@ class ApplyController extends Controller
             'status' => 'required|in:PASSED,REFUSE',
             'remark' => 'sometimes|string',
         ]);
+        if ($activity->price == 0 && Carbon::parse($activity->end_time)->gte(Carbon::now()) && $activity->stocks > 0) {
+            DB::transaction(function () use ($apply, $activity) {
+                $ticket = new Ticket([
+                    'charity_id' => $activity->charity_id,
+                    'activity_id' => $activity->id,
+                    'user_id' => $apply->user_id,
+                    'type' => Ticket::TYPE_DONOR,
+                    'price' => $activity->price,
+                ]);
+                if (!$activity->is_verification) {
+                    do {
+                        $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_BOTH);
+                        if (Ticket::where(['activity_id' => $activity->id, 'lottery_code' => $code])->doesntExist()) {
+                            $ticket->lottery_code = $code;
+                            $ticket->verified_at = Carbon::now();
+                            break;
+                        }
+                    } while (true);
+                }
+                $ticket->save();
+                $activity->update([
+                    'extends->participates' => bcadd(intval($activity->extends['participates']) ?? 0, 1)
+                ]);
+                $activity->decrement('stocks');
+            });
+        }
         $apply->status = $request->get('status');
         $apply->remark = $request->get('remark');
         $apply->reviewer = Auth::id();
