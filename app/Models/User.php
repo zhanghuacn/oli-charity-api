@@ -300,10 +300,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function routeNotificationForSns($notification): string
-    {
-        return sprintf('+%s', $this->phone);
-    }
+//    public function routeNotificationForSns($notification): string
+//    {
+//        return sprintf('+%s', $this->phone);
+//    }
 
     public function info(): array
     {
