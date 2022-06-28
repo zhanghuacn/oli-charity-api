@@ -69,7 +69,7 @@ EOF;
 
         return SnsMessage::create()
             ->body($message)
-            ->promotional()
+            ->transactional()
             ->sender(config('app.name'));
     }
 }
