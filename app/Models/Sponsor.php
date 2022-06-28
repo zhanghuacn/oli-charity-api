@@ -128,14 +128,20 @@ class Sponsor extends Model
         })->toArray();
     }
 
-    public function getLogoAttribute($value): string
+    public function getLogoAttribute($value): ?string
     {
-        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        if (!empty($value)) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        }
+        return $value;
     }
 
-    public function getBackdropAttribute($value): string
+    public function getBackdropAttribute($value): ?string
     {
-        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        if (!empty($value)) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        }
+        return $value;
     }
 
     public function getCredentialsAttribute($value): array

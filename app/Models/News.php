@@ -59,13 +59,19 @@ class News extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function getThumbAttribute($value): string
+    public function getThumbAttribute($value): ?string
     {
-        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        if (!empty($value)) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        }
+        return $value;
     }
 
-    public function getBannerAttribute($value): string
+    public function getBannerAttribute($value): ?string
     {
-        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        if (!empty($value)) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        }
+        return $value;
     }
 }

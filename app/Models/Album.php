@@ -47,8 +47,11 @@ class Album extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function getPathAttribute($value): string
+    public function getPathAttribute($value): ?string
     {
-        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        if (!empty($value)) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        }
+        return $value;
     }
 }
