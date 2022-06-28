@@ -83,7 +83,11 @@ class LotteryController extends Controller
                 foreach ($users as $user) {
                     $user->notify(new LotteryPaid($prize, $user));
                     if (!empty($user->phone)) {
-                        $this->smsPublish($prize, $user);
+                        try {
+                            $this->smsPublish($prize, $user);
+                        } catch (\Exception $e) {
+                            Log::error($e->getMessage());
+                        }
                     }
                 }
             }
