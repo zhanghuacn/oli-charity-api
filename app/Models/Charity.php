@@ -163,36 +163,54 @@ class Charity extends Model
     public function getImagesAttribute($value): array
     {
         return collect(json_decode($value, true))->transform(function ($item) {
-            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
+            if (!empty($item)) {
+                return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
+            }
+            return $item;
         })->toArray();
     }
 
     public function getLogoAttribute($value): string
     {
-        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        if (!empty($value)) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        }
+        return $value;
     }
 
     public function getBackdropAttribute($value): string
     {
-        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        if (!empty($value)) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        }
+        return $value;
     }
 
     public function getCredentialsAttribute($value): array
     {
         return collect($value)->transform(function ($item) {
-            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
+            if (!empty($item)) {
+                return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
+            }
+            return $item;
         })->toArray();
     }
 
     public function getDocumentsAttribute($value): array
     {
         return collect(json_decode($value, true))->transform(function ($item) {
-            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
+            if (!empty($item)) {
+                return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $item);
+            }
+            return $item;
         })->toArray();
     }
 
     public function getIntroduceAttribute($value): string
     {
-        return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        if (!empty($value)) {
+            return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
+        }
+        return $value;
     }
 }
