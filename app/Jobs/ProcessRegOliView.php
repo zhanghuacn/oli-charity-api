@@ -35,7 +35,7 @@ class ProcessRegOliView implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $data = [
             'email' => $this->user['email'],
@@ -48,7 +48,7 @@ class ProcessRegOliView implements ShouldQueue
         $body = Http::asForm()->post(config('services.custom.oli_api_url') . '/login/existUser', $data)->body();
         Log::info(sprintf('响应参数：%s', $body));
         $result = json_decode($body, true);
-        if ($result['status'] == 1 && $result['data']['ischecklogin'] == true) {
+        if ($result['status'] == 1 && $result['data']['ischecklogin']) {
             if (!empty($this->user['email'])) {
                 User::whereEmail($this->user['email'])->update(['sync' => true]);
             }
