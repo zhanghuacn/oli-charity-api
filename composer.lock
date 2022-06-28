@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3138562391f0c6ed93270e70fcb9d64f",
+    "content-hash": "76e40a151aca3390f5fd35a94d5b0cbd",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2313,7 +2313,13 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/laravel-notification-channels/aws-sns/zipball/4655c0588e7ab3792f6f601b20b044a139dfcb8c",
                 "reference": "4655c0588e7ab3792f6f601b20b044a139dfcb8c",
-                "shasum": ""
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
             },
             "require": {
                 "aws/aws-sdk-php": "^3.69.11",

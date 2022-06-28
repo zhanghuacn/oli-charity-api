@@ -67,7 +67,7 @@ Congratulations, you've won the $prize in our $event,
 You can claim your prize on the day of the banquet on $date.
 If you have any questions, please contact the administrator of the WeChat group and check the details by email.
 EOF;
-        Log::info('send message');
+        Log::info($message);
         return SnsMessage::create()
             ->body($message)
             ->transactional()
