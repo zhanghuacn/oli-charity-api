@@ -170,7 +170,7 @@ class Charity extends Model
         })->toArray();
     }
 
-    public function getLogoAttribute($value): string
+    public function getLogoAttribute($value): ?string
     {
         if (!empty($value)) {
             return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
@@ -178,7 +178,7 @@ class Charity extends Model
         return $value;
     }
 
-    public function getBackdropAttribute($value): string
+    public function getBackdropAttribute($value): ?string
     {
         if (!empty($value)) {
             return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
@@ -206,7 +206,7 @@ class Charity extends Model
         })->toArray();
     }
 
-    public function getIntroduceAttribute($value): string
+    public function getIntroduceAttribute($value): ?string
     {
         if (!empty($value)) {
             return str_replace(config('filesystems.disks.s3.host'), config('filesystems.disks.s3.cloudfront'), $value);
