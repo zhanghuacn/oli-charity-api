@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Listeners\PruneOldTokens;
 use App\Listeners\RevokeOldTokens;
+use Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Events\AccessTokenCreated;
 use Laravel\Passport\Events\RefreshTokenCreated;
 use SocialiteProviders\Apple\AppleExtendSocialite;
@@ -25,7 +27,7 @@ class EventServiceProvider extends ServiceProvider
             PruneOldTokens::class,
         ],
         SocialiteWasCalled::class => [
-            AppleExtendSocialite::class.'@handle',
+            AppleExtendSocialite::class . '@handle',
         ],
     ];
 
@@ -36,5 +38,10 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        parent::boot();
+
+        Event::listen(function (\Illuminate\Notifications\Events\NotificationFailed $event) {
+            dd($event);
+        });
     }
 }
