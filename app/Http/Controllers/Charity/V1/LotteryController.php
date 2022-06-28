@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Charity\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Lottery;
 use App\Models\Prize;
 use App\Models\Ticket;
@@ -82,13 +83,13 @@ class LotteryController extends Controller
                 $prize->update(['winners' => $users->toArray()]);
                 foreach ($users as $user) {
                     $user->notify(new LotteryPaid($prize, $user));
-                    if (!empty($user->phone)) {
-                        try {
-                            $this->smsPublish($prize, $user);
-                        } catch (\Exception $e) {
-                            Log::error($e->getMessage());
-                        }
-                    }
+//                    if (!empty($user->phone)) {
+//                        try {
+//                            $this->smsPublish($prize, $user);
+//                        } catch (\Exception $e) {
+//                            Log::error($e->getMessage());
+//                        }
+//                    }
                 }
             }
             $start += $prize->num;
@@ -101,8 +102,8 @@ class LotteryController extends Controller
         $event = $prize->activity->name;
         $prize = $prize->name;
         $name = $user->name;
-        //$date = Carbon::parse(optional($prize->activity)->end_time)->toFormattedDateString();
-        $date = '2022-06-28';
+        $activity = Activity::findOrFail($prize->activity_id);
+        $date = Carbon::parse($activity->end_time)->toFormattedDateString();
         $message = <<<EOF
 Dear $name
 Congratulations, you've won the $prize in our $event,

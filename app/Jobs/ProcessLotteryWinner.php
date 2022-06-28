@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Activity;
 use App\Models\Lottery;
 use App\Models\Prize;
 use App\Models\Ticket;
@@ -74,13 +75,13 @@ class ProcessLotteryWinner implements ShouldQueue
                                         $prize->update(['winners' => $users->toArray()]);
                                         foreach ($users as $user) {
                                             $user->notify(new LotteryPaid($prize, $user));
-                                            if (!empty($user->phone)) {
-                                                try {
-                                                    $this->smsPublish($prize, $user);
-                                                } catch (\Exception $e) {
-                                                    Log::error($e->getMessage());
-                                                }
-                                            }
+//                                            if (!empty($user->phone)) {
+//                                                try {
+//                                                    $this->smsPublish($prize, $user);
+//                                                } catch (\Exception $e) {
+//                                                    Log::error($e->getMessage());
+//                                                }
+//                                            }
                                         }
                                     }
                                     $start += $prize->num;
@@ -104,7 +105,8 @@ class ProcessLotteryWinner implements ShouldQueue
         $event = $prize->activity->name;
         $prize = $prize->name;
         $name = $user->name;
-        $date = Carbon::parse($prize->activity->end_time)->toFormattedDateString();
+        $activity = Activity::findOrFail($prize->activity_id);
+        $date = Carbon::parse($activity->end_time)->toFormattedDateString();
         $message = <<<EOF
 Dear $name
 Congratulations, you've won the $prize in our $event,
