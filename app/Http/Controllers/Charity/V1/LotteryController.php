@@ -67,7 +67,7 @@ class LotteryController extends Controller
         $lottery->prizes()->each(function (Prize $prize) use (&$start, $result) {
             $ids = collect($result)->slice($start, $prize->num);
             if (!empty($ids)) {
-                $users = User::whereIn('id', $ids)->select(['id', 'name', 'avatar', 'email', 'phone'])->get();
+                $users = User::whereIn('id', $ids)->select('id', 'name', 'avatar', 'email', 'phone', 'first_name', 'last_name')->get();
                 Log::info(json_encode(['winners' => $users->toArray()]));
                 $prize->update(['winners' => $users->toArray()]);
                 foreach ($users as $user) {
