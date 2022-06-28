@@ -37,7 +37,7 @@ class ApplyController extends Controller
             'status' => 'required|in:PASSED,REFUSE',
             'remark' => 'sometimes|string',
         ]);
-        if ($activity->price == 0 && Carbon::parse($activity->end_time)->gte(Carbon::now()) && $activity->stocks > 0) {
+        if ($request->get('status') == 'PASSED' && $activity->price == 0 && Carbon::parse($activity->end_time)->gte(Carbon::now()) && $activity->stocks > 0) {
             DB::transaction(function () use ($apply, $activity) {
                 $ticket = new Ticket([
                     'charity_id' => $activity->charity_id,
