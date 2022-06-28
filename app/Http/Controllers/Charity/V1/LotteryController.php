@@ -101,7 +101,8 @@ class LotteryController extends Controller
         $event = $prize->activity->name;
         $prize = $prize->name;
         $name = $user->name;
-        $date = Carbon::parse($prize->activity->end_time)->toFormattedDateString();
+        //$date = Carbon::parse(optional($prize->activity)->end_time)->toFormattedDateString();
+        $date = '2022-06-28';
         $message = <<<EOF
 Dear $name
 Congratulations, you've won the $prize in our $event,
