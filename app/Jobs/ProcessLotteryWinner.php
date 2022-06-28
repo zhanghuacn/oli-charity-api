@@ -7,6 +7,7 @@ use App\Models\Prize;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\LotteryPaid;
+use Aws\Sns\SnsClient;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,14 +25,16 @@ class ProcessLotteryWinner implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    private SnsClient $snsClient;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(SnsClient $snsClient)
     {
-        //
+        $this->snsClient = $snsClient;
     }
 
     /**
@@ -71,6 +74,9 @@ class ProcessLotteryWinner implements ShouldQueue
                                         $prize->update(['winners' => $users->toArray()]);
                                         foreach ($users as $user) {
                                             $user->notify(new LotteryPaid($prize, $user));
+                                            if (!empty($user->phone)) {
+                                                $this->smsPublish($prize, $user);
+                                            }
                                         }
                                     }
                                     $start += $prize->num;
@@ -87,5 +93,29 @@ class ProcessLotteryWinner implements ShouldQueue
                     $lottery->update(['status' => true]);
                 });
         });
+    }
+
+    private function smsPublish(Prize $prize, User $user): void
+    {
+        $event = $prize->activity->name;
+        $prize = $prize->name;
+        $name = $user->name;
+        $date = Carbon::parse($prize->activity->end_time)->toFormattedDateString();
+        $message = <<<EOF
+Dear $name
+Congratulations, you've won the $prize in our $event,
+You can claim your prize on the day of the banquet on $date.
+If you have any questions, please contact the administrator of the WeChat group and check the details by email.
+EOF;
+        $this->snsClient->publish([
+            'Message' => $message,
+            'PhoneNumber' => sprintf('+%s', $user->phone),
+            'MessageAttributes' => [
+                'AWS.SNS.SMS.SMSType' => [
+                    'DataType' => 'String',
+                    'StringValue' => 'Transactional',
+                ]
+            ],
+        ]);
     }
 }

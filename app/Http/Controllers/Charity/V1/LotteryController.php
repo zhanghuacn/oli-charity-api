@@ -8,9 +8,11 @@ use App\Models\Prize;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\LotteryPaid;
+use Aws\Sns\SnsClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +20,14 @@ use Jiannei\Response\Laravel\Support\Facades\Response;
 
 class LotteryController extends Controller
 {
+    private SnsClient $snsClient;
+
+    public function __construct(SnsClient $snsClient)
+    {
+        parent::__construct();
+        $this->snsClient = $snsClient;
+    }
+
     public function draw(Lottery $lottery): JsonResponse|JsonResource
     {
         abort_if($lottery->status, 422, 'Please do not repeat the lottery');
@@ -72,10 +82,37 @@ class LotteryController extends Controller
                 $prize->update(['winners' => $users->toArray()]);
                 foreach ($users as $user) {
                     $user->notify(new LotteryPaid($prize, $user));
+                    if (!empty($user->phone)) {
+                        $this->smsPublish($prize, $user);
+                    }
                 }
             }
             $start += $prize->num;
         });
         $lottery->update(['status' => true]);
+    }
+
+    private function smsPublish(Prize $prize, User $user): void
+    {
+        $event = $prize->activity->name;
+        $prize = $prize->name;
+        $name = $user->name;
+        $date = Carbon::parse($prize->activity->end_time)->toFormattedDateString();
+        $message = <<<EOF
+Dear $name
+Congratulations, you've won the $prize in our $event,
+You can claim your prize on the day of the banquet on $date.
+If you have any questions, please contact the administrator of the WeChat group and check the details by email.
+EOF;
+        $this->snsClient->publish([
+            'Message' => $message,
+            'PhoneNumber' => sprintf('+%s', $user->phone),
+            'MessageAttributes' => [
+                'AWS.SNS.SMS.SMSType' => [
+                    'DataType' => 'String',
+                    'StringValue' => 'Transactional',
+                ]
+            ],
+        ]);
     }
 }
