@@ -67,6 +67,7 @@ class ProcessLotteryWinner implements ShouldQueue
                                     $ids = collect($result)->slice($start, $prize->num);
                                     if (!empty($ids)) {
                                         $users = User::whereIn('id', $ids)->get(['id', 'name', 'avatar', 'email', 'phone']);
+                                        Log::info(json_encode(['winners' => $users->toArray()]));
                                         $prize->update(['winners' => $users->toArray()]);
                                         foreach ($users as $user) {
                                             $user->notify(new LotteryPaid($prize, $user));
