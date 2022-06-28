@@ -68,6 +68,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'username',
         'avatar',
         'profile',
+        'phone',
+        'email',
+        'first_name',
+        'middle_name',
+        'last_name'
     ];
     public const STATUS_ACTIVE = 'ACTIVE';
     public const STATUS_INACTIVATED = 'INACTIVATED';
