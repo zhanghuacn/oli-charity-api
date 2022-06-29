@@ -41,7 +41,7 @@ class LotteryController extends Controller
                         'name' => $prize->name,
                         'stock' => $prize->num,
                         'price' => floatval($prize->price),
-                        'sponsor' => optional($prize->prizeable)->getMorphClass() != Sponsor::class ? [] : [
+                        'sponsor' => optional($prize->prizeable)->getMorphClass() != Sponsor::class ? null : [
                             'id' => $prize->prizeable->id,
                             'name' => $prize->prizeable->name,
                             'logo' => $prize->prizeable->logo,
