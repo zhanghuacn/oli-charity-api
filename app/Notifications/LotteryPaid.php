@@ -51,7 +51,7 @@ class LotteryPaid extends Notification implements ShouldQueue
                 'prize' => $this->prize->name,
                 'event' => $this->prize->activity->name,
                 'image' => collect($this->prize->images)->first(),
-                'url' => sprintf('%s/events/lottery/result/%d?eventsId=%d', config('services.custom.app_spa_url'), $this->prize->id, $this->prize->activity_id),
+                'url' => sprintf('%s/events/lottery/result/%d?eventsId=%d', config('services.custom.app_spa_url'), $this->prize->lottery_id, $this->prize->activity_id),
             ]);
     }
 
