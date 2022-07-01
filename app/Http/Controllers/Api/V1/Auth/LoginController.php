@@ -107,7 +107,7 @@ class LoginController extends Controller
         if (empty($user)) {
             $user = User::create([
                 'phone' => $request->get('phone'),
-                'password' => $request->get('phone')
+                'password' => Str::random(10)
             ]);
         }
         abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
