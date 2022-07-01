@@ -89,6 +89,35 @@ class LoginController extends Controller
         return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
     }
 
+    public function loginAndRegisterByPhone(Request $request): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'phone' => 'required|phone:AU,mobile',
+            'code' => 'required|digits:4',
+        ]);
+        $key = 'phone:login:code:' . $request->get('phone');
+        if (config('app.env') == 'production') {
+            abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+        } else {
+            if ($request->get('code') != '6666') {
+                abort_if($request->get('code') != Cache::get($key), '422', "Verification code error");
+            }
+        }
+        $user = User::wherePhone($request->get('phone'))->first();
+        if (empty($user)) {
+            $user = User::create([
+                'phone' => $request->get('phone'),
+                'password' => $request->get('phone')
+            ]);
+        }
+        abort_if($user->status == User::STATUS_FROZEN, 403, 'Account has been frozen');
+        if (!$user->hasStripeId()) {
+            ProcessStripeCustomer::dispatch($user);
+        }
+        Cache::forget($key);
+        return Response::success(array_merge($user->createPlaceToken('api', ['place-app']), ['user' => $user->info()]));
+    }
+
     public function loginByEmail(Request $request): JsonResponse|JsonResource
     {
         $request->validate([

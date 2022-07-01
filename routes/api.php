@@ -54,6 +54,7 @@ Route::controller(RegisterController::class)->group(function () {
 Route::controller(LoginController::class)->group(function () {
     Route::post('/auth/login', 'login');
     Route::post('/auth/login-phone', 'loginByPhone');
+    Route::post('/auth/login-register-phone', 'loginAndRegisterByPhone');
     Route::post('/auth/login-email', 'loginByEmail');
     Route::post('/auth/login-social', 'socialite');
     Route::post('/auth/reset-password-email', 'resetByEmail');
