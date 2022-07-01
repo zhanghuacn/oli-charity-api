@@ -68,6 +68,7 @@ Route::controller(CaptchaController::class)->group(function () {
     Route::post('/auth/phone-register-code', 'sendRegisterCodeByPhone');
     Route::post('/auth/email-register-code', 'sendRegisterCodeByEmail');
     Route::post('/auth/phone-login-code', 'sendLoginCodeByPhone');
+    Route::post('/auth/phone-login-register-code', 'sendLoginAndRegisterCodeByPhone');
     Route::post('/auth/email-login-code', 'sendLoginCodeByEmail');
 });
 

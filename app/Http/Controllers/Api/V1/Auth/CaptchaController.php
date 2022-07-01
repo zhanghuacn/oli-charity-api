@@ -143,6 +143,29 @@ class CaptchaController extends Controller
         return Response::success();
     }
 
+    public function sendLoginAndRegisterCodeByPhone(Request $request, SnsClient $snsClient): JsonResponse|JsonResource
+    {
+        $request->validate([
+            'phone' => 'required|phone:AU,mobile',
+            'captcha_key' => 'required|string',
+            'captcha_code' => 'required|string',
+        ]);
+        $captcha = Cache::get($request->get('captcha_key'));
+        abort_if(!$captcha, 403, 'Graphic verification code is invalid');
+        abort_if(!hash_equals($captcha['code'], $request->get('captcha_code')), 422, 'Graphic verification code error ');
+        try {
+            $code = str_pad(random_int(1, 9999), 4, 0, STR_PAD_LEFT);
+            $phone = $request->get('phone');
+            $key = 'phone:login:code:' . $phone;
+            Cache::put($key, $code, Carbon::now()->addMinutes(15));
+            $this->smsPublish($snsClient, $code, $phone);
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            abort(500, 'SMS sending failed');
+        }
+        return Response::success();
+    }
+
     /**
      * @param SnsClient $snsClient
      * @param string $code
