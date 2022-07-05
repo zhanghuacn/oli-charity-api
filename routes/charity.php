@@ -60,7 +60,7 @@ Route::middleware(['auth:charity', 'scopes:place-charity', 'charity'])->group(fu
 
     Route::get('/events/{activity}/applies', [ApplyController::class, 'index']);
     Route::post('/events/{activity}/applies/{apply}/audit', [ApplyController::class, 'audit']);
-    Route::post('/events/{activity}/applies', [ApplyController::class, 'batchAudit']);
+    Route::post('/events/{activity}/applies/audit', [ApplyController::class, 'batchAudit']);
 
     Route::get('/events/{activity}/gifts', [GiftController::class, 'index']);
     Route::get('/events/{activity}/gifts/{gift}/users', [GiftController::class, 'users']);
