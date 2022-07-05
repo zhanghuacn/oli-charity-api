@@ -319,7 +319,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'gender' => $this->gender,
             'email' => $this->email,
             'phone' => $this->phone,
-            'birthday' => Carbon::parse($this->birthday)->toDateString(),
+            'birthday' => $this->birthday ? Carbon::parse($this->birthday)->toDateString() : null,
             'address' => $this->address,
             'is_public_records' => $this->settings['records'],
             'is_public_portfolio' => $this->settings['portfolio'],
