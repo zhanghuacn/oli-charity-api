@@ -59,7 +59,7 @@ class LotteryPaid extends Notification implements ShouldQueue
     {
         $event = $this->prize->activity->name;
         $prize = $this->prize->name;
-        $name = $this->user->name;
+        $name = empty($this->user->first_name) ? $this->user->name : sprintf('%s %s', $this->user->first_name, $this->user->last_name);
         $date = Carbon::parse($this->prize->activity->end_time)->toFormattedDateString();
         $message = <<<EOF
 Dear $name
