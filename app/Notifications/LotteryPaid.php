@@ -47,7 +47,7 @@ class LotteryPaid extends Notification implements ShouldQueue
     {
         return (new MailMessage())->subject(sprintf('%s Congratulations！', config('app.name')))
             ->markdown('emails.award', [
-                'name' => $this->user->name,
+                'name' => empty($this->user->first_name) ? $this->user->name : sprintf('%s %s', $this->user->first_name, $this->user->last_name),
                 'prize' => $this->prize->name,
                 'event' => $this->prize->activity->name,
                 'image' => collect($this->prize->images)->first(),

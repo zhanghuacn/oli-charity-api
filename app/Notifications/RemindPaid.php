@@ -36,7 +36,7 @@ class RemindPaid extends Notification implements ShouldQueue
         return (new MailMessage())
             ->subject(sprintf('%s Event Reminder！', config('app.name')))
             ->markdown('emails.remind', [
-                'name'=> $this->user->name,
+                'name' => empty($this->user->first_name) ? $this->user->name : sprintf('%s %s', $this->user->first_name, $this->user->last_name),
                 'event' => $this->activity->name,
                 'days' => $this->days,
                 'url' => $url,
