@@ -48,6 +48,7 @@ class Activity extends Model
     public const DEFAULT_EXTENDS = [
         'specialty' => [],
         'timeline' => [],
+        'sponsor_logos' => [],
         'participates' => 0,
         'total_amount' => 0,
         'is_albums' => true,
@@ -77,6 +78,7 @@ class Activity extends Model
         'extends->participates',
         'extends->total_amount',
         'extends->is_albums',
+        'extends->sponsor_logos',
         'cache',
         'status',
         'remark',
