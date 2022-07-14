@@ -31,6 +31,7 @@ class ActivityResource extends JsonResource
                 'images' => $this->images,
                 'specialty' => $this->extends['specialty'],
                 'timeline' => $this->extends['timeline'],
+                'sponsor_logos' => $this->extends['sponsor_logos'],
                 'status' => $this->status,
             ],
             'lotteries' => $this->lotteries->transform(function (Lottery $lottery) {
