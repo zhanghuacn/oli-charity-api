@@ -37,6 +37,7 @@ class ActivityService
                         'specialty' => $arr['basic']['specialty'] ?? [],
                         'timeline' => $arr['basic']['timeline'] ?? [],
                         'is_albums' => $arr['basic']['is_albums'] ?? false,
+                        'sponsor_logos' =>  $arr['basic']['sponsor_logos'] ?? [],
                     ],
                     'cache' => $arr
                 ]);
@@ -66,6 +67,7 @@ class ActivityService
                         'specialty' => $arr['basic']['specialty'] ?? [],
                         'timeline' => $arr['basic']['timeline'] ?? [],
                         'is_albums' => $arr['basic']['is_albums'] ?? false,
+                        'sponsor_logos' =>  $arr['basic']['sponsor_logos'] ?? [],
                     ],
                     'cache' => $arr
                 ]);

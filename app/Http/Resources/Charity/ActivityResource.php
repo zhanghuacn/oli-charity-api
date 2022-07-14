@@ -31,6 +31,7 @@ class ActivityResource extends JsonResource
                 'images' => $this->images,
                 'specialty' => $this->extends['specialty'],
                 'timeline' => $this->extends['timeline'],
+                'sponsor_logos' => $this->extends['sponsor_logos'],
                 'is_albums' => $this->extends['is_albums'] ?? false,
                 'is_verification' => $this->is_verification,
                 'status' => $this->status,

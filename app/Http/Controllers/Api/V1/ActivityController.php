@@ -69,6 +69,7 @@ class ActivityController extends Controller
         ];
         $data['price'] = floatval($activity->price);
         $data['is_sales'] = $activity->stocks - $activity->extends['participates'] > 0;
+        $data['sponsor_logos'] = $activity->extends['sponsor_logos'];
         if (Auth::check()) {
             if ($activity->is_private) {
                 $activityApplyRecord = $activity->applies()->where(['user_id' => Auth::id()])->first();
