@@ -1,5 +1,5 @@
 @component('mail::message')
-### <center><img src="https://charity-s3.oliview.com.au/prod/logo.svg" alt="{{ config('app.name') }}"></center>
+### <center><img src="https://charity-s3.oliview.com.au/prod/logo.png" alt="{{ config('app.name') }}"></center>
 # Dear {{ $name }},
 
 <p>Congratulations, you've won the <font size="5">{{ $prize }}</font>  in our <font size="5">{{ $event }}</font>!</p>

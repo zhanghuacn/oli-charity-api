@@ -1,5 +1,5 @@
 @component('mail::message')
-### <center><img src="https://charity-s3.oliview.com.au/prod/logo.svg" alt="{{ config('app.name') }}"></center>
+### <center><img src="https://charity-s3.oliview.com.au/prod/logo.png" alt="{{ config('app.name') }}"></center>
 # Dear {{ $name }},
 
 The lucky draw of <font size="5">{{ $event }}</font> will be held as scheduled after <font size="5">{{ $days }}</font> days.
